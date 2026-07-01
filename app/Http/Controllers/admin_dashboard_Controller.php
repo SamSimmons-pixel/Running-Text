@@ -92,17 +92,19 @@ class admin_dashboard_Controller extends Controller
         $this->requireAdmin();
 
         $data = $request->validate([
-            'Tanggal'    => ['required', 'date'],
-            'Judul'      => ['required', 'string', 'max:255'],
-            'Narasumber' => ['required', 'string', 'max:255'],
-            'Tempat'     => ['required', 'string', 'max:255'],
-            'Kontak'     => ['nullable', 'string', 'max:100'],
-            'Tampilkan'  => ['nullable', 'boolean'],
-            'Logo'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,svg,webp', 'max:4096'],
+            'Tanggal'       => ['required', 'date'],
+            'Judul'         => ['required', 'string', 'max:255'],
+            'Narasumber'    => ['required', 'string', 'max:255'],
+            'Tempat'        => ['required', 'string', 'max:255'],
+            'Kontak'        => ['nullable', 'string', 'max:100'],
+            'Tampilkan'     => ['nullable', 'boolean'],
+            'Logo'          => ['nullable', 'image', 'mimes:jpg,jpeg,png,svg,webp', 'max:4096'],
+            'TampilkanLogo' => ['nullable', 'boolean'],
         ]);
 
-        $data['Tampilkan'] = $request->boolean('Tampilkan');
-        $data['Logo']      = $this->saveLogo($request); // null if no file
+        $data['Tampilkan']     = $request->boolean('Tampilkan');
+        $data['TampilkanLogo'] = $request->boolean('TampilkanLogo');
+        $data['Logo']          = $this->saveLogo($request); // null if no file
 
         running_text_data::create($data);
 
@@ -121,16 +123,18 @@ class admin_dashboard_Controller extends Controller
         $kajian = running_text_data::findOrFail($id);
 
         $data = $request->validate([
-            'Tanggal'    => ['required', 'date'],
-            'Judul'      => ['required', 'string', 'max:255'],
-            'Narasumber' => ['required', 'string', 'max:255'],
-            'Tempat'     => ['required', 'string', 'max:255'],
-            'Kontak'     => ['nullable', 'string', 'max:100'],
-            'Tampilkan'  => ['nullable', 'boolean'],
-            'Logo'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,svg,webp', 'max:4096'],
+            'Tanggal'       => ['required', 'date'],
+            'Judul'         => ['required', 'string', 'max:255'],
+            'Narasumber'    => ['required', 'string', 'max:255'],
+            'Tempat'        => ['required', 'string', 'max:255'],
+            'Kontak'        => ['nullable', 'string', 'max:100'],
+            'Tampilkan'     => ['nullable', 'boolean'],
+            'Logo'          => ['nullable', 'image', 'mimes:jpg,jpeg,png,svg,webp', 'max:4096'],
+            'TampilkanLogo' => ['nullable', 'boolean'],
         ]);
 
-        $data['Tampilkan'] = $request->boolean('Tampilkan');
+        $data['Tampilkan']     = $request->boolean('Tampilkan');
+        $data['TampilkanLogo'] = $request->boolean('TampilkanLogo');
 
         if ($request->hasFile('Logo')) {
             // Delete the old logo file before saving the new one
@@ -148,7 +152,7 @@ class admin_dashboard_Controller extends Controller
     }
 
     /**
-     * Toggle the Tampilkan (show/hide) flag for a kajian.
+     * Toggle the Tampilkan (show/hide kajian) flag.
      */
     public function toggle($id)
     {
@@ -159,6 +163,20 @@ class admin_dashboard_Controller extends Controller
 
         return redirect()->route('admin.dashboard')
             ->with('success', 'Status tampil kajian diperbarui.');
+    }
+
+    /**
+     * Toggle the TampilkanLogo (show/hide logo) flag independently.
+     */
+    public function toggleLogo($id)
+    {
+        $this->requireAdmin();
+
+        $kajian = running_text_data::findOrFail($id);
+        $kajian->update(['TampilkanLogo' => !$kajian->TampilkanLogo]);
+
+        return redirect()->route('admin.dashboard')
+            ->with('success', 'Status tampil logo diperbarui.');
     }
 
     /**

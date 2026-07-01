@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('Kontak');
             $table->boolean('Tampilkan')->default(false);
             $table->string('Logo')->nullable();
+            $table->boolean('TampilkanLogo')->default(false);
             $table->timestamps();
         });
     }
@@ -29,6 +30,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('kajian', function (Blueprint $table) {
+            $table->dropColumn('TampilkanLogo');
+        });
     }
 };

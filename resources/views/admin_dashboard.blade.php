@@ -531,12 +531,21 @@
                         <input id="add_Logo" type="file" name="Logo" class="form-control" accept="image/*">
                     </div>
                 </div>
-                <div class="form-group" style="margin-bottom:1rem; flex-direction:row; align-items:center; gap:10px;">
-                    <label class="toggle" for="add_Tampilkan">
-                        <input type="checkbox" id="add_Tampilkan" name="Tampilkan" value="1" {{ old('Tampilkan') ? 'checked' : '' }}>
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span class="form-label" style="text-transform:none; letter-spacing:0;">Tampilkan di running text</span>
+                <div style="display: flex; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                    <div class="form-group" style="flex-direction:row; align-items:center; gap:10px;">
+                        <label class="toggle" for="add_Tampilkan">
+                            <input type="checkbox" id="add_Tampilkan" name="Tampilkan" value="1" {{ old('Tampilkan') ? 'checked' : '' }}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="form-label" style="text-transform:none; letter-spacing:0;">Tampilkan di running text</span>
+                    </div>
+                    <div class="form-group" style="flex-direction:row; align-items:center; gap:10px;">
+                        <label class="toggle" for="add_TampilkanLogo">
+                            <input type="checkbox" id="add_TampilkanLogo" name="TampilkanLogo" value="1" {{ old('TampilkanLogo') ? 'checked' : '' }}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="form-label" style="text-transform:none; letter-spacing:0;">Tampilkan Logo</span>
+                    </div>
                 </div>
                 <div class="form-footer">
                     <button type="button" class="btn btn-outline" onclick="toggleAddForm()">Batal</button>
@@ -572,6 +581,7 @@
                             <th>Tempat</th>
                             <th>Kontak</th>
                             <th style="text-align:center">Tampil</th>
+                            <th style="text-align:center">Tampil Logo</th>
                             <th style="text-align:right">Aksi</th>
                         </tr>
                     </thead>
@@ -619,6 +629,19 @@
                                 </label>
                             </td>
 
+                            {{-- Toggle Tampilkan Logo --}}
+                            <td style="text-align:center;">
+                                <form method="POST" action="{{ route('admin.kajian.toggleLogo', $item->id) }}" class="toggle-form" id="toggleLogoForm-{{ $item->id }}">
+                                    @csrf
+                                </form>
+                                <label class="toggle" title="{{ $item->TampilkanLogo ? 'Klik untuk sembunyikan logo' : 'Klik untuk tampilkan logo' }}">
+                                    <input type="checkbox"
+                                        {{ $item->TampilkanLogo ? 'checked' : '' }}
+                                        onchange="document.getElementById('toggleLogoForm-{{ $item->id }}').submit()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </td>
+
                             {{-- Actions --}}
                             <td>
                                 <div class="td-actions" style="justify-content:flex-end;">
@@ -630,7 +653,8 @@
                                             '{{ \Carbon\Carbon::parse($item->Tanggal)->format('Y-m-d\TH:i') }}',
                                             '{{ addslashes($item->Tempat) }}',
                                             '{{ addslashes($item->Kontak ?? '') }}',
-                                            {{ $item->Tampilkan ? 'true' : 'false' }}
+                                            {{ $item->Tampilkan ? 'true' : 'false' }},
+                                            {{ $item->TampilkanLogo ? 'true' : 'false' }}
                                         )">
                                         ✏️ Edit
                                     </button>
@@ -686,12 +710,21 @@
                     <input id="edit_Logo" type="file" name="Logo" class="form-control" accept="image/*">
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom:1.25rem; flex-direction:row; align-items:center; gap:10px;">
-                <label class="toggle" for="edit_Tampilkan">
-                    <input type="checkbox" id="edit_Tampilkan" name="Tampilkan" value="1">
-                    <span class="toggle-slider"></span>
-                </label>
-                <span class="form-label" style="text-transform:none; letter-spacing:0;">Tampilkan di running text</span>
+            <div style="display: flex; gap: 2rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+                <div class="form-group" style="flex-direction:row; align-items:center; gap:10px;">
+                    <label class="toggle" for="edit_Tampilkan">
+                        <input type="checkbox" id="edit_Tampilkan" name="Tampilkan" value="1">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="form-label" style="text-transform:none; letter-spacing:0;">Tampilkan di running text</span>
+                </div>
+                <div class="form-group" style="flex-direction:row; align-items:center; gap:10px;">
+                    <label class="toggle" for="edit_TampilkanLogo">
+                        <input type="checkbox" id="edit_TampilkanLogo" name="TampilkanLogo" value="1">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="form-label" style="text-transform:none; letter-spacing:0;">Tampilkan Logo</span>
+                </div>
             </div>
             <div class="form-footer">
                 <button type="button" class="btn btn-outline" onclick="closeEditModal(null)">Batal</button>
@@ -730,7 +763,7 @@
     }
 
     // ── Edit Modal ────────────────────────────────────────────────
-    function openEditModal(id, judul, narasumber, tanggal, tempat, kontak, tampilkan) {
+    function openEditModal(id, judul, narasumber, tanggal, tempat, kontak, tampilkan, tampilkanLogo) {
         document.getElementById('editForm').action = `/admin_dashboard/${id}`;
         document.getElementById('edit_Judul').value       = judul;
         document.getElementById('edit_Narasumber').value  = narasumber;
@@ -738,6 +771,7 @@
         document.getElementById('edit_Tempat').value      = tempat;
         document.getElementById('edit_Kontak').value      = kontak;
         document.getElementById('edit_Tampilkan').checked = tampilkan;
+        document.getElementById('edit_TampilkanLogo').checked = tampilkanLogo;
         document.getElementById('editModalBackdrop').classList.add('open');
     }
 

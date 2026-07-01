@@ -658,14 +658,16 @@
                             <span class="ticker-title">{{ $item->Judul }}</span>
                             <span class="ticker-narasumber">{{ $item->Narasumber }}</span>
                             <span class="ticker-tempat">📍 {{ $item->Tempat }}</span>
-                            @if ($item->Logo)
-                            <img src="{{ asset('logo/' . $item->Logo) }}"
-                                alt="{{ $item->Judul }}"
-                                class="ticker-logo"
-                                onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
-                            <span class="ticker-logo-placeholder" style="display:none">LOGO</span>
-                            @else
-                            <span class="ticker-logo-placeholder">LOGO</span>
+                            @if ($item->TampilkanLogo)
+                                @if ($item->Logo)
+                                <img src="{{ asset('logo/' . $item->Logo) }}"
+                                    alt="{{ $item->Judul }}"
+                                    class="ticker-logo"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
+                                <span class="ticker-logo-placeholder" style="display:none">LOGO</span>
+                                @else
+                                <span class="ticker-logo-placeholder">LOGO</span>
+                                @endif
                             @endif
                         </div>
                         <span class="ticker-bullet">◆</span>
@@ -679,14 +681,16 @@
                             <span class="ticker-title">{{ $item->Judul }}</span>
                             <span class="ticker-narasumber">{{ $item->Narasumber }}</span>
                             <span class="ticker-tempat">📍 {{ $item->Tempat }}</span>
-                            @if ($item->Logo)
-                            <img src="{{ asset('logo/' . $item->Logo) }}"
-                                alt="{{ $item->Judul }}"
-                                class="ticker-logo"
-                                onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
-                            <span class="ticker-logo-placeholder" style="display:none">LOGO</span>
-                            @else
-                            <span class="ticker-logo-placeholder">LOGO</span>
+                            @if ($item->TampilkanLogo)
+                                @if ($item->Logo)
+                                <img src="{{ asset('logo/' . $item->Logo) }}"
+                                    alt="{{ $item->Judul }}"
+                                    class="ticker-logo"
+                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
+                                <span class="ticker-logo-placeholder" style="display:none">LOGO</span>
+                                @else
+                                <span class="ticker-logo-placeholder">LOGO</span>
+                                @endif
                             @endif
                         </div>
                         <span class="ticker-bullet">◆</span>

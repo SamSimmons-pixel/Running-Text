@@ -20,10 +20,12 @@ class running_text_data extends Model
         'Tempat',
         'Kontak',
         'Tampilkan',
-        'Logo'
+        'Logo',
+        'TampilkanLogo',
     ];
 
     protected $casts = [
-        'Tampilkan' => 'boolean',
+        'Tampilkan'     => 'boolean',
+        'TampilkanLogo' => 'boolean',
     ];
 }
