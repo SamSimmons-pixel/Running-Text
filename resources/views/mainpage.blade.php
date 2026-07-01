@@ -659,7 +659,7 @@
                             <span class="ticker-narasumber">{{ $item->Narasumber }}</span>
                             <span class="ticker-tempat">📍 {{ $item->Tempat }}</span>
                             @if ($item->Logo)
-                            <img src="{{ asset('storage/' . $item->Logo) }}"
+                            <img src="{{ asset('logo/' . $item->Logo) }}"
                                 alt="{{ $item->Judul }}"
                                 class="ticker-logo"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
@@ -680,7 +680,7 @@
                             <span class="ticker-narasumber">{{ $item->Narasumber }}</span>
                             <span class="ticker-tempat">📍 {{ $item->Tempat }}</span>
                             @if ($item->Logo)
-                            <img src="{{ asset('storage/' . $item->Logo) }}"
+                            <img src="{{ asset('logo/' . $item->Logo) }}"
                                 alt="{{ $item->Judul }}"
                                 class="ticker-logo"
                                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">

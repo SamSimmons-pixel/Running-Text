@@ -2,22 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
-
-// Show login form
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-
-// Handle login POST
-Route::post('/login', [LoginController::class, 'login'])->name('login.post');
-
-// Logout
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-// Temporary admin dashboard route
-Route::get('/admin_dashboard', function () {
-    return view('admin_dashboard');
-})->name('admin.dashboard');
-
-// Mainpage — running text display
+use App\Http\Controllers\admin_dashboard_Controller;
 use App\Http\Controllers\MainpageController;
 
+// ── Auth ──────────────────────────────────────────────────────────
+Route::get('/',       [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::post('/logout',[LoginController::class, 'logout'])->name('logout');
+
+// ── Mainpage (regular user) ───────────────────────────────────────
 Route::get('/mainpage', [MainpageController::class, 'index'])->name('mainpage');
+
+// ── Admin dashboard (admin only — guarded inside controller) ─────
+Route::get ('/admin_dashboard',           [admin_dashboard_Controller::class, 'index'])->name('admin.dashboard');
+Route::post('/admin_dashboard',           [admin_dashboard_Controller::class, 'store'])->name('admin.kajian.store');
+Route::post('/admin_dashboard/{id}',      [admin_dashboard_Controller::class, 'update'])->name('admin.kajian.update');
+Route::post('/admin_dashboard/{id}/toggle', [admin_dashboard_Controller::class, 'toggle'])->name('admin.kajian.toggle');
+Route::post('/admin_dashboard/{id}/delete', [admin_dashboard_Controller::class, 'destroy'])->name('admin.kajian.destroy');
