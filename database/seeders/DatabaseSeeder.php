@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\running_text_data;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,11 +16,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::factory()->create([
+            'name' => 'Admin',
+            'password' => 'Admin123',
+            'role' => 'admin',
+        ]);
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'User',
+            'password' => 'User123',
+            'role' => 'user',
+        ]);
+
+        running_text_data::create([
+            'Tanggal' => '2022-01-01',
+            'Judul' => 'Judul',
+            'Narasumber' => 'Narasumber',
+            'Tempat' => 'Tempat',
+            'Kontak' => 'Kontak',
+            'Tampilkan' => true,
+            'Logo' => 'Logo.png (ini masih dummy)'
         ]);
     }
 }
