@@ -30,7 +30,7 @@ class LoginController extends Controller
         if (Auth::attempt(['name' => $credentials['name'], 'password' => $credentials['password']], $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect('mainpage')->with('success', 'Welcome back, ' . Auth::user()->name . '!');
+            return redirect('admin_dashboard');
         }
 
         // Authentication failed
