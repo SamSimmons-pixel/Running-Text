@@ -134,6 +134,11 @@
         <div class="topnavbar">
           <ul class="nav navbar-nav navbar-left">
             <li><a href="{{ route('admin.dashboard') }}"><span>Dashboard</span></a></li>
+            <li>
+              <a href="{{ url('/') }}" target="_blank">
+                <span><i class="fa fa-external-link" style="font-size:0.75em;"></i> Running Text</span>
+              </a>
+            </li>
           </ul>
           <ul class="userbar nav navbar-nav">
             <li class="dropdown">
@@ -166,6 +171,9 @@
                 </div>
                 <div class="quickmenu__item" title="Running Text">
                   <div class="fa fa-fw fa-television"></div>
+                </div>
+                <div class="quickmenu__item" title="Pengaturan">
+                  <div class="fa fa-fw fa-cog"></div>
                 </div>
               </div>
             </div>
@@ -201,12 +209,15 @@
                       <div class="nav-menu__text"><span>Kelola Kontak</span></div>
                     </a>
                   </li>
+<<<<<<< HEAD
                   <li class="{{ request()->routeIs('admin.logo') ? 'active' : '' }}">
                     <a href="{{ route('admin.logo') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-image"></i></div>
                       <div class="nav-menu__text"><span>Kelola Logo</span></div>
                     </a>
                   </li>
+=======
+>>>>>>> parent of 2f97f78 (little update before using livewire)
                   <li>
                     <a href="{{ url('/') }}" target="_blank">
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-television"></i></div>
@@ -219,6 +230,39 @@
                 </ul>
               </div>
 
+<<<<<<< HEAD
+=======
+              {{-- Stats --}}
+              <div class="sidebar__menu">
+                <div class="sidebar__title">Statistik</div>
+                <div class="sidestat">
+                  <div class="sidestat__cont">
+                    <div class="sidestat__item">
+                      <div class="sidestat__value">{{ $kontakList->count() }}</div>
+                      <div class="sidestat__text">total kontak</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {{-- Quick Actions --}}
+              <div class="sidebar__menu">
+                <div class="sidebar__title">Aksi Cepat</div>
+                <div class="sidebar__btn">
+                  <a class="btn btn-block btn-default" href="{{ url('/') }}" target="_blank">
+                    <i class="fa fa-eye"></i> Lihat Running Text
+                  </a>
+                </div>
+                <div class="sidebar__btn" style="margin-top:0.4rem;">
+                  <a class="btn btn-block btn-danger" href="#"
+                     onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
+                    <i class="fa fa-sign-out"></i> Logout
+                  </a>
+                  <form id="logout-form-sidebar" method="POST" action="{{ route('logout') }}" style="display:none;">@csrf</form>
+                </div>
+              </div>
+
+>>>>>>> parent of 2f97f78 (little update before using livewire)
             </div>
           </div>
         </div>

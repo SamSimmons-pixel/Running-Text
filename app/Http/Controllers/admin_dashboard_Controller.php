@@ -65,22 +65,6 @@ class admin_dashboard_Controller extends Controller
     }
 
     /**
-     * Show the logo management page.
-     */
-    public function logo()
-    {
-        $this->requireAdmin();
-
-        $logoUrl = null;
-        $files = glob(public_path('logo/global_logo.*'));
-        if (!empty($files)) {
-            $logoUrl = asset('logo/' . basename($files[0])) . '?v=' . filemtime($files[0]);
-        }
-
-        return view('logo', compact('logoUrl'));
-    }
-
-    /**
      * Upload or update the single global logo.
      */
     public function uploadGlobalLogo(Request $request)

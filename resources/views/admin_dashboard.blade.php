@@ -285,6 +285,11 @@
         <div class="topnavbar">
           <ul class="nav navbar-nav navbar-left">
             <li class="active"><a href="{{ route('admin.dashboard') }}"><span>Dashboard</span></a></li>
+            <li>
+              <a href="{{ url('/') }}" target="_blank">
+                <span><i class="fa fa-external-link" style="font-size:0.75em;"></i> Running Text</span>
+              </a>
+            </li>
           </ul>
           <ul class="userbar nav navbar-nav">
             <li class="dropdown">
@@ -318,6 +323,9 @@
                 </div>
                 <div class="quickmenu__item" title="Running Text">
                   <div class="fa fa-fw fa-television"></div>
+                </div>
+                <div class="quickmenu__item" title="Pengaturan">
+                  <div class="fa fa-fw fa-cog"></div>
                 </div>
               </div>
             </div>
@@ -354,12 +362,15 @@
                       <div class="nav-menu__text"><span>Kelola Kontak</span></div>
                     </a>
                   </li>
+<<<<<<< HEAD
                   <li class="{{ request()->routeIs('admin.logo') ? 'active' : '' }}">
                     <a href="{{ route('admin.logo') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-image"></i></div>
                       <div class="nav-menu__text"><span>Kelola Logo</span></div>
                     </a>
                   </li>
+=======
+>>>>>>> parent of 2f97f78 (little update before using livewire)
                   <li>
                     <a href="{{ url('/') }}" target="_blank">
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-television"></i></div>
@@ -395,6 +406,28 @@
                       <div class="sidestat__text">disembunyikan</div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {{-- Quick Actions --}}
+              <div class="sidebar__menu">
+                <div class="sidebar__title">Aksi Cepat</div>
+                <div class="sidebar__btn">
+                  <a class="btn btn-block btn-default" href="#" onclick="toggleAddForm(); return false;">
+                    <i class="fa fa-plus"></i> Tambah Kajian Baru
+                  </a>
+                </div>
+                <div class="sidebar__btn" style="margin-top:0.4rem;">
+                  <a class="btn btn-block btn-default" href="{{ url('/') }}" target="_blank">
+                    <i class="fa fa-eye"></i> Lihat Running Text
+                  </a>
+                </div>
+                <div class="sidebar__btn" style="margin-top:0.4rem;">
+                  <a class="btn btn-block btn-danger" href="#"
+                     onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
+                    <i class="fa fa-sign-out"></i> Logout
+                  </a>
+                  <form id="logout-form-sidebar" method="POST" action="{{ route('logout') }}" style="display:none;">@csrf</form>
                 </div>
               </div>
 
@@ -447,7 +480,36 @@
                   </div>
                 @endif
 
-
+                {{-- ── Global Logo Upload Panel ── --}}
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-image"></i> Logo Global</h3>
+                  </div>
+                  <div class="panel-body">
+                    <form method="POST" action="{{ route('admin.logo.update') }}" enctype="multipart/form-data" class="form-inline" style="display:flex; align-items:center; gap:20px; flex-wrap:wrap; justify-content:space-between;">
+                      @csrf
+                      <div style="display:flex; justify-content:space-between; gap:20px; width: 89%;">
+                        <div class="form-group" style="margin-bottom:0; display:flex; align-items:center; gap:10px;">
+                          <label class="control-label" style="margin-bottom:0;">Logo Berjalan Saat Ini:</label>
+                          <div class="td-logo" style="display:inline-block;">
+                            @if ($logoUrl)
+                              <img src="{{ $logoUrl }}" alt="Logo Global" style="max-height:50px; width:auto; border-radius:6px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); padding:3px;">
+                            @else
+                              <span class="no-logo" style="display:inline-block; padding:10px 15px; background:rgba(255,255,255,0.04); border:1px dashed rgba(255,255,255,0.13); border-radius:6px; color:#64748b; font-size:0.8rem; font-weight:normal;">Belum ada logo</span>
+                            @endif
+                          </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0; display:flex; align-items:center; gap:10px;">
+                          <label class="control-label" style="margin-bottom:0;">Ganti Logo Global:</label>
+                          <input type="file" name="Logo" class="form-control form-control-custom" accept="image/*" required style="display:inline-block; width:auto;">
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-primary" style="margin-top:0;">
+                        <i class="fa fa-upload"></i> Upload Logo
+                      </button>
+                    </form>
+                  </div>
+                </div>
 
                 {{-- ── Add Kajian Form (collapsible) ── --}}
                 <div class="form-card-kajian" id="addForm">

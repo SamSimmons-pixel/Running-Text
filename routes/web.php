@@ -21,7 +21,6 @@ use App\Http\Controllers\KontakController;
 Route::get ('/admin_dashboard',                  [admin_dashboard_Controller::class, 'index'])->name('admin.dashboard');
 Route::post('/admin_dashboard',                  [admin_dashboard_Controller::class, 'store'])->name('admin.kajian.store');
 Route::post('/admin_dashboard/global-logo',      [admin_dashboard_Controller::class, 'uploadGlobalLogo'])->name('admin.logo.update');
-Route::get ('/admin_dashboard/logo',             [admin_dashboard_Controller::class, 'logo'])->name('admin.logo');
 
 // ── Narasumber Management ──────────────────────────────────────
 Route::get ('/admin_dashboard/narasumber',       [NarasumberController::class, 'index'])->name('admin.narasumber');
