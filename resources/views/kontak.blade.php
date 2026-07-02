@@ -95,6 +95,7 @@
       }
       .topbar-user-info strong { color: #e2e8f0; margin-left: 4px; }
     </style>
+    @livewireStyles
   </head>
   <body class="framed main-scrollable">
     <div class="wrapper">
@@ -176,32 +177,32 @@
               <div class="sidebar__menu">
                 <div class="sidebar__title">Menu Utama</div>
                 <ul class="nav nav-menu">
-                  <li>
-                    <a href="{{ route('admin.dashboard') }}">
+                  <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.dashboard') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-home"></i></div>
                       <div class="nav-menu__text"><span>Dashboard</span></div>
                     </a>
                   </li>
-                  <li>
-                    <a href="{{ route('admin.narasumber') }}">
+                  <li class="{{ request()->routeIs('admin.narasumber') ? 'active' : '' }}">
+                    <a href="{{ route('admin.narasumber') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-user"></i></div>
                       <div class="nav-menu__text"><span>Kelola Narasumber</span></div>
                     </a>
                   </li>
-                  <li>
-                    <a href="{{ route('admin.tempat') }}">
+                  <li class="{{ request()->routeIs('admin.tempat') ? 'active' : '' }}">
+                    <a href="{{ route('admin.tempat') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-map-marker"></i></div>
                       <div class="nav-menu__text"><span>Kelola Tempat</span></div>
                     </a>
                   </li>
-                  <li class="active">
-                    <a href="{{ route('admin.kontak') }}">
+                  <li class="{{ request()->routeIs('admin.kontak') ? 'active' : '' }}">
+                    <a href="{{ route('admin.kontak') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-phone"></i></div>
                       <div class="nav-menu__text"><span>Kelola Kontak</span></div>
                     </a>
                   </li>
-                  <li>
-                    <a href="{{ route('admin.logo') }}">
+                  <li class="{{ request()->routeIs('admin.logo') ? 'active' : '' }}">
+                    <a href="{{ route('admin.logo') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-image"></i></div>
                       <div class="nav-menu__text"><span>Kelola Logo</span></div>
                     </a>
@@ -216,19 +217,6 @@
                     </a>
                   </li>
                 </ul>
-              </div>
-
-              {{-- Stats --}}
-              <div class="sidebar__menu">
-                <div class="sidebar__title">Statistik</div>
-                <div class="sidestat">
-                  <div class="sidestat__cont">
-                    <div class="sidestat__item">
-                      <div class="sidestat__value">{{ $kontakList->count() }}</div>
-                      <div class="sidestat__text">total kontak</div>
-                    </div>
-                  </div>
-                </div>
               </div>
 
             </div>
@@ -395,6 +383,20 @@
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
           closeDeleteModal(null);
+        }
+      });
+    </script>
+    @livewireScripts
+    <script>
+      document.addEventListener('livewire:navigated', function() {
+        if (window.jQuery) {
+          var $ = window.jQuery;
+          $('body.main-scrollable .main__scroll').scrollbar();
+          $('.scrollable').scrollbar({'disableBodyScroll' : true});
+          
+          $('.header-navbar-mobile__menu button').off('click').on('click', function() {
+            $('.dashboard').toggleClass('dashboard_menu');
+          });
         }
       });
     </script>

@@ -68,6 +68,7 @@
         box-shadow: none !important;
       }
     </style>
+    @livewireStyles
   </head>
   <body class="framed main-scrollable">
     <div class="wrapper">
@@ -128,72 +129,6 @@
       {{-- ── Dashboard Wrapper ── --}}
       <div class="dashboard">
 
-        {{-- ── Sidebar ── --}}
-        <div class="sidebar">
-          <div class="quickmenu">
-            <div class="quickmenu__cont">
-              <div class="quickmenu__list">
-                <div class="quickmenu__item active" title="Dashboard">
-                  <div class="fa fa-fw fa-home"></div>
-                </div>
-                <div class="quickmenu__item" title="Running Text">
-                  <div class="fa fa-fw fa-television"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="scrollable scrollbar-macosx">
-            <div class="sidebar__cont">
-
-              <div class="sidebar__menu">
-                <div class="sidebar__title">Menu Utama</div>
-                <ul class="nav nav-menu">
-                  <li>
-                    <a href="{{ route('admin.dashboard') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-home"></i></div>
-                      <div class="nav-menu__text"><span>Dashboard</span></div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('admin.narasumber') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-user"></i></div>
-                      <div class="nav-menu__text"><span>Kelola Narasumber</span></div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('admin.tempat') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-map-marker"></i></div>
-                      <div class="nav-menu__text"><span>Kelola Tempat</span></div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('admin.kontak') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-phone"></i></div>
-                      <div class="nav-menu__text"><span>Kelola Kontak</span></div>
-                    </a>
-                  </li>
-                  <li class="active">
-                    <a href="{{ route('admin.logo') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-image"></i></div>
-                      <div class="nav-menu__text"><span>Kelola Logo</span></div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ url('/') }}" target="_blank">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-television"></i></div>
-                      <div class="nav-menu__text"><span>Running Text</span></div>
-                      <div class="nav-menu__right">
-                        <i class="fa fa-fw fa-external-link" style="font-size:0.7em; opacity:0.5;"></i>
-                      </div>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-            </div>
-          </div>
-        </div>
 
         {{-- ── Main Content ── --}}
         <div class="main">
@@ -276,5 +211,19 @@
     <script src="{{ asset('admin-template/libs/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
+    @livewireScripts
+    <script>
+      document.addEventListener('livewire:navigated', function() {
+        if (window.jQuery) {
+          var $ = window.jQuery;
+          $('body.main-scrollable .main__scroll').scrollbar();
+          $('.scrollable').scrollbar({'disableBodyScroll' : true});
+          
+          $('.header-navbar-mobile__menu button').off('click').on('click', function() {
+            $('.dashboard').toggleClass('dashboard_menu');
+          });
+        }
+      });
+    </script>
   </body>
 </html>
