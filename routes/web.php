@@ -20,6 +20,7 @@ use App\Http\Controllers\KontakController;
 // ── Admin dashboard (admin only — guarded inside controller) ─────
 Route::get ('/admin_dashboard',                  [admin_dashboard_Controller::class, 'index'])->name('admin.dashboard');
 Route::post('/admin_dashboard',                  [admin_dashboard_Controller::class, 'store'])->name('admin.kajian.store');
+Route::get('/admin_dashboard/logo',               [admin_dashboard_Controller::class, 'logo'])->name('admin.logo');
 Route::post('/admin_dashboard/global-logo',      [admin_dashboard_Controller::class, 'uploadGlobalLogo'])->name('admin.logo.update');
 
 // ── Narasumber Management ──────────────────────────────────────

@@ -362,15 +362,12 @@
                       <div class="nav-menu__text"><span>Kelola Kontak</span></div>
                     </a>
                   </li>
-<<<<<<< HEAD
                   <li class="{{ request()->routeIs('admin.logo') ? 'active' : '' }}">
                     <a href="{{ route('admin.logo') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-image"></i></div>
                       <div class="nav-menu__text"><span>Kelola Logo</span></div>
                     </a>
                   </li>
-=======
->>>>>>> parent of 2f97f78 (little update before using livewire)
                   <li>
                     <a href="{{ url('/') }}" target="_blank">
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-television"></i></div>
