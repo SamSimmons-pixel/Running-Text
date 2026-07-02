@@ -16,6 +16,13 @@ class MainpageController extends Controller
             ->orderBy('Tanggal', 'asc')
             ->get();
 
-        return view('mainpage', compact('kajian'));
+        // Get single global logo if exists
+        $logoUrl = null;
+        $files = glob(public_path('logo/global_logo.*'));
+        if (!empty($files)) {
+            $logoUrl = asset('logo/' . basename($files[0])) . '?v=' . filemtime($files[0]);
+        }
+
+        return view('mainpage', compact('kajian', 'logoUrl'));
     }
 }

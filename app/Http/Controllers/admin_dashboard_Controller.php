@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\running_text_data;
+use App\Models\Narasumber;
+use App\Models\Tempat;
+use App\Models\Kontak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -36,52 +39,63 @@ class admin_dashboard_Controller extends Controller
         }
     }
 
-    /**
-     * Save an uploaded logo to public/logo/ and return the filename.
-     * Generates a unique name to avoid collisions.
-     */
-    private function saveLogo(Request $request): ?string
-    {
-        if (!$request->hasFile('Logo')) {
-            return null;
-        }
 
-        $file      = $request->file('Logo');
-        $extension = $file->getClientOriginalExtension();
-        $filename  = uniqid('logo_', true) . '.' . $extension;
-
-        $file->move($this->logoDir, $filename);
-
-        return $filename; // only the filename is stored in DB
-    }
-
-    /**
-     * Delete a logo file from public/logo/ if it exists.
-     * Called automatically on update (old file) and destroy.
-     */
-    private function deleteLogo(?string $filename): void
-    {
-        if (!$filename) return;
-
-        $path = $this->logoDir . DIRECTORY_SEPARATOR . $filename;
-
-        if (File::exists($path)) {
-            File::delete($path);
-        }
-    }
 
     // ─────────────────────────────────────────────────────────────
 
     /**
-     * Show the admin dashboard with all kajian records.
+     * Show the admin dashboard with all kajian records and global logo.
      */
     public function index()
     {
         $this->requireAdmin();
 
         $kajian = running_text_data::orderBy('Tanggal', 'asc')->get();
+        $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
+        $tempatList     = Tempat::orderBy('nama', 'asc')->get();
+        $kontakList     = Kontak::orderBy('nama', 'asc')->get();
 
-        return view('admin_dashboard', compact('kajian'));
+        $logoUrl = null;
+        $files = glob(public_path('logo/global_logo.*'));
+        if (!empty($files)) {
+            $logoUrl = asset('logo/' . basename($files[0])) . '?v=' . filemtime($files[0]);
+        }
+
+        return view('admin_dashboard', compact('kajian', 'logoUrl', 'narasumberList', 'tempatList', 'kontakList'));
+    }
+
+    /**
+     * Upload or update the single global logo.
+     */
+    public function uploadGlobalLogo(Request $request)
+    {
+        $this->requireAdmin();
+
+        $request->validate([
+            'Logo' => ['required', 'image', 'mimes:jpg,jpeg,png,svg,webp', 'max:4096'],
+        ]);
+
+        if ($request->hasFile('Logo')) {
+            // Delete any existing global logo files
+            $existing = glob(public_path('logo/global_logo.*'));
+            foreach ($existing as $file) {
+                if (File::exists($file)) {
+                    File::delete($file);
+                }
+            }
+
+            // Save the new one
+            $file = $request->file('Logo');
+            $extension = $file->getClientOriginalExtension();
+            $filename = 'global_logo.' . $extension;
+            $file->move(public_path('logo'), $filename);
+
+            return redirect()->route('admin.dashboard')
+                ->with('success', 'Logo global berhasil diperbarui.');
+        }
+
+        return redirect()->route('admin.dashboard')
+            ->with('error', 'Gagal mengupload logo.');
     }
 
     /**
@@ -92,19 +106,15 @@ class admin_dashboard_Controller extends Controller
         $this->requireAdmin();
 
         $data = $request->validate([
-            'Tanggal'       => ['required', 'date'],
-            'Judul'         => ['required', 'string', 'max:255'],
-            'Narasumber'    => ['required', 'string', 'max:255'],
-            'Tempat'        => ['required', 'string', 'max:255'],
-            'Kontak'        => ['nullable', 'string', 'max:100'],
-            'Tampilkan'     => ['nullable', 'boolean'],
-            'Logo'          => ['nullable', 'image', 'mimes:jpg,jpeg,png,svg,webp', 'max:4096'],
-            'TampilkanLogo' => ['nullable', 'boolean'],
+            'Tanggal'    => ['required', 'date'],
+            'Judul'      => ['required', 'string', 'max:255'],
+            'Narasumber' => ['required', 'string', 'exists:narasumber,nama'],
+            'Tempat'     => ['required', 'string', 'exists:tempat,nama'],
+            'Kontak'     => ['nullable', 'string', 'exists:kontak,nama'],
+            'Tampilkan'  => ['nullable', 'boolean'],
         ]);
 
-        $data['Tampilkan']     = $request->boolean('Tampilkan');
-        $data['TampilkanLogo'] = $request->boolean('TampilkanLogo');
-        $data['Logo']          = $this->saveLogo($request); // null if no file
+        $data['Tampilkan'] = $request->boolean('Tampilkan');
 
         running_text_data::create($data);
 
@@ -114,7 +124,6 @@ class admin_dashboard_Controller extends Controller
 
     /**
      * Update an existing kajian record.
-     * If a new logo is uploaded, the old file is deleted automatically.
      */
     public function update(Request $request, $id)
     {
@@ -123,27 +132,15 @@ class admin_dashboard_Controller extends Controller
         $kajian = running_text_data::findOrFail($id);
 
         $data = $request->validate([
-            'Tanggal'       => ['required', 'date'],
-            'Judul'         => ['required', 'string', 'max:255'],
-            'Narasumber'    => ['required', 'string', 'max:255'],
-            'Tempat'        => ['required', 'string', 'max:255'],
-            'Kontak'        => ['nullable', 'string', 'max:100'],
-            'Tampilkan'     => ['nullable', 'boolean'],
-            'Logo'          => ['nullable', 'image', 'mimes:jpg,jpeg,png,svg,webp', 'max:4096'],
-            'TampilkanLogo' => ['nullable', 'boolean'],
+            'Tanggal'    => ['required', 'date'],
+            'Judul'      => ['required', 'string', 'max:255'],
+            'Narasumber' => ['required', 'string', 'exists:narasumber,nama'],
+            'Tempat'     => ['required', 'string', 'exists:tempat,nama'],
+            'Kontak'     => ['nullable', 'string', 'exists:kontak,nama'],
+            'Tampilkan'  => ['nullable', 'boolean'],
         ]);
 
-        $data['Tampilkan']     = $request->boolean('Tampilkan');
-        $data['TampilkanLogo'] = $request->boolean('TampilkanLogo');
-
-        if ($request->hasFile('Logo')) {
-            // Delete the old logo file before saving the new one
-            $this->deleteLogo($kajian->Logo);
-            $data['Logo'] = $this->saveLogo($request);
-        } else {
-            // Keep the existing logo filename in DB
-            unset($data['Logo']);
-        }
+        $data['Tampilkan'] = $request->boolean('Tampilkan');
 
         $kajian->update($data);
 
@@ -166,32 +163,13 @@ class admin_dashboard_Controller extends Controller
     }
 
     /**
-     * Toggle the TampilkanLogo (show/hide logo) flag independently.
-     */
-    public function toggleLogo($id)
-    {
-        $this->requireAdmin();
-
-        $kajian = running_text_data::findOrFail($id);
-        $kajian->update(['TampilkanLogo' => !$kajian->TampilkanLogo]);
-
-        return redirect()->route('admin.dashboard')
-            ->with('success', 'Status tampil logo diperbarui.');
-    }
-
-    /**
      * Delete a kajian record.
-     * The logo file is deleted from public/logo/ automatically — no orphans left.
      */
     public function destroy($id)
     {
         $this->requireAdmin();
 
         $kajian = running_text_data::findOrFail($id);
-
-        // Delete the logo file first — it is no longer used after this
-        $this->deleteLogo($kajian->Logo);
-
         $kajian->delete();
 
         return redirect()->route('admin.dashboard')

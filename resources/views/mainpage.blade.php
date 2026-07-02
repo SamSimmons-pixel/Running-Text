@@ -549,7 +549,7 @@
     ============================================================ -->
         <div class="main-area">
 
-            <!-- Islamic geometric watermark -->
+            {{-- <!-- Islamic geometric watermark -->
             <div class="watermark">
                 <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <polygon points="100,10 190,50 190,150 100,190 10,150 10,50" stroke="white" stroke-width="1.5" fill="none" />
@@ -562,13 +562,13 @@
                     <line x1="29" y1="29" x2="171" y2="171" stroke="white" stroke-width="0.4" />
                     <line x1="171" y1="29" x2="29" y2="171" stroke="white" stroke-width="0.4" />
                 </svg>
-            </div>
+            </div> --}}
 
-            <!-- Channel badge -->
+            {{-- <!-- Channel badge -->
             <div class="channel-badge">
                 <span class="live-dot"></span>
                 <span class="channel-name">Jadwal Kajian Islam</span>
-            </div>
+            </div> --}}
 
             <!-- Live clock -->
             <div class="live-clock">
@@ -576,16 +576,16 @@
                 <div class="clock-date" id="clockDate"></div>
             </div>
 
-            <!-- Brand -->
+            {{-- <!-- Brand -->
             <div class="brand-block">
                 <div class="brand-ornament"></div>
                 <div class="brand-title">Jadwal Kajian</div>
                 <div class="brand-subtitle">Informasi Jadwal &amp; Kegiatan Islam</div>
                 <div class="brand-ornament bottom"></div>
-            </div>
+            </div> --}}
 
             <!-- Spotlight: next upcoming kajian -->
-            @if ($kajian->isNotEmpty())
+            {{-- @if ($kajian->isNotEmpty())
             @php $next = $kajian->first(); @endphp
             <div class="spotlight">
                 <div class="spotlight-label">▶ &nbsp;Kajian Berikutnya</div>
@@ -632,7 +632,7 @@
                     </div>
                 </div>
             </div>
-            @endif
+            @endif --}}
 
         </div><!-- /main-area -->
 
@@ -643,9 +643,6 @@
 
             <!-- ── Main ticker strip ── -->
             <div class="ticker-strip">
-                <div class="ticker-label">
-                    <span class="ticker-label-text">Kajian</span>
-                </div>
                 <div class="ticker-track">
                     <div class="ticker-inner" id="tickerInner">
                         @if ($kajian->isNotEmpty())
@@ -658,16 +655,10 @@
                             <span class="ticker-title">{{ $item->Judul }}</span>
                             <span class="ticker-narasumber">{{ $item->Narasumber }}</span>
                             <span class="ticker-tempat">📍 {{ $item->Tempat }}</span>
-                            @if ($item->TampilkanLogo)
-                                @if ($item->Logo)
-                                <img src="{{ asset('logo/' . $item->Logo) }}"
-                                    alt="{{ $item->Judul }}"
-                                    class="ticker-logo"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
-                                <span class="ticker-logo-placeholder" style="display:none">LOGO</span>
-                                @else
-                                <span class="ticker-logo-placeholder">LOGO</span>
-                                @endif
+                            @if ($logoUrl)
+                                <img src="{{ $logoUrl }}"
+                                    alt="Logo"
+                                    class="ticker-logo">
                             @endif
                         </div>
                         <span class="ticker-bullet">◆</span>
@@ -681,16 +672,10 @@
                             <span class="ticker-title">{{ $item->Judul }}</span>
                             <span class="ticker-narasumber">{{ $item->Narasumber }}</span>
                             <span class="ticker-tempat">📍 {{ $item->Tempat }}</span>
-                            @if ($item->TampilkanLogo)
-                                @if ($item->Logo)
-                                <img src="{{ asset('logo/' . $item->Logo) }}"
-                                    alt="{{ $item->Judul }}"
-                                    class="ticker-logo"
-                                    onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
-                                <span class="ticker-logo-placeholder" style="display:none">LOGO</span>
-                                @else
-                                <span class="ticker-logo-placeholder">LOGO</span>
-                                @endif
+                            @if ($logoUrl)
+                                <img src="{{ $logoUrl }}"
+                                    alt="Logo"
+                                    class="ticker-logo">
                             @endif
                         </div>
                         <span class="ticker-bullet">◆</span>

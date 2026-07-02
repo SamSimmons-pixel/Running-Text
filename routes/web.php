@@ -13,10 +13,31 @@ Route::post('/logout',[LoginController::class, 'logout'])->name('logout');
 // ── Mainpage (regular user) ───────────────────────────────────────
 Route::get('/mainpage', [MainpageController::class, 'index'])->name('mainpage');
 
+use App\Http\Controllers\NarasumberController;
+use App\Http\Controllers\TempatController;
+use App\Http\Controllers\KontakController;
+
 // ── Admin dashboard (admin only — guarded inside controller) ─────
 Route::get ('/admin_dashboard',                  [admin_dashboard_Controller::class, 'index'])->name('admin.dashboard');
 Route::post('/admin_dashboard',                  [admin_dashboard_Controller::class, 'store'])->name('admin.kajian.store');
+Route::post('/admin_dashboard/global-logo',      [admin_dashboard_Controller::class, 'uploadGlobalLogo'])->name('admin.logo.update');
+
+// ── Narasumber Management ──────────────────────────────────────
+Route::get ('/admin_dashboard/narasumber',       [NarasumberController::class, 'index'])->name('admin.narasumber');
+Route::post('/admin_dashboard/narasumber',       [NarasumberController::class, 'store'])->name('admin.narasumber.store');
+Route::post('/admin_dashboard/narasumber/{id}/delete', [NarasumberController::class, 'destroy'])->name('admin.narasumber.destroy');
+
+// ── Tempat Management ──────────────────────────────────────────
+Route::get ('/admin_dashboard/tempat',           [TempatController::class, 'index'])->name('admin.tempat');
+Route::post('/admin_dashboard/tempat',           [TempatController::class, 'store'])->name('admin.tempat.store');
+Route::post('/admin_dashboard/tempat/{id}/delete', [TempatController::class, 'destroy'])->name('admin.tempat.destroy');
+
+// ── Kontak Management ──────────────────────────────────────────
+Route::get ('/admin_dashboard/kontak',           [KontakController::class, 'index'])->name('admin.kontak');
+Route::post('/admin_dashboard/kontak',           [KontakController::class, 'store'])->name('admin.kontak.store');
+Route::post('/admin_dashboard/kontak/{id}/delete', [KontakController::class, 'destroy'])->name('admin.kontak.destroy');
+
+// ── Kajian Wildcards (Define after static routes to prevent conflicts) ─
 Route::post('/admin_dashboard/{id}',             [admin_dashboard_Controller::class, 'update'])->name('admin.kajian.update');
 Route::post('/admin_dashboard/{id}/toggle',      [admin_dashboard_Controller::class, 'toggle'])->name('admin.kajian.toggle');
-Route::post('/admin_dashboard/{id}/toggleLogo',  [admin_dashboard_Controller::class, 'toggleLogo'])->name('admin.kajian.toggleLogo');
 Route::post('/admin_dashboard/{id}/delete',      [admin_dashboard_Controller::class, 'destroy'])->name('admin.kajian.destroy');
