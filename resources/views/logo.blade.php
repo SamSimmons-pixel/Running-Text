@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Kelola Narasumber — Jadwal Kajian</title>
+    <title>Kelola Logo — Jadwal Kajian</title>
     <link rel="icon" type="image/png" href="{{ asset('admin-template/img/favicon.png') }}">
     <link href="{{ asset('admin-template/libs/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,300,400italic,500,700,900" rel="stylesheet" type="text/css">
@@ -23,20 +23,25 @@
         --red-h:    #dc2626;
       }
 
-      /* ── Add/Edit form card ── */
-      .form-card-kajian {
-        margin-bottom: 1.5rem;
+      .td-logo img {
+        max-height: 80px;
+        width: auto;
+        border-radius: 8px;
+        object-fit: contain;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.07);
+        padding: 5px;
+      }
+      .td-logo .no-logo {
+        padding: 15px 25px;
+        background: rgba(255,255,255,0.04);
+        border: 1px dashed rgba(255,255,255,0.13);
+        border-radius: 8px;
+        display: inline-block;
+        color: #64748b;
+        font-size: 0.85rem;
       }
 
-      /* ── Table actions ── */
-      .td-actions {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: nowrap;
-      }
-
-      /* ── Alerts ── */
       .alert-kajian {
         border-radius: 8px;
         padding: 0.75rem 1.1rem;
@@ -49,15 +54,6 @@
       .alert-kajian.success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
       .alert-kajian.error   { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
 
-      /* ── Empty state ── */
-      .empty-state {
-        padding: 3rem;
-        text-align: center;
-        color: #64748b;
-        font-size: 0.9rem;
-      }
-
-      /* ── Custom form controls ── */
       .form-control-custom {
         background: #22263a !important;
         border: 1px solid rgba(255,255,255,0.07) !important;
@@ -71,34 +67,6 @@
         outline: none !important;
         box-shadow: none !important;
       }
-      .form-control-custom::placeholder { color: #64748b; }
-
-      .btn-kajian-danger {
-        background: var(--red);
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        padding: 4px 10px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        transition: background 0.15s;
-        white-space: nowrap;
-      }
-      .btn-kajian-danger:hover { background: var(--red-h); color: #fff; }
-
-      .topbar-user-info {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        padding: 0 1rem;
-        font-size: 0.82rem;
-        color: #94a3b8;
-      }
-      .topbar-user-info strong { color: #e2e8f0; margin-left: 4px; }
     </style>
   </head>
   <body class="framed main-scrollable">
@@ -110,7 +78,7 @@
           <div class="header-navbar-mobile__menu">
             <button class="btn" type="button"><i class="fa fa-bars"></i></button>
           </div>
-          <div class="header-navbar-mobile__title"><span>Kelola Narasumber</span></div>
+          <div class="header-navbar-mobile__title"><span>Kelola Logo</span></div>
           <div class="header-navbar-mobile__settings dropdown">
             <a class="btn dropdown-toggle" href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
               <i class="fa fa-power-off"></i>
@@ -140,11 +108,6 @@
             <li><a href="{{ route('admin.dashboard') }}"><span>Dashboard</span></a></li>
           </ul>
           <ul class="userbar nav navbar-nav">
-            <li>
-              <span class="topbar-user-info">
-                Login sebagai <strong>{{ Auth::user()->name }}</strong>
-              </span>
-            </li>
             <li class="dropdown">
               <a class="userbar__settings dropdown-toggle" href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 <i class="fa fa-power-off"></i>
@@ -192,7 +155,7 @@
                       <div class="nav-menu__text"><span>Dashboard</span></div>
                     </a>
                   </li>
-                  <li class="active">
+                  <li>
                     <a href="{{ route('admin.narasumber') }}">
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-user"></i></div>
                       <div class="nav-menu__text"><span>Kelola Narasumber</span></div>
@@ -210,7 +173,7 @@
                       <div class="nav-menu__text"><span>Kelola Kontak</span></div>
                     </a>
                   </li>
-                  <li>
+                  <li class="active">
                     <a href="{{ route('admin.logo') }}">
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-image"></i></div>
                       <div class="nav-menu__text"><span>Kelola Logo</span></div>
@@ -228,18 +191,6 @@
                 </ul>
               </div>
 
-              {{-- Stats --}}
-              <div class="sidebar__menu">
-                <div class="sidebar__title">Statistik</div>
-                <div class="sidestat">
-                  <div class="sidestat__cont">
-                    <div class="sidestat__item">
-                      <div class="sidestat__value">{{ $narasumberList->count() }}</div>
-                      <div class="sidestat__text">total narasumber</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -253,7 +204,7 @@
                 <div class="main-title">
                   <ol class="breadcrumb">
                     <li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-                    <li class="active">Kelola Narasumber</li>
+                    <li class="active">Kelola Logo</li>
                   </ol>
                 </div>
               </div>
@@ -282,75 +233,34 @@
                   </div>
                 @endif
 
-                {{-- Add Form --}}
-                <div class="form-card-kajian">
-                  <div class="panel panel-primary">
-                    <div class="panel-heading">
-                      <h3 class="panel-title"><i class="fa fa-plus-circle"></i> Tambah Narasumber Baru</h3>
-                    </div>
-                    <div class="panel-body">
-                      <form method="POST" action="{{ route('admin.narasumber.store') }}">
-                        @csrf
-                        <div class="row">
-                          <div class="col-sm-8 col-md-9">
-                            <div class="form-group">
-                              <label class="control-label" for="narasumber_nama">Nama Narasumber / Pembicara</label>
-                              <input id="narasumber_nama" type="text" name="nama" class="form-control form-control-custom"
-                                     placeholder="Isi Nama Disini" value="{{ old('nama') }}" required>
-                            </div>
-                          </div>
-                          <div class="col-sm-4 col-md-3" style="margin-top: 25px;">
-                            <button type="submit" class="btn btn-primary btn-block">
-                              <i class="fa fa-check"></i> Simpan
-                            </button>
+                {{-- ── Global Logo Upload Panel ── --}}
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-image"></i> Logo Global</h3>
+                  </div>
+                  <div class="panel-body">
+                    <form method="POST" action="{{ route('admin.logo.update') }}" enctype="multipart/form-data" class="form-inline" style="display:flex; align-items:center; gap:20px; flex-wrap:wrap; justify-content:space-between;">
+                      @csrf
+                      <div style="display:flex; justify-content:space-between; gap:20px; width: 89%;">
+                        <div class="form-group" style="margin-bottom:0; display:flex; align-items:center; gap:10px;">
+                          <label class="control-label" style="margin-bottom:0;">Logo Berjalan Saat Ini:</label>
+                          <div class="td-logo" style="display:inline-block;">
+                            @if ($logoUrl)
+                              <img src="{{ $logoUrl }}" alt="Logo Global" style="max-height:80px; width:auto; border-radius:6px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); padding:3px;">
+                            @else
+                              <span class="no-logo">Belum ada logo</span>
+                            @endif
                           </div>
                         </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-
-                {{-- Table --}}
-                <div class="panel panel-default">
-                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> Daftar Narasumber</h3>
-                    <small class="section-count">Total: {{ $narasumberList->count() }} orang</small>
-                  </div>
-                  <div class="panel-body" style="padding:0;">
-                    @if ($narasumberList->isEmpty())
-                      <div class="empty-state">
-                        <i class="fa fa-user-times" style="font-size:2.5rem; margin-bottom:1rem; display:block; opacity:0.3;"></i>
-                        Belum ada data narasumber. Tambahkan narasumber pertama!
+                        <div class="form-group" style="margin-bottom:0; display:flex; align-items:center; gap:10px;">
+                          <label class="control-label" style="margin-bottom:0;">Ganti Logo Global:</label>
+                          <input type="file" name="Logo" class="form-control form-control-custom" accept="image/*" required style="display:inline-block; width:auto;">
+                        </div>
                       </div>
-                    @else
-                      <div class="table-responsive">
-                        <table class="table table-hover" style="margin-bottom:0;">
-                          <thead>
-                            <tr>
-                              <th style="width: 80px;">No.</th>
-                              <th>Nama Narasumber</th>
-                              <th style="text-align:right; width: 150px;">Aksi</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            @foreach ($narasumberList as $index => $item)
-                            <tr>
-                              <td>{{ $index + 1 }}</td>
-                              <td><strong>{{ $item->nama }}</strong></td>
-                              <td>
-                                <div class="td-actions" style="justify-content:flex-end;">
-                                  <button class="btn-kajian-danger"
-                                    onclick="openDeleteModal({{ $item->id }}, '{{ addslashes($item->nama) }}')">
-                                    <i class="fa fa-trash"></i> Hapus
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                            @endforeach
-                          </tbody>
-                        </table>
-                      </div>
-                    @endif
+                      <button type="submit" class="btn btn-primary" style="margin-top:0;">
+                        <i class="fa fa-upload"></i> Upload Logo
+                      </button>
+                    </form>
                   </div>
                 </div>
 
@@ -362,50 +272,9 @@
       </div>{{-- end dashboard --}}
     </div>{{-- end wrapper --}}
 
-    {{-- Delete Modal --}}
-    <div class="modal-backdrop-custom" id="deleteModalBackdrop" onclick="closeDeleteModal(event)">
-      <div class="modal-confirm">
-        <div style="font-size:2.5rem; margin-bottom:1rem;">🗑️</div>
-        <div style="font-size:1rem; font-weight:700; margin-bottom:0.5rem; color:#e2e8f0;">Hapus Narasumber?</div>
-        <div style="font-size:0.85rem; color:#64748b; margin-bottom:1.5rem;" id="deleteDesc">
-          Narasumber ini akan dihapus secara permanen.
-        </div>
-        <div style="display:flex; justify-content:center; gap:1rem;">
-          <button class="btn btn-default" onclick="closeDeleteModal(null)">Batal</button>
-          <form method="POST" id="deleteForm" style="display:inline;">
-            @csrf
-            <button type="submit" class="btn btn-danger">
-              <i class="fa fa-trash"></i> Ya, Hapus
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-
     <script src="{{ asset('admin-template/libs/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('admin-template/libs/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
-
-    <script>
-      function openDeleteModal(id, nama) {
-        document.getElementById('deleteForm').action = `/admin_dashboard/narasumber/${id}/delete`;
-        document.getElementById('deleteDesc').textContent =
-          `"${nama}" akan dihapus secara permanen dari daftar narasumber.`;
-        document.getElementById('deleteModalBackdrop').classList.add('open');
-      }
-
-      function closeDeleteModal(e) {
-        if (e === null || e.target === document.getElementById('deleteModalBackdrop')) {
-          document.getElementById('deleteModalBackdrop').classList.remove('open');
-        }
-      }
-
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-          closeDeleteModal(null);
-        }
-      });
-    </script>
   </body>
 </html>

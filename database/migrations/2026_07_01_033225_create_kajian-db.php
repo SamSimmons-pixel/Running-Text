@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('Judul');
             $table->string('Narasumber');
             $table->string('Tempat');
-            $table->string('Kontak');
+            $table->string('Kontak')->nullable();
             $table->boolean('Tampilkan')->default(false);
             $table->string('Logo')->nullable();
             $table->timestamps();
