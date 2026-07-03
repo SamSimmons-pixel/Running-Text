@@ -136,7 +136,7 @@
             <li><a href="{{ route('admin.dashboard') }}"><span>Dashboard</span></a></li>
             <li>
               <a href="{{ url('/') }}" target="_blank">
-                <span><i class="fa fa-external-link" style="font-size:0.75em;"></i> Running Text</span>
+                <span><i class="fa fa-external-link" style="font-size:0.75em;"></i> MainPage</span>
               </a>
             </li>
           </ul>
@@ -175,6 +175,11 @@
                     <li class="active">Kelola Kontak</li>
                   </ol>
                 </div>
+                <div class="main-filter">
+                  <button class="btn btn-primary" onclick="toggleAddForm()">
+                    <i class="fa fa-plus"></i> Tambah Kontak
+                  </button>
+                </div>
               </div>
 
               <div class="container-fluid half-padding">
@@ -202,7 +207,7 @@
                 @endif
 
                 {{-- Add Form --}}
-                <div class="form-card-kajian">
+                <div class="form-card-kajian" id="addForm">
                   <div class="panel panel-primary">
                     <div class="panel-heading">
                       <h3 class="panel-title"><i class="fa fa-plus-circle"></i> Tambah Kontak Baru</h3>
@@ -307,6 +312,15 @@
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
 
     <script>
+      function toggleAddForm() {
+        var form = document.getElementById('addForm');
+        form.classList.toggle('open');
+      }
+
+      @if ($errors->any() && old('nama'))
+      toggleAddForm();
+      @endif
+
       function openDeleteModal(id, nama) {
         document.getElementById('deleteForm').action = `/admin_dashboard/kontak/${id}/delete`;
         document.getElementById('deleteDesc').textContent =

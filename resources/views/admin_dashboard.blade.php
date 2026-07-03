@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin Dashboard — Jadwal Kajian</title>
+    <title>Dashboard — Jadwal Kajian</title>
     <meta name="description" content="Panel admin untuk mengelola jadwal kajian.">
     <link rel="icon" type="image/png" href="{{ asset('admin-template/img/favicon.png') }}">
     <link href="{{ asset('admin-template/libs/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -15,7 +15,6 @@
     <link href="{{ asset('admin-template/css/right.dark.css') }}" rel="stylesheet">
 
     <style>
-      /* ── Custom overrides for Kajian Admin ── */
       :root {
         --accent:   #6d28d9;
         --accent-h: #7c3aed;
@@ -24,88 +23,57 @@
         --red-h:    #dc2626;
       }
 
-      /* ── Toggle switch ── */
-      .toggle-form { display: inline; }
-      .toggle {
-        position: relative;
-        display: inline-block;
-        width: 42px;
-        height: 22px;
-        vertical-align: middle;
-      }
-      .toggle input { opacity: 0; width: 0; height: 0; }
-      .toggle-slider {
-        position: absolute;
-        cursor: pointer;
-        inset: 0;
-        background: rgba(255,255,255,0.12);
-        border-radius: 22px;
-        transition: background 0.2s;
-      }
-      .toggle-slider::before {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        left: 3px;
-        top: 3px;
-        background: #fff;
-        border-radius: 50%;
-        transition: transform 0.2s;
-      }
-      .toggle input:checked + .toggle-slider { background: var(--green); }
-      .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
-
-      /* ── Logo cell ── */
-      .td-logo img {
-        width: 38px; height: 38px;
-        border-radius: 7px;
-        object-fit: contain;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.07);
-        padding: 3px;
-      }
-      .td-logo .no-logo {
-        width: 38px; height: 38px;
-        border-radius: 7px;
-        background: rgba(255,255,255,0.04);
-        border: 1px dashed rgba(255,255,255,0.13);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.6rem;
-        color: #64748b;
-      }
-
-      /* ── Add/Edit form card ── */
-      .form-card-kajian {
-        display: none;
+      /* ── Stat cards ── */
+      .stat-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
         margin-bottom: 1.5rem;
       }
-      .form-card-kajian.open { display: block; }
-
-      /* ── Table actions ── */
-      .td-actions {
+      .stat-card {
+        flex: 1 1 160px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
         display: flex;
         align-items: center;
-        gap: 6px;
-        flex-wrap: nowrap;
+        gap: 1rem;
+        transition: border-color 0.15s;
+      }
+      .stat-card:hover { border-color: var(--accent); }
+      .stat-card__icon {
+        width: 44px; height: 44px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+      .stat-card__value {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #e2e8f0;
+      }
+      .stat-card__label {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
 
-      /* ── Alerts ── */
-      .alert-kajian {
-        border-radius: 8px;
-        padding: 0.75rem 1.1rem;
-        font-size: 0.875rem;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
+      /* ── Upcoming table ── */
+      .upcoming-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 99px;
+        font-size: 0.7rem;
+        font-weight: 600;
       }
-      .alert-kajian.success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
-      .alert-kajian.error   { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
+      .badge-on  { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+      .badge-off { background: rgba(148,163,184,0.1);  color: #64748b;  border: 1px solid rgba(148,163,184,0.2); }
 
-      /* ── Empty state ── */
       .empty-state {
         padding: 3rem;
         text-align: center;
@@ -113,135 +81,10 @@
         font-size: 0.9rem;
       }
 
-      /* ── Section count badge ── */
       .section-count {
         font-size: 0.78rem;
         color: #64748b;
-        margin-top: 2px;
       }
-
-      /* ── Edit/Delete modal backdrops ── */
-      .modal-backdrop-custom {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.65);
-        backdrop-filter: blur(4px);
-        z-index: 1060;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-      }
-      .modal-backdrop-custom.open { display: flex; }
-
-      .modal-kajian {
-        background: #1a1d27;
-        border: 1px solid rgba(255,255,255,0.13);
-        border-radius: 16px;
-        padding: 1.75rem;
-        width: 100%;
-        max-width: 680px;
-        max-height: 90vh;
-        overflow-y: auto;
-        animation: modalIn 0.2s ease;
-      }
-
-      .modal-confirm {
-        background: #1a1d27;
-        border: 1px solid rgba(255,255,255,0.13);
-        border-radius: 16px;
-        padding: 2rem;
-        width: 100%;
-        max-width: 420px;
-        text-align: center;
-        animation: modalIn 0.2s ease;
-      }
-
-      @keyframes modalIn {
-        from { opacity: 0; transform: translateY(16px) scale(0.98); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-      }
-
-      .modal-title-custom {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #e2e8f0;
-      }
-
-      .btn-close-modal {
-        background: none;
-        border: none;
-        color: #64748b;
-        font-size: 1.3rem;
-        cursor: pointer;
-        line-height: 1;
-        padding: 4px;
-        border-radius: 6px;
-        transition: color 0.15s;
-      }
-      .btn-close-modal:hover { color: var(--red); }
-
-      /* ── Custom form controls ── */
-      .form-control-custom {
-        background: #22263a !important;
-        border: 1px solid rgba(255,255,255,0.07) !important;
-        border-radius: 8px !important;
-        color: #e2e8f0 !important;
-        font-size: 0.875rem !important;
-        transition: border-color 0.15s;
-      }
-      .form-control-custom:focus {
-        border-color: var(--accent) !important;
-        outline: none !important;
-        box-shadow: none !important;
-      }
-      .form-control-custom::placeholder { color: #64748b; }
-
-      /* ── Action buttons ── */
-      .btn-kajian-outline {
-        background: transparent;
-        color: #94a3b8;
-        border: 1px solid rgba(255,255,255,0.13);
-        border-radius: 6px;
-        padding: 4px 10px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        transition: border-color 0.15s, color 0.15s;
-        white-space: nowrap;
-      }
-      .btn-kajian-outline:hover { border-color: var(--accent); color: #a78bfa; }
-
-      .btn-kajian-danger {
-        background: var(--red);
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        padding: 4px 10px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        transition: background 0.15s;
-        white-space: nowrap;
-      }
-      .btn-kajian-danger:hover { background: var(--red-h); color: #fff; }
-
-      /* ── Topbar user info ── */
-      .topbar-user-info {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        padding: 0 1rem;
-        font-size: 0.82rem;
-        color: #94a3b8;
-      }
-      .topbar-user-info strong { color: #e2e8f0; margin-left: 4px; }
     </style>
     @livewireStyles
   </head>
@@ -287,7 +130,7 @@
             <li class="active"><a href="{{ route('admin.dashboard') }}"><span>Dashboard</span></a></li>
             <li>
               <a href="{{ url('/') }}" target="_blank">
-                <span><i class="fa fa-external-link" style="font-size:0.75em;"></i> Running Text</span>
+                <span><i class="fa fa-external-link" style="font-size:0.75em;"></i> MainPage</span>
               </a>
             </li>
           </ul>
@@ -325,145 +168,91 @@
                 <div class="main-title">
                   <ol class="breadcrumb">
                     <li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-                    <li class="active">Kelola Kajian</li>
+                    <li class="active">Dashboard</li>
                   </ol>
-                </div>
-                <div class="main-filter">
-                  <button class="btn btn-primary" onclick="toggleAddForm()">
-                    <i class="fa fa-plus"></i> Tambah Kajian
-                  </button>
                 </div>
               </div>
 
               <div class="container-fluid half-padding">
 
-                {{-- ── Alerts ── --}}
-                @if (session('success'))
-                  <div class="alert-kajian success">
-                    <i class="fa fa-check-circle"></i>
-                    {{ session('success') }}
-                  </div>
-                @endif
-                @if (session('error'))
-                  <div class="alert-kajian error">
-                    <i class="fa fa-exclamation-circle"></i>
-                    {{ session('error') }}
-                  </div>
-                @endif
-                @if ($errors->any())
-                  <div class="alert-kajian error">
-                    <i class="fa fa-exclamation-circle"></i>
+                {{-- ── Stat Cards ── --}}
+                @php
+                  $totalKajian  = $kajian->count();
+                  $activeKajian = $kajian->where('Tampilkan', 1)->count();
+                  $hiddenKajian = $totalKajian - $activeKajian;
+                  $upcoming     = $kajian->where('Tanggal', '>=', now())->sortBy('Tanggal')->take(5);
+                @endphp
+
+                <div class="stat-row">
+                  <div class="stat-card">
+                    <div class="stat-card__icon" style="background:rgba(109,40,217,0.15); color:#a78bfa;">
+                      <i class="fa fa-calendar"></i>
+                    </div>
                     <div>
-                      @foreach ($errors->all() as $e) <div>{{ $e }}</div> @endforeach
+                      <div class="stat-card__value">{{ $totalKajian }}</div>
+                      <div class="stat-card__label">Total Kajian</div>
                     </div>
                   </div>
-                @endif
-
-
-                {{-- ── Add Kajian Form (collapsible) ── --}}
-                <div class="form-card-kajian" id="addForm">
-                  <div class="panel panel-primary">
-                    <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
-                      <h3 class="panel-title"><i class="fa fa-plus-circle"></i> Tambah Kajian Baru</h3>
-                      <button type="button" class="btn btn-xs btn-default" onclick="toggleAddForm()">
-                        <i class="fa fa-times"></i> Tutup
-                      </button>
+                  <div class="stat-card">
+                    <div class="stat-card__icon" style="background:rgba(16,185,129,0.15); color:#34d399;">
+                      <i class="fa fa-eye"></i>
                     </div>
-                    <div class="panel-body">
-                      <form method="POST" action="{{ route('admin.kajian.store') }}" enctype="multipart/form-data">
-                        @csrf
-                        <div class="row">
-                          <div class="col-sm-6 col-md-4">
-                            <div class="form-group">
-                              <label class="control-label">Judul Kajian</label>
-                              <input type="text" name="Judul" class="form-control form-control-custom"
-                                     placeholder="Nama kajian" value="{{ old('Judul') }}" required>
-                            </div>
-                          </div>
-                          <div class="col-sm-6 col-md-4">
-                            <div class="form-group">
-                              <label class="control-label">Narasumber</label>
-                              <select name="Narasumber" class="form-control form-control-custom" required>
-                                <option value="" disabled selected>Pilih Narasumber</option>
-                                @foreach($narasumberList as $nara)
-                                  <option value="{{ $nara->nama }}" {{ old('Narasumber') == $nara->nama ? 'selected' : '' }}>
-                                    {{ $nara->nama }}
-                                  </option>
-                                @endforeach
-                              </select>
-                            </div>
-                          </div>
-                          <div class="col-sm-6 col-md-4">
-                            <div class="form-group">
-                              <label class="control-label">Tanggal &amp; Waktu</label>
-                              <input type="datetime-local" name="Tanggal" class="form-control form-control-custom"
-                                     value="{{ old('Tanggal') }}" required>
-                            </div>
-                          </div>
-                          <div class="col-sm-6 col-md-4">
-                            <div class="form-group">
-                              <label class="control-label">Tempat</label>
-                              <select name="Tempat" class="form-control form-control-custom" required>
-                                <option value="" disabled selected>Pilih Tempat</option>
-                                @foreach($tempatList as $temp)
-                                  <option value="{{ $temp->nama }}" {{ old('Tempat') == $temp->nama ? 'selected' : '' }}>
-                                    {{ $temp->nama }}
-                                  </option>
-                                @endforeach
-                              </select>
-                            </div>
-                          </div>
-                          <div class="col-sm-6 col-md-4">
-                            <div class="form-group">
-                              <label class="control-label">Kontak</label>
-                              <select name="Kontak" class="form-control form-control-custom">
-                                <option value="" selected>— Tanpa Kontak —</option>
-                                @foreach($kontakList as $kon)
-                                  <option value="{{ $kon->nama }}" {{ old('Kontak') == $kon->nama ? 'selected' : '' }}>
-                                    {{ $kon->nama }}
-                                  </option>
-                                @endforeach
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="row" style="margin-bottom: 1rem;">
-                          <div class="col-sm-12">
-                            <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-bottom:0;">
-                              <label class="toggle" for="add_Tampilkan">
-                                <input type="checkbox" id="add_Tampilkan" name="Tampilkan" value="1"
-                                       {{ old('Tampilkan') ? 'checked' : '' }}>
-                                <span class="toggle-slider"></span>
-                              </label>
-                              <span style="color:#94a3b8; font-size:0.85rem;">Tampilkan di running text</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
-                          <button type="button" class="btn btn-default" onclick="toggleAddForm()">Batal</button>
-                          <button type="submit" class="btn btn-primary">
-                            <i class="fa fa-check"></i> Simpan
-                          </button>
-                        </div>
-                      </form>
+                    <div>
+                      <div class="stat-card__value" style="color:#34d399;">{{ $activeKajian }}</div>
+                      <div class="stat-card__label">Ditampilkan</div>
+                    </div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card__icon" style="background:rgba(148,163,184,0.1); color:#64748b;">
+                      <i class="fa fa-eye-slash"></i>
+                    </div>
+                    <div>
+                      <div class="stat-card__value" style="color:#64748b;">{{ $hiddenKajian }}</div>
+                      <div class="stat-card__label">Disembunyikan</div>
+                    </div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card__icon" style="background:rgba(251,191,36,0.12); color:#fbbf24;">
+                      <i class="fa fa-user"></i>
+                    </div>
+                    <div>
+                      <div class="stat-card__value" style="color:#fbbf24;">{{ $narasumberList->count() }}</div>
+                      <div class="stat-card__label">Narasumber</div>
+                    </div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card__icon" style="background:rgba(96,165,250,0.12); color:#60a5fa;">
+                      <i class="fa fa-map-marker"></i>
+                    </div>
+                    <div>
+                      <div class="stat-card__value" style="color:#60a5fa;">{{ $tempatList->count() }}</div>
+                      <div class="stat-card__label">Lokasi</div>
+                    </div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card__icon" style="background:rgba(251,113,133,0.12); color:#fb7185;">
+                      <i class="fa fa-phone"></i>
+                    </div>
+                    <div>
+                      <div class="stat-card__value" style="color:#fb7185;">{{ $kontakList->count() }}</div>
+                      <div class="stat-card__label">Kontak</div>
                     </div>
                   </div>
                 </div>
-                {{-- End Add Form --}}
 
-                {{-- ── Kajian Table ── --}}
+                {{-- ── Upcoming Kajian ── --}}
                 <div class="panel panel-default">
-                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> Daftar Kajian</h3>
-                    <small class="section-count">Total: {{ $kajian->count() }} kajian</small>
+                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
+                    <h3 class="panel-title"><i class="fa fa-clock-o"></i> Kajian Mendatang</h3>
+                    <a href="{{ route('admin.kajian') }}" class="btn btn-xs btn-default" wire:navigate>
+                      <i class="fa fa-list"></i> Lihat Semua
+                    </a>
                   </div>
                   <div class="panel-body" style="padding:0;">
-                    @if ($kajian->isEmpty())
+                    @if ($upcoming->isEmpty())
                       <div class="empty-state">
-                        <i class="fa fa-calendar-o" style="font-size:2.5rem; margin-bottom:1rem; display:block; opacity:0.3;"></i>
-                        Belum ada data kajian. Tambahkan kajian pertama!
+                        <i class="fa fa-calendar-check-o" style="font-size:2rem; margin-bottom:0.75rem; display:block; opacity:0.3;"></i>
+                        Tidak ada kajian mendatang.
                       </div>
                     @else
                       <div class="table-responsive">
@@ -473,70 +262,27 @@
                               <th>Judul &amp; Narasumber</th>
                               <th>Tanggal</th>
                               <th>Tempat</th>
-                              <th>Kontak</th>
-                              <th style="text-align:center;">Tampil</th>
-                              <th style="text-align:right;">Aksi</th>
+                              <th style="text-align:center;">Status</th>
                             </tr>
                           </thead>
                           <tbody>
-                            @foreach ($kajian as $item)
+                            @foreach ($upcoming as $item)
                             <tr>
-                              {{-- Judul & Narasumber --}}
                               <td>
                                 <strong>{{ $item->Judul }}</strong>
-                                <small style="display:block; color:#94a3b8; font-size:0.78rem; margin-top:2px;">
-                                  {{ $item->Narasumber }}
-                                </small>
+                                <small style="display:block; color:#94a3b8; font-size:0.78rem; margin-top:2px;">{{ $item->Narasumber }}</small>
                               </td>
-
-                              {{-- Tanggal --}}
                               <td style="white-space:nowrap; color:#94a3b8;">
-                                {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('ddd, D MMM Y') }}
-                                <br>
+                                {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('ddd, D MMM Y') }}<br>
                                 <small>{{ \Carbon\Carbon::parse($item->Tanggal)->format('H:i') }}</small>
                               </td>
-
-                              {{-- Tempat --}}
                               <td style="color:#94a3b8;">{{ $item->Tempat }}</td>
-
-                              {{-- Kontak --}}
-                              <td style="color:#94a3b8;">{{ $item->Kontak ?: '—' }}</td>
-
-                              {{-- Toggle Tampilkan --}}
                               <td style="text-align:center;">
-                                <form method="POST" action="{{ route('admin.kajian.toggle', $item->id) }}"
-                                      class="toggle-form" id="toggleForm-{{ $item->id }}">
-                                  @csrf
-                                </form>
-                                <label class="toggle"
-                                       title="{{ $item->Tampilkan ? 'Klik untuk sembunyikan' : 'Klik untuk tampilkan' }}">
-                                  <input type="checkbox"
-                                    {{ $item->Tampilkan ? 'checked' : '' }}
-                                    onchange="document.getElementById('toggleForm-{{ $item->id }}').submit()">
-                                  <span class="toggle-slider"></span>
-                                </label>
-                              </td>
-
-                              {{-- Actions --}}
-                              <td>
-                                <div class="td-actions" style="justify-content:flex-end;">
-                                  <button class="btn-kajian-outline"
-                                    onclick="openEditModal(
-                                      '{{ $item->id }}',
-                                      '{{ addslashes($item->Judul) }}',
-                                      '{{ addslashes($item->Narasumber) }}',
-                                      '{{ \Carbon\Carbon::parse($item->Tanggal)->format('Y-m-d\TH:i') }}',
-                                      '{{ addslashes($item->Tempat) }}',
-                                      '{{ addslashes($item->Kontak ?? '') }}',
-                                      '{{ $item->Tampilkan ? 'true' : 'false' }}'
-                                    )">
-                                    <i class="fa fa-pencil"></i> Edit
-                                  </button>
-                                  <button class="btn-kajian-danger"
-                                    onclick="openDeleteModal({{ $item->id }}, '{{ addslashes($item->Judul) }}')">
-                                    <i class="fa fa-trash"></i> Hapus
-                                  </button>
-                                </div>
+                                @if ($item->Tampilkan)
+                                  <span class="upcoming-badge badge-on">Tampil</span>
+                                @else
+                                  <span class="upcoming-badge badge-off">Tersembunyi</span>
+                                @endif
                               </td>
                             </tr>
                             @endforeach
@@ -546,7 +292,30 @@
                     @endif
                   </div>
                 </div>
-                {{-- End Table --}}
+
+                {{-- ── Quick Links ── --}}
+                <div class="row" style="margin-top:1rem;">
+                  <div class="col-sm-6 col-md-3" style="margin-bottom:1rem;">
+                    <a href="{{ route('admin.kajian') }}" class="btn btn-block btn-default" wire:navigate>
+                      <i class="fa fa-calendar"></i> Kelola Kajian
+                    </a>
+                  </div>
+                  <div class="col-sm-6 col-md-3" style="margin-bottom:1rem;">
+                    <a href="{{ route('admin.narasumber') }}" class="btn btn-block btn-default" wire:navigate>
+                      <i class="fa fa-user"></i> Kelola Narasumber
+                    </a>
+                  </div>
+                  <div class="col-sm-6 col-md-3" style="margin-bottom:1rem;">
+                    <a href="{{ route('admin.tempat') }}" class="btn btn-block btn-default" wire:navigate>
+                      <i class="fa fa-map-marker"></i> Kelola Tempat
+                    </a>
+                  </div>
+                  <div class="col-sm-6 col-md-3" style="margin-bottom:1rem;">
+                    <a href="{{ route('admin.kontak') }}" class="btn btn-block btn-default" wire:navigate>
+                      <i class="fa fa-phone"></i> Kelola Kontak
+                    </a>
+                  </div>
+                </div>
 
               </div>{{-- end container-fluid --}}
             </div>{{-- end main__cont --}}
@@ -556,167 +325,10 @@
       </div>{{-- end dashboard --}}
     </div>{{-- end wrapper --}}
 
-    {{-- ── Edit Modal ── --}}
-    <div class="modal-backdrop-custom" id="editModalBackdrop" onclick="closeEditModal(event)">
-      <div class="modal-kajian">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
-          <div class="modal-title-custom"><i class="fa fa-pencil-square-o"></i> Edit Kajian</div>
-          <button class="btn-close-modal" onclick="closeEditModal(null)">✕</button>
-        </div>
-        <form method="POST" id="editForm" enctype="multipart/form-data">
-          @csrf
-          <div class="row">
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="control-label">Judul Kajian</label>
-                <input id="edit_Judul" type="text" name="Judul" class="form-control form-control-custom" required>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="control-label">Narasumber</label>
-                <select id="edit_Narasumber" name="Narasumber" class="form-control form-control-custom" required>
-                  <option value="" disabled>Pilih Narasumber</option>
-                  @foreach($narasumberList as $nara)
-                    <option value="{{ $nara->nama }}">{{ $nara->nama }}</option>
-                  @endforeach
-                </select>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="control-label">Tanggal &amp; Waktu</label>
-                <input id="edit_Tanggal" type="datetime-local" name="Tanggal" class="form-control form-control-custom" required>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="control-label">Tempat</label>
-                <select id="edit_Tempat" name="Tempat" class="form-control form-control-custom" required>
-                  <option value="" disabled>Pilih Tempat</option>
-                  @foreach($tempatList as $temp)
-                    <option value="{{ $temp->nama }}">{{ $temp->nama }}</option>
-                  @endforeach
-                </select>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="control-label">Kontak</label>
-                <select id="edit_Kontak" name="Kontak" class="form-control form-control-custom">
-                  <option value="">— Tanpa Kontak —</option>
-                  @foreach($kontakList as $kon)
-                    <option value="{{ $kon->nama }}">{{ $kon->nama }}</option>
-                  @endforeach
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="row" style="margin-bottom:1.25rem;">
-            <div class="col-sm-12">
-              <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-bottom:0;">
-                <label class="toggle" for="edit_Tampilkan">
-                  <input type="checkbox" id="edit_Tampilkan" name="Tampilkan" value="1">
-                  <span class="toggle-slider"></span>
-                </label>
-                <span style="color:#94a3b8; font-size:0.85rem;">Tampilkan di running text</span>
-              </div>
-            </div>
-          </div>
-
-          <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
-            <button type="button" class="btn btn-default" onclick="closeEditModal(null)">Batal</button>
-            <button type="submit" class="btn btn-primary">
-              <i class="fa fa-check"></i> Simpan Perubahan
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    {{-- ── Delete Confirm Modal ── --}}
-    <div class="modal-backdrop-custom" id="deleteModalBackdrop" onclick="closeDeleteModal(event)">
-      <div class="modal-confirm">
-        <div style="font-size:2.5rem; margin-bottom:1rem;">🗑️</div>
-        <div style="font-size:1rem; font-weight:700; margin-bottom:0.5rem; color:#e2e8f0;">Hapus Kajian?</div>
-        <div style="font-size:0.85rem; color:#64748b; margin-bottom:1.5rem;" id="deleteDesc">
-          Kajian ini akan dihapus secara permanen dan tidak bisa dikembalikan.
-        </div>
-        <div style="display:flex; justify-content:center; gap:1rem;">
-          <button class="btn btn-default" onclick="closeDeleteModal(null)">Batal</button>
-          <form method="POST" id="deleteForm" style="display:inline;">
-            @csrf
-            <button type="submit" class="btn btn-danger">
-              <i class="fa fa-trash"></i> Ya, Hapus
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    {{-- ── Scripts ── --}}
     <script src="{{ asset('admin-template/libs/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('admin-template/libs/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
-
-    <script>
-      // ── Add Form toggle ─────────────────────────────────────────
-      function toggleAddForm() {
-        const form = document.getElementById('addForm');
-        form.classList.toggle('open');
-        if (form.classList.contains('open')) {
-          form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }
-
-      // ── Edit Modal ──────────────────────────────────────────────
-      function openEditModal(id, judul, narasumber, tanggal, tempat, kontak, tampilkan) {
-        document.getElementById('editForm').action = `/admin_dashboard/${id}`;
-        document.getElementById('edit_Judul').value           = judul;
-        document.getElementById('edit_Narasumber').value      = narasumber;
-        document.getElementById('edit_Tanggal').value         = tanggal;
-        document.getElementById('edit_Tempat').value          = tempat;
-        document.getElementById('edit_Kontak').value          = kontak;
-        document.getElementById('edit_Tampilkan').checked     = (tampilkan === 'true');
-        document.getElementById('editModalBackdrop').classList.add('open');
-      }
-
-      function closeEditModal(e) {
-        if (e === null || e.target === document.getElementById('editModalBackdrop')) {
-          document.getElementById('editModalBackdrop').classList.remove('open');
-        }
-      }
-
-      // ── Delete Modal ────────────────────────────────────────────
-      function openDeleteModal(id, judul) {
-        document.getElementById('deleteForm').action = `/admin_dashboard/${id}/delete`;
-        document.getElementById('deleteDesc').textContent =
-          `"${judul}" akan dihapus secara permanen dan tidak bisa dikembalikan.`;
-        document.getElementById('deleteModalBackdrop').classList.add('open');
-      }
-
-      function closeDeleteModal(e) {
-        if (e === null || e.target === document.getElementById('deleteModalBackdrop')) {
-          document.getElementById('deleteModalBackdrop').classList.remove('open');
-        }
-      }
-
-      // Close modals on Escape key
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-          closeEditModal(null);
-          closeDeleteModal(null);
-        }
-      });
-
-      // Auto-open add form if there were validation errors on store
-      @if ($errors->any() && old('Judul'))
-      toggleAddForm();
-      @endif
-    </script>
-
     @livewireScripts
     <script>
       document.addEventListener('livewire:navigated', function() {

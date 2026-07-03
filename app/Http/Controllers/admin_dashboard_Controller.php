@@ -59,6 +59,21 @@ class admin_dashboard_Controller extends Controller
     }
 
     /**
+     * Show the dedicated Kelola Kajian page (full CRUD).
+     */
+    public function kajian()
+    {
+        $this->requireAdmin();
+
+        $kajian         = running_text_data::orderBy('Tanggal', 'asc')->get();
+        $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
+        $tempatList     = Tempat::orderBy('nama', 'asc')->get();
+        $kontakList     = Kontak::orderBy('nama', 'asc')->get();
+
+        return view('kelola_kajian', compact('kajian', 'narasumberList', 'tempatList', 'kontakList'));
+    }
+
+    /**
      * Upload or update the single global logo.
      */
     public function uploadGlobalLogo(Request $request)
@@ -112,7 +127,7 @@ class admin_dashboard_Controller extends Controller
 
         running_text_data::create($data);
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil ditambahkan.');
     }
 
@@ -138,7 +153,7 @@ class admin_dashboard_Controller extends Controller
 
         $kajian->update($data);
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil diperbarui.');
     }
 
@@ -152,7 +167,7 @@ class admin_dashboard_Controller extends Controller
         $kajian = running_text_data::findOrFail($id);
         $kajian->update(['Tampilkan' => !$kajian->Tampilkan]);
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('admin.kajian')
             ->with('success', 'Status tampil kajian diperbarui.');
     }
 
@@ -166,7 +181,7 @@ class admin_dashboard_Controller extends Controller
         $kajian = running_text_data::findOrFail($id);
         $kajian->delete();
 
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil dihapus.');
     }
 
