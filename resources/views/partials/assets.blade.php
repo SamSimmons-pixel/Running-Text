@@ -6,6 +6,7 @@
 <link href="{{ asset('admin-template/css/right.dark.css') }}" rel="stylesheet">
 <link href="{{ asset('admin-template/libs/summernote/summernote.css') }}" rel="stylesheet">
 <link href="{{ asset('admin-template/libs/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css') }}" rel="stylesheet">
+<link href="{{ asset('admin-template/libs/ionrangeslider/css/ion.rangeSlider.css') }}" rel="stylesheet">
 <link href="{{ asset('admin-template/css/custom-admin.css') }}" rel="stylesheet">
 
 <!-- JS Core & Library Scripts -->
@@ -14,4 +15,25 @@
 <script src="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
 <script src="{{ asset('admin-template/libs/bootstrap-tabdrop/bootstrap-tabdrop.min.js') }}"></script>
 <script src="{{ asset('admin-template/libs/bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
+<script src="{{ asset('admin-template/libs/ionrangeslider/js/ion.rangeSlider.min.js') }}"></script>
+<script src="{{ asset('admin-template/libs/inputNumber/js/inputNumber.js') }}"></script>
 <script src="{{ asset('admin-template/libs/summernote/summernote.min.js') }}"></script>
+
+<!-- Safeguard jQuery overrides for missing theme dependencies -->
+<script>
+  if (window.jQuery) {
+    var $ = window.jQuery;
+    if (!$.fn.ionRangeSlider) {
+      $.fn.ionRangeSlider = function() { return this; };
+    }
+    if (!$.fn.inputNumber) {
+      $.fn.inputNumber = function() { return this; };
+    }
+    if (!$.fn.bootstrapSwitch) {
+      $.fn.bootstrapSwitch = function() { return this; };
+    }
+    if (!$.fn.tabdrop) {
+      $.fn.tabdrop = function() { return this; };
+    }
+  }
+</script>

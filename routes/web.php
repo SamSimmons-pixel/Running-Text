@@ -39,6 +39,16 @@ Route::get ('/admin_dashboard/kontak',           [KontakController::class, 'inde
 Route::post('/admin_dashboard/kontak',           [KontakController::class, 'store'])->name('admin.kontak.store');
 Route::post('/admin_dashboard/kontak/{id}/delete', [KontakController::class, 'destroy'])->name('admin.kontak.destroy');
 
+// ── Pewaktuan Hijriah ──────────────────────────────────────────
+use App\Http\Controllers\HijriTickerController;
+use App\Http\Controllers\VmixDataController;
+
+Route::get ('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class, 'index'])->name('admin.hijri');
+Route::post('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class, 'update'])->name('admin.hijri.update');
+
+// ── vMix Data API ──────────────────────────────────────────────
+Route::get ('/api/vmix/hijri-ticker',             [VmixDataController::class, 'getTickerData'])->name('api.vmix.hijri-ticker');
+
 // ── Kajian Wildcards (Define after static routes to prevent conflicts) ─
 Route::post('/admin_dashboard/{id}',             [admin_dashboard_Controller::class, 'update'])->name('admin.kajian.update');
 Route::post('/admin_dashboard/{id}/toggle',      [admin_dashboard_Controller::class, 'toggle'])->name('admin.kajian.toggle');
