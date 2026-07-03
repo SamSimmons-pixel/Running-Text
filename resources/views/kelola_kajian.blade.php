@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="utf-8">
@@ -13,193 +13,7 @@
     <link href="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.css') }}" rel="stylesheet">
     <link href="{{ asset('admin-template/css/right.dark.css') }}" rel="stylesheet">
 
-    <style>
-      :root {
-        --accent:   #6d28d9;
-        --accent-h: #7c3aed;
-        --green:    #10b981;
-        --red:      #ef4444;
-        --red-h:    #dc2626;
-      }
-
-      .toggle-form { display: inline; }
-      .toggle {
-        position: relative;
-        display: inline-block;
-        width: 42px;
-        height: 22px;
-        vertical-align: middle;
-      }
-      .toggle input { opacity: 0; width: 0; height: 0; }
-      .toggle-slider {
-        position: absolute;
-        cursor: pointer;
-        inset: 0;
-        background: rgba(255,255,255,0.12);
-        border-radius: 22px;
-        transition: background 0.2s;
-      }
-      .toggle-slider::before {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        left: 3px;
-        top: 3px;
-        background: #fff;
-        border-radius: 50%;
-        transition: transform 0.2s;
-      }
-      .toggle input:checked + .toggle-slider { background: var(--green); }
-      .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
-
-      .form-card-kajian {
-        display: none;
-        margin-bottom: 1.5rem;
-      }
-      .form-card-kajian.open { display: block; }
-
-      .td-actions {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: nowrap;
-      }
-
-      .alert-kajian {
-        border-radius: 8px;
-        padding: 0.75rem 1.1rem;
-        font-size: 0.875rem;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      }
-      .alert-kajian.success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
-      .alert-kajian.error   { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
-
-      .empty-state {
-        padding: 3rem;
-        text-align: center;
-        color: #64748b;
-        font-size: 0.9rem;
-      }
-
-      .section-count {
-        font-size: 0.78rem;
-        color: #64748b;
-        margin-top: 2px;
-      }
-
-      .modal-backdrop-custom {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.65);
-        backdrop-filter: blur(4px);
-        z-index: 1060;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-      }
-      .modal-backdrop-custom.open { display: flex; }
-
-      .modal-kajian {
-        background: #1a1d27;
-        border: 1px solid rgba(255,255,255,0.13);
-        border-radius: 16px;
-        padding: 1.75rem;
-        width: 100%;
-        max-width: 680px;
-        max-height: 90vh;
-        overflow-y: auto;
-        animation: modalIn 0.2s ease;
-      }
-
-      .modal-confirm {
-        background: #1a1d27;
-        border: 1px solid rgba(255,255,255,0.13);
-        border-radius: 16px;
-        padding: 2rem;
-        width: 100%;
-        max-width: 420px;
-        text-align: center;
-        animation: modalIn 0.2s ease;
-      }
-
-      @keyframes modalIn {
-        from { opacity: 0; transform: translateY(16px) scale(0.98); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-      }
-
-      .modal-title-custom {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #e2e8f0;
-      }
-
-      .btn-close-modal {
-        background: none;
-        border: none;
-        color: #64748b;
-        font-size: 1.3rem;
-        cursor: pointer;
-        line-height: 1;
-        padding: 4px;
-        border-radius: 6px;
-        transition: color 0.15s;
-      }
-      .btn-close-modal:hover { color: var(--red); }
-
-      .form-control-custom {
-        background: #22263a !important;
-        border: 1px solid rgba(255,255,255,0.07) !important;
-        border-radius: 8px !important;
-        color: #e2e8f0 !important;
-        font-size: 0.875rem !important;
-        transition: border-color 0.15s;
-      }
-      .form-control-custom:focus {
-        border-color: var(--accent) !important;
-        outline: none !important;
-        box-shadow: none !important;
-      }
-      .form-control-custom::placeholder { color: #64748b; }
-
-      .btn-kajian-outline {
-        background: transparent;
-        color: #94a3b8;
-        border: 1px solid rgba(255,255,255,0.13);
-        border-radius: 6px;
-        padding: 4px 10px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        transition: border-color 0.15s, color 0.15s;
-        white-space: nowrap;
-      }
-      .btn-kajian-outline:hover { border-color: var(--accent); color: #a78bfa; }
-
-      .btn-kajian-danger {
-        background: var(--red);
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        padding: 4px 10px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        transition: background 0.15s;
-        white-space: nowrap;
-      }
-      .btn-kajian-danger:hover { background: var(--red-h); color: #fff; }
-    </style>
+    <link href="{{ asset('admin-template/css/custom-admin.css') }}" rel="stylesheet">
     @livewireStyles
   </head>
   <body class="framed main-scrollable">
@@ -423,6 +237,7 @@
                             <tr>
                               <th>Judul &amp; Narasumber</th>
                               <th>Tanggal</th>
+                              <th style="text-align:center;">Status</th>
                               <th>Tempat</th>
                               <th>Kontak</th>
                               <th style="text-align:center;">Tampil</th>
@@ -434,7 +249,7 @@
                             <tr>
                               <td>
                                 <strong>{{ $item->Judul }}</strong>
-                                <small style="display:block; color:#94a3b8; font-size:0.78rem; margin-top:2px;">
+                                <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">
                                   {{ $item->Narasumber }}
                                 </small>
                               </td>
@@ -442,6 +257,13 @@
                                 {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('ddd, D MMM Y') }}
                                 <br>
                                 <small>{{ \Carbon\Carbon::parse($item->Tanggal)->format('H:i') }}</small>
+                              </td>
+                              <td style="text-align:center; vertical-align:middle;">
+                                @if(\Carbon\Carbon::parse($item->Tanggal)->isPast())
+                                  <span class="label label-danger" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(239, 68, 68, 0.15) !important; color: #fb7185 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important;">terlewat</span>
+                                @else
+                                  <span class="label label-success" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(34, 197, 94, 0.15) !important; color: #34d399 !important; border: 1px solid rgba(34, 197, 94, 0.3) !important;">terjadwal</span>
+                                @endif
                               </td>
                               <td style="color:#94a3b8;">{{ $item->Tempat }}</td>
                               <td style="color:#94a3b8;">{{ $item->Kontak ?: '—' }}</td>

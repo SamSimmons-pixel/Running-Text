@@ -13,61 +13,7 @@
     <link href="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.css') }}" rel="stylesheet">
     <link href="{{ asset('admin-template/css/right.dark.css') }}" rel="stylesheet">
 
-    <style>
-      /* ── Custom overrides ── */
-      :root {
-        --accent:   #6d28d9;
-        --accent-h: #7c3aed;
-        --green:    #10b981;
-        --red:      #ef4444;
-        --red-h:    #dc2626;
-      }
-
-      .td-logo img {
-        max-height: 80px;
-        width: auto;
-        border-radius: 8px;
-        object-fit: contain;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.07);
-        padding: 5px;
-      }
-      .td-logo .no-logo {
-        padding: 15px 25px;
-        background: rgba(255,255,255,0.04);
-        border: 1px dashed rgba(255,255,255,0.13);
-        border-radius: 8px;
-        display: inline-block;
-        color: #64748b;
-        font-size: 0.85rem;
-      }
-
-      .alert-kajian {
-        border-radius: 8px;
-        padding: 0.75rem 1.1rem;
-        font-size: 0.875rem;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      }
-      .alert-kajian.success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
-      .alert-kajian.error   { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
-
-      .form-control-custom {
-        background: #22263a !important;
-        border: 1px solid rgba(255,255,255,0.07) !important;
-        border-radius: 8px !important;
-        color: #e2e8f0 !important;
-        font-size: 0.875rem !important;
-        transition: border-color 0.15s;
-      }
-      .form-control-custom:focus {
-        border-color: var(--accent) !important;
-        outline: none !important;
-        box-shadow: none !important;
-      }
-    </style>
+    <link href="{{ asset('admin-template/css/custom-admin.css') }}" rel="stylesheet">
     @livewireStyles
   </head>
   <body class="framed main-scrollable">

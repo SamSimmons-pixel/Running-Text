@@ -1,0 +1,277 @@
+/* ── Color variables ── */
+:root {
+  --accent:   #6d28d9;
+  --accent-h: #7c3aed;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --red-h:    #dc2626;
+}
+
+/* ── Toggle switch ── */
+.toggle-form { display: inline; }
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+  vertical-align: middle;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(255,255,255,0.12);
+  border-radius: 22px;
+  transition: background 0.2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--green); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+/* ── Add/Edit form card ── */
+.form-card-kajian {
+  display: none;
+  margin-bottom: 1.5rem;
+}
+.form-card-kajian.open { display: block; }
+
+/* ── Table actions ── */
+.td-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+/* ── Alerts ── */
+.alert-kajian {
+  border-radius: 8px;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.alert-kajian.success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+.alert-kajian.error   { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
+
+/* ── Empty state ── */
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* ── Section count badge ── */
+.section-count {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* ── Edit/Delete modal backdrops ── */
+.modal-backdrop-custom {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+  z-index: 1060;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-backdrop-custom.open { display: flex; }
+
+.modal-kajian {
+  background: #1a1d27;
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 16px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalIn 0.2s ease;
+}
+
+.modal-confirm {
+  background: #1a1d27;
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-title-custom {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 1.3rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+.btn-close-modal:hover { color: var(--red); }
+
+/* ── Custom form controls ── */
+.form-control-custom {
+  background: #22263a !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 8px !important;
+  color: #e2e8f0 !important;
+  font-size: 0.875rem !important;
+  transition: border-color 0.15s;
+}
+.form-control-custom:focus {
+  border-color: var(--accent) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.form-control-custom::placeholder { color: #64748b; }
+
+/* ── Action buttons ── */
+.btn-kajian-outline {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  gap: 4px;
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.btn-kajian-outline:hover { border-color: var(--accent); color: #a78bfa; }
+
+.btn-kajian-danger {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  gap: 4px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.btn-kajian-danger:hover { background: var(--red-h); color: #fff; }
+
+.topbar-user-info {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1rem;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+.topbar-user-info strong { color: #e2e8f0; margin-left: 4px; }
+
+/* ── Stat cards (from admin_dashboard) ── */
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stat-card {
+  flex: 1 1 160px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: border-color 0.15s;
+}
+.stat-card:hover { border-color: var(--accent); }
+.stat-card__icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex align-items: center; justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+.stat-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #e2e8f0;
+}
+.stat-card__label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Upcoming table & status badges (from admin_dashboard) ── */
+.upcoming-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.badge-on  { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+.badge-off { background: rgba(148,163,184,0.1);  color: #64748b;  border: 1px solid rgba(148,163,184,0.2); }
+
+/* ── Logo view (from logo.blade.php) ── */
+.td-logo img {
+  max-height: 80px;
+  width: auto;
+  border-radius: 8px;
+  object-fit: contain;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 5px;
+}
+.td-logo .no-logo {
+  padding: 15px 25px;
+  background: rgba(255,255,255,0.04);
+  border: 1px dashed rgba(255,255,255,0.13);
+  border-radius: 8px;
+  display: inline-block;
+  color: #64748b;
+  font-size: 0.85rem;
+}

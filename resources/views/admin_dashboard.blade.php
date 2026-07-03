@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="utf-8">
@@ -56,9 +56,8 @@
         color: #e2e8f0;
       }
       .stat-card__label {
-        font-size: 0.75rem;
+        font-size: 1rem;
         color: #64748b;
-        margin-top: 4px;
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
@@ -68,7 +67,7 @@
         display: inline-block;
         padding: 2px 8px;
         border-radius: 99px;
-        font-size: 0.7rem;
+        font-size: 1.1rem;
         font-weight: 600;
       }
       .badge-on  { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
@@ -177,10 +176,11 @@
 
                 {{-- ── Stat Cards ── --}}
                 @php
-                  $totalKajian  = $kajian->count();
-                  $activeKajian = $kajian->where('Tampilkan', 1)->count();
-                  $hiddenKajian = $totalKajian - $activeKajian;
-                  $upcoming     = $kajian->where('Tanggal', '>=', now())->sortBy('Tanggal')->take(5);
+                  $totalKajian      = $kajian->count();
+                  $activeKajian     = $kajian->where('Tampilkan', 1)->count();
+                  $hiddenKajian     = $totalKajian - $activeKajian;
+                  $upcoming         = $kajian->where('Tanggal', '>=', now())->sortBy('Tanggal')->take(5);
+                  $pastActiveKajian = $kajian->filter(fn($item) => $item->Tampilkan && \Carbon\Carbon::parse($item->Tanggal)->isPast())->count();
                 @endphp
 
                 <div class="stat-row">
@@ -238,8 +238,18 @@
                       <div class="stat-card__label">Kontak</div>
                     </div>
                   </div>
+                  <div class="stat-card">
+                    <div class="stat-card__icon" style="background:rgba(239,68,68,0.12); color:#fca5a5;">
+                      <i class="fa fa-calendar-times-o"></i>
+                    </div>
+                    <div>
+                      <div class="stat-card__value" style="color:#fca5a5;">{{ $pastActiveKajian }}</div>
+                      <div class="stat-card__label">Kajian terlewat yang di tampilkan</div>
+                    </div>
+                  </div>
                 </div>
 
+                
                 {{-- ── Upcoming Kajian ── --}}
                 <div class="panel panel-default">
                   <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
@@ -262,6 +272,7 @@
                               <th>Judul &amp; Narasumber</th>
                               <th>Tanggal</th>
                               <th>Tempat</th>
+                              <th style="text-align:center;">Tampil di Running Text?</th>
                               <th style="text-align:center;">Status</th>
                             </tr>
                           </thead>
@@ -270,7 +281,7 @@
                             <tr>
                               <td>
                                 <strong>{{ $item->Judul }}</strong>
-                                <small style="display:block; color:#94a3b8; font-size:0.78rem; margin-top:2px;">{{ $item->Narasumber }}</small>
+                                <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">{{ $item->Narasumber }}</small>
                               </td>
                               <td style="white-space:nowrap; color:#94a3b8;">
                                 {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('ddd, D MMM Y') }}<br>
@@ -282,6 +293,13 @@
                                   <span class="upcoming-badge badge-on">Tampil</span>
                                 @else
                                   <span class="upcoming-badge badge-off">Tersembunyi</span>
+                                @endif
+                              </td>
+                              <td style="text-align:center;">
+                                @if(\Carbon\Carbon::parse($item->Tanggal)->isPast())
+                                  <span class="label label-danger" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(239, 68, 68, 0.15) !important; color: #fb7185 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important;">terlewat</span>
+                                @else
+                                  <span class="label label-success" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(34, 197, 94, 0.15) !important; color: #34d399 !important; border: 1px solid rgba(34, 197, 94, 0.3) !important;">terjadwal</span>
                                 @endif
                               </td>
                             </tr>
