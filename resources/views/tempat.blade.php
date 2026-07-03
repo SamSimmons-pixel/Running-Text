@@ -24,8 +24,10 @@
       }
 
       .form-card-kajian {
+        display: none;
         margin-bottom: 1.5rem;
       }
+      .form-card-kajian.open { display: block; }
 
       .td-actions {
         display: flex;
@@ -134,11 +136,6 @@
         <div class="topnavbar">
           <ul class="nav navbar-nav navbar-left">
             <li><a href="{{ route('admin.dashboard') }}"><span>Dashboard</span></a></li>
-            <li>
-              <a href="{{ url('/') }}" target="_blank">
-                <span><i class="fa fa-external-link" style="font-size:0.75em;"></i> Running Text</span>
-              </a>
-            </li>
           </ul>
           <ul class="userbar nav navbar-nav">
             <li class="dropdown">
@@ -161,25 +158,8 @@
       {{-- ── Dashboard Wrapper ── --}}
       <div class="dashboard">
 
-<<<<<<< HEAD
-=======
         {{-- ── Sidebar ── --}}
         <div class="sidebar">
-          <div class="quickmenu">
-            <div class="quickmenu__cont">
-              <div class="quickmenu__list">
-                <div class="quickmenu__item active" title="Dashboard">
-                  <div class="fa fa-fw fa-home"></div>
-                </div>
-                <div class="quickmenu__item" title="Running Text">
-                  <div class="fa fa-fw fa-television"></div>
-                </div>
-                <div class="quickmenu__item" title="Pengaturan">
-                  <div class="fa fa-fw fa-cog"></div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div class="scrollable scrollbar-macosx">
             <div class="sidebar__cont">
@@ -187,77 +167,45 @@
               <div class="sidebar__menu">
                 <div class="sidebar__title">Menu Utama</div>
                 <ul class="nav nav-menu">
-                  <li>
-                    <a href="{{ route('admin.dashboard') }}">
+                  <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.dashboard') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-home"></i></div>
                       <div class="nav-menu__text"><span>Dashboard</span></div>
                     </a>
                   </li>
-                  <li>
-                    <a href="{{ route('admin.narasumber') }}">
+                  <li class="{{ request()->routeIs('admin.narasumber') ? 'active' : '' }}">
+                    <a href="{{ route('admin.narasumber') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-user"></i></div>
                       <div class="nav-menu__text"><span>Kelola Narasumber</span></div>
                     </a>
                   </li>
-                  <li class="active">
-                    <a href="{{ route('admin.tempat') }}">
+                  <li class="{{ request()->routeIs('admin.tempat') ? 'active' : '' }}">
+                    <a href="{{ route('admin.tempat') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-map-marker"></i></div>
                       <div class="nav-menu__text"><span>Kelola Tempat</span></div>
                     </a>
                   </li>
-                  <li>
-                    <a href="{{ route('admin.kontak') }}">
+                  <li class="{{ request()->routeIs('admin.kontak') ? 'active' : '' }}">
+                    <a href="{{ route('admin.kontak') }}" wire:navigate>
                       <div class="nav-menu__ico"><i class="fa fa-fw fa-phone"></i></div>
                       <div class="nav-menu__text"><span>Kelola Kontak</span></div>
                     </a>
                   </li>
-                  <li>
-                    <a href="{{ url('/') }}" target="_blank">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-television"></i></div>
-                      <div class="nav-menu__text"><span>Running Text</span></div>
-                      <div class="nav-menu__right">
-                        <i class="fa fa-fw fa-external-link" style="font-size:0.7em; opacity:0.5;"></i>
-                      </div>
+                  <li class="{{ request()->routeIs('admin.logo') ? 'active' : '' }}">
+                    <a href="{{ route('admin.logo') }}" wire:navigate>
+                      <div class="nav-menu__ico"><i class="fa fa-fw fa-image"></i></div>
+                      <div class="nav-menu__text"><span>Logo</span></div>
                     </a>
                   </li>
+                  <li>
+                  </li>
                 </ul>
-              </div>
-
-              {{-- Stats --}}
-              <div class="sidebar__menu">
-                <div class="sidebar__title">Statistik</div>
-                <div class="sidestat">
-                  <div class="sidestat__cont">
-                    <div class="sidestat__item">
-                      <div class="sidestat__value">{{ $tempatList->count() }}</div>
-                      <div class="sidestat__text">total lokasi</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {{-- Quick Actions --}}
-              <div class="sidebar__menu">
-                <div class="sidebar__title">Aksi Cepat</div>
-                <div class="sidebar__btn">
-                  <a class="btn btn-block btn-default" href="{{ url('/') }}" target="_blank">
-                    <i class="fa fa-eye"></i> Lihat Running Text
-                  </a>
-                </div>
-                <div class="sidebar__btn" style="margin-top:0.4rem;">
-                  <a class="btn btn-block btn-danger" href="#"
-                     onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
-                    <i class="fa fa-sign-out"></i> Logout
-                  </a>
-                  <form id="logout-form-sidebar" method="POST" action="{{ route('logout') }}" style="display:none;">@csrf</form>
-                </div>
               </div>
 
             </div>
           </div>
         </div>
 
->>>>>>> parent of 2f97f78 (little update before using livewire)
         {{-- ── Main Content ── --}}
         <div class="main">
           <div class="main__scroll scrollbar-macosx">
@@ -269,6 +217,11 @@
                     <li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
                     <li class="active">Kelola Tempat</li>
                   </ol>
+                </div>
+                <div class="main-filter">
+                  <button class="btn btn-primary" onclick="toggleAddForm()">
+                    <i class="fa fa-plus"></i> Tambah Tempat
+                  </button>
                 </div>
               </div>
 
@@ -297,10 +250,13 @@
                 @endif
 
                 {{-- Add Form --}}
-                <div class="form-card-kajian">
+                 <div class="form-card-kajian" id="addForm">
                   <div class="panel panel-primary">
-                    <div class="panel-heading">
+                    <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
                       <h3 class="panel-title"><i class="fa fa-plus-circle"></i> Tambah Tempat Baru</h3>
+                      <button type="button" class="btn btn-xs btn-default" onclick="toggleAddForm()">
+                        <i class="fa fa-times"></i> Tutup
+                      </button>
                     </div>
                     <div class="panel-body">
                       <form method="POST" action="{{ route('admin.tempat.store') }}">
@@ -402,6 +358,15 @@
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
 
     <script>
+      function toggleAddForm() {
+        var form = document.getElementById('addForm');
+        form.classList.toggle('open');
+      }
+
+      @if ($errors->any() && old('nama'))
+      toggleAddForm();
+      @endif
+
       function openDeleteModal(id, nama) {
         document.getElementById('deleteForm').action = `/admin_dashboard/tempat/${id}/delete`;
         document.getElementById('deleteDesc').textContent =
