@@ -129,6 +129,7 @@
       {{-- ── Dashboard Wrapper ── --}}
       <div class="dashboard">
 
+        @include('partials.sidebar')
 
         {{-- ── Main Content ── --}}
         <div class="main">

@@ -55,13 +55,7 @@ class admin_dashboard_Controller extends Controller
         $tempatList     = Tempat::orderBy('nama', 'asc')->get();
         $kontakList     = Kontak::orderBy('nama', 'asc')->get();
 
-        $logoUrl = null;
-        $files = glob(public_path('logo/global_logo.*'));
-        if (!empty($files)) {
-            $logoUrl = asset('logo/' . basename($files[0])) . '?v=' . filemtime($files[0]);
-        }
-
-        return view('admin_dashboard', compact('kajian', 'logoUrl', 'narasumberList', 'tempatList', 'kontakList'));
+        return view('admin_dashboard', compact('kajian', 'narasumberList', 'tempatList', 'kontakList'));
     }
 
     /**
@@ -174,5 +168,17 @@ class admin_dashboard_Controller extends Controller
 
         return redirect()->route('admin.dashboard')
             ->with('success', 'Kajian berhasil dihapus.');
+    }
+
+    public function logo() {
+        $this->requireAdmin();
+
+        $logoUrl = null;
+        $files = glob(public_path('logo/global_logo.*'));
+        if (!empty($files)) {
+            $logoUrl = asset('logo/' . basename($files[0])) . '?v=' . filemtime($files[0]);
+        }
+
+        return view('logo', compact('logoUrl'));
     }
 }
