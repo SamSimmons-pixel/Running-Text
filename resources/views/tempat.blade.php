@@ -7,13 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kelola Tempat — Jadwal Kajian</title>
     <link rel="icon" type="image/png" href="{{ asset('admin-template/img/favicon.png') }}">
-    <link href="{{ asset('admin-template/libs/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,300,400italic,500,700,900" rel="stylesheet" type="text/css">
-    <link href="{{ asset('admin-template/libs/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin-template/css/right.dark.css') }}" rel="stylesheet">
-
-    <link href="{{ asset('admin-template/css/custom-admin.css') }}" rel="stylesheet">
+    @include('partials.assets')
     @livewireStyles
   </head>
   <body class="framed main-scrollable">
@@ -137,19 +131,14 @@
                     <div class="panel-body">
                       <form method="POST" action="{{ route('admin.tempat.store') }}">
                         @csrf
-                        <div class="row">
-                          <div class="col-sm-8 col-md-9">
-                            <div class="form-group">
-                              <label class="control-label" for="tempat_nama">Nama Masjid / Tempat Kegiatan</label>
-                              <input id="tempat_nama" type="text" name="nama" class="form-control form-control-custom"
-                                     placeholder="Isi Lokasi Disini" value="{{ old('nama') }}" required>
-                            </div>
-                          </div>
-                          <div class="col-sm-4 col-md-3" style="margin-top: 25px;">
-                            <button type="submit" class="btn btn-primary btn-block">
-                              <i class="fa fa-check"></i> Simpan
-                            </button>
-                          </div>
+                        <div class="form-group">
+                          <label class="control-label" for="tempat_nama">Nama Masjid / Tempat Kegiatan (Disarankan untuk tidak menggunakan edit toolnya)</label>
+                          <textarea id="tempat_nama" name="nama" class="form-control form-control-custom" placeholder="Isi Lokasi Disini" required>{{ old('nama') }}</textarea>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end;">
+                          <button type="submit" class="btn btn-primary" style="padding: 8px 30px; font-size: 1.15rem;">
+                            <i class="fa fa-check"></i> Simpan
+                          </button>
                         </div>
                       </form>
                     </div>
@@ -228,9 +217,6 @@
       </div>
     </div>
 
-    <script src="{{ asset('admin-template/libs/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('admin-template/libs/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
 
     <script>
@@ -264,6 +250,24 @@
     </script>
     @livewireScripts
     <script>
+      function initSummernote() {
+        if (window.jQuery) {
+          var $ = window.jQuery;
+          if ($.fn.summernote) {
+            $('#tempat_nama').summernote({
+              height: '250',
+              toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['view', ['fullscreen', 'codeview']]
+              ]
+            });
+          }
+        }
+      }
+
       document.addEventListener('livewire:navigated', function() {
         if (window.jQuery) {
           var $ = window.jQuery;
@@ -273,7 +277,13 @@
           $('.header-navbar-mobile__menu button').off('click').on('click', function() {
             $('.dashboard').toggleClass('dashboard_menu');
           });
+
+          initSummernote();
         }
+      });
+
+      $(document).ready(function() {
+        initSummernote();
       });
     </script>
   </body>

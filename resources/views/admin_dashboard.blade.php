@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="utf-8">
@@ -8,11 +8,7 @@
     <title>Dashboard — Jadwal Kajian</title>
     <meta name="description" content="Panel admin untuk mengelola jadwal kajian.">
     <link rel="icon" type="image/png" href="{{ asset('admin-template/img/favicon.png') }}">
-    <link href="{{ asset('admin-template/libs/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,300,400italic,500,700,900" rel="stylesheet" type="text/css">
-    <link href="{{ asset('admin-template/libs/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin-template/css/right.dark.css') }}" rel="stylesheet">
+    @include('partials.assets')
 
     <style>
       :root {
@@ -343,9 +339,6 @@
       </div>{{-- end dashboard --}}
     </div>{{-- end wrapper --}}
 
-    <script src="{{ asset('admin-template/libs/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('admin-template/libs/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
     @livewireScripts
     <script>
