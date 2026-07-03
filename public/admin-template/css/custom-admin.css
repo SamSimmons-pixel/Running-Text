@@ -149,7 +149,9 @@
   border: 1px solid rgba(255,255,255,0.07) !important;
   border-radius: 8px !important;
   color: #e2e8f0 !important;
-  font-size: 0.875rem !important;
+  font-size: 1.15rem !important;
+  padding: 8px 14px !important;
+  height: auto !important;
   transition: border-color 0.15s;
 }
 .form-control-custom:focus {
@@ -228,7 +230,9 @@
 .stat-card__icon {
   width: 44px; height: 44px;
   border-radius: 10px;
-  display: flex align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.25rem;
   flex-shrink: 0;
 }
@@ -274,4 +278,55 @@
   display: inline-block;
   color: #64748b;
   font-size: 0.85rem;
+}
+
+/* ── Summernote dark overrides ── */
+.note-editor.note-frame {
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  background: #1a1d27 !important;
+}
+.note-toolbar {
+  background-color: #22263a !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+.note-btn {
+  background-color: #1a1d27 !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  color: #e2e8f0 !important;
+}
+.note-btn:hover, .note-btn.active {
+  background-color: var(--accent) !important;
+  color: #fff !important;
+}
+.note-editable {
+  background-color: #22263a !important;
+  color: #e2e8f0 !important;
+  font-size: 1.15rem !important;
+}
+.note-resizebar {
+  background-color: #22263a !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
+}
+.note-dropdown-menu {
+  background-color: #1a1d27 !important;
+  border: 1px solid rgba(255,255,255,0.13) !important;
+}
+.note-dropdown-menu > li > a {
+  color: #e2e8f0 !important;
+}
+.note-dropdown-menu > li > a:hover {
+  background-color: var(--accent) !important;
+}
+.note-modal-content {
+  background-color: #1a1d27 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255,255,255,0.13) !important;
+}
+.note-form-label {
+  color: #e2e8f0 !important;
+}
+.note-input {
+  background-color: #22263a !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
 }
