@@ -268,7 +268,7 @@
                               <th>Judul &amp; Narasumber</th>
                               <th>Tanggal</th>
                               <th>Tempat</th>
-                              <th style="text-align:center;">Tampil di Running Text?</th>
+                              <th style="text-align:center;">Tampilkan Json</th>
                               <th style="text-align:center;">Status</th>
                             </tr>
                           </thead>
