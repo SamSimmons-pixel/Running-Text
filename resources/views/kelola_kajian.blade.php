@@ -192,7 +192,7 @@
                             <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-bottom:0;">
                               <label class="toggle" for="add_Tampilkan">
                                 <input type="checkbox" id="add_Tampilkan" name="Tampilkan" value="1"
-                                       {{ old('Tampilkan') ? 'checked' : '' }}>
+                                       {{ old('Tampilkan') ? '' : 'checked' }}>
                                 <span class="toggle-slider"></span>
                               </label>
                               <span style="color:#94a3b8; font-size:0.85rem;">Tampilkan di running text</span>
@@ -230,11 +230,11 @@
                           <thead>
                             <tr>
                               <th>Judul &amp; Narasumber</th>
-                              <th>Tanggal</th>
+                              <th>Tanggal & Jam Mulai</th>
                               <th style="text-align:center;">Status</th>
                               <th>Tempat</th>
                               <th>Kontak</th>
-                              <th style="text-align:center;">Tampil</th>
+                              <th style="text-align:center;">Tampil Di Json</th>
                               <th style="text-align:right;">Aksi</th>
                             </tr>
                           </thead>

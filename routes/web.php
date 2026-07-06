@@ -16,12 +16,20 @@ Route::get('/mainpage', [MainpageController::class, 'index'])->name('mainpage');
 use App\Http\Controllers\NarasumberController;
 use App\Http\Controllers\TempatController;
 use App\Http\Controllers\KontakController;
+use App\Http\Controllers\InformasiUmumController;
 
 // ── Admin dashboard (admin only — guarded inside controller) ─────
 Route::get ('/admin_dashboard',                  [admin_dashboard_Controller::class, 'index'])->name('admin.dashboard');
+Route::get ('/admin_dashboard/informasi',        [InformasiUmumController::class, 'index'])->name('admin.informasi');
+Route::post('/admin_dashboard/informasi',        [InformasiUmumController::class, 'store'])->name('admin.informasi.store');
+Route::post('/admin_dashboard/informasi/{id}',   [InformasiUmumController::class, 'update'])->name('admin.informasi.update');
+Route::post('/admin_dashboard/informasi/{id}/toggle', [InformasiUmumController::class, 'toggle'])->name('admin.informasi.toggle');
+Route::post('/admin_dashboard/informasi/{id}/delete', [InformasiUmumController::class, 'destroy'])->name('admin.informasi.destroy');
+
 Route::get ('/admin_dashboard/kajian',            [admin_dashboard_Controller::class, 'kajian'])->name('admin.kajian');
 Route::post('/admin_dashboard',                  [admin_dashboard_Controller::class, 'store'])->name('admin.kajian.store');
 Route::get('/admin_dashboard/logo',               [admin_dashboard_Controller::class, 'logo'])->name('admin.logo');
+Route::get ('/admin_dashboard/acara',            [admin_dashboard_Controller::class, 'acara'])->name('admin.acara');
 Route::post('/admin_dashboard/global-logo',      [admin_dashboard_Controller::class, 'uploadGlobalLogo'])->name('admin.logo.update');
 
 // ── Narasumber Management ──────────────────────────────────────

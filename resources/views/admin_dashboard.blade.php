@@ -309,24 +309,34 @@
 
                 {{-- ── Quick Links ── --}}
                 <div class="row" style="margin-top:1rem;">
-                  <div class="col-sm-6 col-md-3" style="margin-bottom:1rem;">
+                  <div class="col-sm-6 col-md-2" style="margin-bottom:1rem;">
+                    <a href="{{ route('admin.informasi') }}" class="btn btn-block btn-default" wire:navigate>
+                      <i class="fa fa-info-circle"></i> Informasi Umum
+                    </a>
+                  </div>
+                  <div class="col-sm-6 col-md-2" style="margin-bottom:1rem;">
                     <a href="{{ route('admin.kajian') }}" class="btn btn-block btn-default" wire:navigate>
                       <i class="fa fa-calendar"></i> Kelola Kajian
                     </a>
                   </div>
-                  <div class="col-sm-6 col-md-3" style="margin-bottom:1rem;">
+                  <div class="col-sm-6 col-md-2" style="margin-bottom:1rem;">
                     <a href="{{ route('admin.narasumber') }}" class="btn btn-block btn-default" wire:navigate>
                       <i class="fa fa-user"></i> Kelola Narasumber
                     </a>
                   </div>
-                  <div class="col-sm-6 col-md-3" style="margin-bottom:1rem;">
+                  <div class="col-sm-6 col-md-2" style="margin-bottom:1rem;">
                     <a href="{{ route('admin.tempat') }}" class="btn btn-block btn-default" wire:navigate>
                       <i class="fa fa-map-marker"></i> Kelola Tempat
                     </a>
                   </div>
-                  <div class="col-sm-6 col-md-3" style="margin-bottom:1rem;">
+                  <div class="col-sm-6 col-md-2" style="margin-bottom:1rem;">
                     <a href="{{ route('admin.kontak') }}" class="btn btn-block btn-default" wire:navigate>
                       <i class="fa fa-phone"></i> Kelola Kontak
+                    </a>
+                  </div>
+                  <div class="col-sm-6 col-md-2" style="margin-bottom:1rem;">
+                    <a href="{{ route('admin.acara') }}" class="btn btn-block btn-default" wire:navigate>
+                      <i class="fa fa-flag"></i> Kelola Acara
                     </a>
                   </div>
                 </div>

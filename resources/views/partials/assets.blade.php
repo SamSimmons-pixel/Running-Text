@@ -4,7 +4,6 @@
 <link href="{{ asset('admin-template/libs/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
 <link href="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.css') }}" rel="stylesheet">
 <link href="{{ asset('admin-template/css/right.dark.css') }}" rel="stylesheet">
-<link href="{{ asset('admin-template/libs/summernote/summernote.css') }}" rel="stylesheet">
 <link href="{{ asset('admin-template/libs/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css') }}" rel="stylesheet">
 <link href="{{ asset('admin-template/libs/ionrangeslider/css/ion.rangeSlider.css') }}" rel="stylesheet">
 <link href="{{ asset('admin-template/css/custom-admin.css') }}" rel="stylesheet">
@@ -17,7 +16,6 @@
 <script src="{{ asset('admin-template/libs/bootstrap-switch/js/bootstrap-switch.min.js') }}"></script>
 <script src="{{ asset('admin-template/libs/ionrangeslider/js/ion.rangeSlider.min.js') }}"></script>
 <script src="{{ asset('admin-template/libs/inputNumber/js/inputNumber.js') }}"></script>
-<script src="{{ asset('admin-template/libs/summernote/summernote.min.js') }}"></script>
 
 <!-- Safeguard jQuery overrides for missing theme dependencies -->
 <script>

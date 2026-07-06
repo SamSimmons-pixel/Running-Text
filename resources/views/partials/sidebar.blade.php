@@ -13,10 +13,22 @@
               <div class="nav-menu__text"><span>Dashboard</span></div>
             </a>
           </li>
+          <li class="{{ request()->routeIs('admin.informasi') ? 'active' : '' }}">
+            <a href="{{ route('admin.informasi') }}" wire:navigate>
+              <div class="nav-menu__ico"><i class="fa fa-fw fa-info-circle"></i></div>
+              <div class="nav-menu__text"><span>Kelola Informasi Umum</span></div>
+            </a>
+          </li>
           <li class="{{ request()->routeIs('admin.kajian') ? 'active' : '' }}">
             <a href="{{ route('admin.kajian') }}" wire:navigate>
               <div class="nav-menu__ico"><i class="fa fa-fw fa-calendar"></i></div>
               <div class="nav-menu__text"><span>Kelola Kajian</span></div>
+            </a>
+          </li>
+          <li class="{{ request()->routeIs('admin.acara') ? 'active' : '' }}">
+            <a href="{{ route('admin.acara') }}" wire:navigate>
+              <div class="nav-menu__ico"><i class="fa fa-fw fa-play"></i></div>
+              <div class="nav-menu__text"><span>Kelola Acara</span></div>
             </a>
           </li>
           <li class="{{ request()->routeIs('admin.narasumber') ? 'active' : '' }}">

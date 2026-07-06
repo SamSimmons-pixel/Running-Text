@@ -9,6 +9,54 @@
     <link rel="icon" type="image/png" href="{{ asset('admin-template/img/favicon.png') }}">
     @include('partials.assets')
     @livewireStyles
+    <style>
+      /* Tooltip container */
+      .tooltip-container {
+        position: relative;
+        width: 100%;
+      }
+
+      /* Tooltip text */
+      .tooltiptext {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+        background-color: #1e1b4b; /* Premium deep indigo */
+        color: #ffffff;
+        text-align: left;
+        padding: 8px 14px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        position: absolute;
+        bottom: 125%; /* Position above input field */
+        left: 0;
+        z-index: 999; /* Ensure displayed above content */
+        white-space: pre-wrap;
+        word-break: break-all;
+        font-size: 2rem;
+        min-width: 220px;
+        max-width: 100%;
+      }
+
+      /* Triangle indicator */
+      .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 20px;
+        margin-left: -5px;
+        border-width: 6px;
+        border-style: solid;
+        border-color: #1e1b4b transparent transparent transparent;
+      }
+
+      /* Show the tooltip text on hover / focus active typing */
+      .tooltip-container.show-tooltip .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+      }
+    </style>
   </head>
   <body class="framed main-scrollable">
     <div class="wrapper">
@@ -132,8 +180,11 @@
                       <form method="POST" action="{{ route('admin.tempat.store') }}">
                         @csrf
                         <div class="form-group">
-                          <label class="control-label" for="tempat_nama">Nama Masjid / Tempat Kegiatan (Disarankan untuk tidak menggunakan edit toolnya)</label>
-                          <textarea id="tempat_nama" name="nama" class="form-control form-control-custom" placeholder="Isi Lokasi Disini" required>{{ old('nama') }}</textarea>
+                          <label class="control-label" for="tempat_nama">Nama Masjid / Tempat Kegiatan</label>
+                          <div class="tooltip-container">
+                            <input type="text" id="tempat_nama" name="nama" class="form-control form-control-custom" placeholder="Isi Lokasi Disini" value="{{ old('nama') }}" required autocomplete="off">
+                            <span class="tooltiptext" id="tempat_nama_tooltip"></span>
+                          </div>
                         </div>
                         <div style="display:flex; justify-content:flex-end;">
                           <button type="submit" class="btn btn-primary" style="padding: 8px 30px; font-size: 1.15rem;">
@@ -250,24 +301,6 @@
     </script>
     @livewireScripts
     <script>
-      function initSummernote() {
-        if (window.jQuery) {
-          var $ = window.jQuery;
-          if ($.fn.summernote) {
-            $('#tempat_nama').summernote({
-              height: '250',
-              toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'italic', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['view', ['fullscreen', 'codeview']]
-              ]
-            });
-          }
-        }
-      }
-
       document.addEventListener('livewire:navigated', function() {
         if (window.jQuery) {
           var $ = window.jQuery;
@@ -278,12 +311,29 @@
             $('.dashboard').toggleClass('dashboard_menu');
           });
 
-          initSummernote();
-        }
-      });
+          // Dynamic ongoing input tooltip logic
+          const input = document.getElementById('tempat_nama');
+          const tooltip = document.getElementById('tempat_nama_tooltip');
+          const container = input ? input.closest('.tooltip-container') : null;
 
-      $(document).ready(function() {
-        initSummernote();
+          if (input && tooltip && container) {
+            const updateTooltip = () => {
+              const val = input.value;
+              if (val.length > 0) {
+                tooltip.textContent = val;
+                container.classList.add('show-tooltip');
+              } else {
+                container.classList.remove('show-tooltip');
+              }
+            };
+
+            input.addEventListener('input', updateTooltip);
+            input.addEventListener('focus', updateTooltip);
+            input.addEventListener('blur', function() {
+              container.classList.remove('show-tooltip');
+            });
+          }
+        }
       });
     </script>
   </body>

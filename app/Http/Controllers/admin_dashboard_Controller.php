@@ -196,4 +196,16 @@ class admin_dashboard_Controller extends Controller
 
         return view('logo', compact('logoUrl'));
     }
+
+    public function informasi()
+    {
+        $this->requireAdmin();
+        return view('informasi_umum');
+    }
+
+    public function acara()
+    {
+        $this->requireAdmin();
+        return view('kelola_acara');
+    }
 }
