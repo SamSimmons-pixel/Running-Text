@@ -79,8 +79,14 @@
                           <div class="col-sm-6 col-md-4">
                             <div class="form-group">
                               <label class="control-label">Judul Kajian</label>
-                              <input type="text" name="Judul" class="form-control form-control-custom"
-                                     placeholder="Nama kajian" value="{{ old('Judul') }}" required>
+                              <div class="tooltip-container">
+                                <input type="text" name="Judul" class="form-control form-control-custom"
+                                       placeholder="Nama kajian" value="{{ old('Judul') }}" required autocomplete="off"
+                                       oninput="updateTooltip(this, 'Nama kajian')"
+                                       onfocus="updateTooltip(this, 'Nama kajian')"
+                                       onblur="hideTooltip(this)">
+                                <span class="tooltiptext">Nama kajian</span>
+                              </div>
                             </div>
                           </div>
                           <div class="col-sm-6 col-md-4">
@@ -184,26 +190,33 @@
                           </thead>
                           <tbody>
                             @foreach ($kajian as $item)
-                            <tr>
-                              <td>
-                                <strong>{{ $item->Judul }}</strong>
-                                <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">
-                                  {{ $item->Narasumber }}
-                                </small>
-                              </td>
-                              <td style="white-space:nowrap; color:#94a3b8;">
-                                {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('ddd, D MMM Y') }}
-                                <br>
-                                <small>{{ \Carbon\Carbon::parse($item->Tanggal)->format('H:i') }}</small>
-                              </td>
-                              <td style="text-align:center; vertical-align:middle;">
-                                @if(\Carbon\Carbon::parse($item->Tanggal)->isPast())
-                                  <span class="label label-danger" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(239, 68, 68, 0.15) !important; color: #fb7185 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important;">terlewat</span>
-                                @else
-                                  <span class="label label-success" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(34, 197, 94, 0.15) !important; color: #34d399 !important; border: 1px solid rgba(34, 197, 94, 0.3) !important;">terjadwal</span>
-                                @endif
-                              </td>
-                              <td style="color:#94a3b8;">{{ $item->Tempat }}</td>
+                             @php
+                              $kajianStart = \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta');
+                              $kajianEnd   = $kajianStart->copy()->addHour();
+                              $isOnAir     = now('Asia/Jakarta')->between($kajianStart, $kajianEnd);
+                             @endphp
+                             <tr class="{{ $isOnAir ? 'row-on-air' : '' }}">
+                               <td>
+                                 <strong>{{ $item->Judul }}</strong>
+                                 <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">
+                                   {{ $item->Narasumber }}
+                                 </small>
+                               </td>
+                               <td style="white-space:nowrap; color:#94a3b8;">
+                                 {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('ddd, D MMM Y') }}
+                                 <br>
+                                 <small>{{ \Carbon\Carbon::parse($item->Tanggal)->format('H:i') }}</small>
+                               </td>
+                               <td style="text-align:center; vertical-align:middle;">
+                                 @if($isOnAir)
+                                   <span class="badge-live">LIVE</span>
+                                 @elseif(\Carbon\Carbon::parse($item->Tanggal)->isPast())
+                                   <span class="label label-danger" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(239, 68, 68, 0.15) !important; color: #fb7185 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important;">terlewat</span>
+                                 @else
+                                   <span class="label label-success" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(34, 197, 94, 0.15) !important; color: #34d399 !important; border: 1px solid rgba(34, 197, 94, 0.3) !important;">terjadwal</span>
+                                 @endif
+                               </td>
+                               <td style="color:#94a3b8;">{{ $item->Tempat }}</td>
                               <td style="color:#94a3b8;">{{ $item->Kontak ?: '—' }}</td>
                               <td style="text-align:center;">
                                 <form method="POST" action="{{ route('admin.kajian.toggle', $item->id) }}"
@@ -269,7 +282,13 @@
             <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Judul Kajian</label>
-                <input id="edit_Judul" type="text" name="Judul" class="form-control form-control-custom" required>
+                <div class="tooltip-container">
+                  <input id="edit_Judul" type="text" name="Judul" class="form-control form-control-custom" required autocomplete="off"
+                         oninput="updateTooltip(this, 'Nama kajian')"
+                         onfocus="updateTooltip(this, 'Nama kajian')"
+                         onblur="hideTooltip(this)">
+                  <span class="tooltiptext">Nama kajian</span>
+                </div>
               </div>
             </div>
             <div class="col-sm-6">

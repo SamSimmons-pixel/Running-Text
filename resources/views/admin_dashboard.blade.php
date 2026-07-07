@@ -215,7 +215,12 @@
                           </thead>
                           <tbody>
                             @foreach ($upcoming as $item)
-                            <tr>
+                            @php
+                              $kajianStart  = \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta');
+                              $kajianEnd    = $kajianStart->copy()->addHour();
+                              $kajianOnAir  = now('Asia/Jakarta')->between($kajianStart, $kajianEnd);
+                            @endphp
+                            <tr class="{{ $kajianOnAir ? 'row-on-air' : '' }}">
                               <td>
                                 <strong>{{ $item->Judul }}</strong>
                                 <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">{{ $item->Narasumber }}</small>
@@ -233,10 +238,92 @@
                                 @endif
                               </td>
                               <td style="text-align:center;">
-                                @if(\Carbon\Carbon::parse($item->Tanggal)->isPast())
+                                @if($kajianOnAir)
+                                  <span class="badge-live">LIVE</span>
+                                @elseif(\Carbon\Carbon::parse($item->Tanggal)->isPast())
                                   <span class="label label-danger" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(239, 68, 68, 0.15) !important; color: #fb7185 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important;">terlewat</span>
                                 @else
-                                  <span class="label label-success" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(34, 197, 94, 0.15) !important; color: #34d399 !important; border: 1px solid rgba(34, 197, 94, 0.3) !important;">terjadwal</span>
+                                  <span class="label label-success" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(255, 240, 58, 0.15) !important; color: #efc424ff !important; border: 1px solid rgba(255, 231, 38, 0.3) !important;">terjadwal</span>
+                                @endif
+                              </td>
+                            </tr>
+                            @endforeach
+                          </tbody>
+
+                        </table>
+                      </div>
+                    @endif
+                  </div>
+                </div>
+
+                {{-- ── Acara Mendatang ── --}}
+                <div class="panel panel-default" style="margin-top:1.25rem;">
+                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
+                    <h3 class="panel-title"><i class="fa fa-play"></i> Acara Mendatang</h3>
+                    <a href="{{ route('admin.acara') }}" class="btn btn-xs btn-default" wire:navigate>
+                      <i class="fa fa-list"></i> Lihat Semua
+                    </a>
+                  </div>
+                  <div class="panel-body" style="padding:0;">
+                    @if ($acaraList->isEmpty())
+                      <div class="empty-state">
+                        <i class="fa fa-play-circle-o" style="font-size:2rem; margin-bottom:0.75rem; display:block; opacity:0.3;"></i>
+                        Tidak ada acara terdaftar.
+                      </div>
+                    @else
+                      @php
+                        $nowJkt  = now('Asia/Jakarta');
+                        $hariIndo = [
+                          'Sunday'    => 'Ahad',
+                          'Monday'    => 'Senin',
+                          'Tuesday'   => 'Selasa',
+                          'Wednesday' => 'Rabu',
+                          'Thursday'  => 'Kamis',
+                          'Friday'    => 'Jumat',
+                          'Saturday'  => 'Sabtu',
+                        ];
+                        $hariIni = $hariIndo[$nowJkt->format('l')];
+                        $jamNow  = $nowJkt->format('H:i:s');
+                      @endphp
+                      <div class="table-responsive">
+                        <table class="table table-hover" style="margin-bottom:0;">
+                          <thead>
+                            <tr>
+                              <th>Judul & Narasumber</th>
+                              <th>Hari</th>
+                              <th>Jam</th>
+                              <th>Tempat</th>
+                              <th style="text-align:center;">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @foreach ($acaraList as $acItem)
+                            @php
+                              $acOnAir = ($acItem->hari === $hariIni)
+                                      && ($jamNow >= $acItem->jam_mulai)
+                                      && ($jamNow <= $acItem->jam_selesai);
+                            @endphp
+                            <tr class="{{ $acOnAir ? 'row-on-air' : '' }}">
+                              <td>
+                                <strong>{{ $acItem->judul }}</strong>
+                                <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">{{ $acItem->narasumber }}</small>
+                              </td>
+                              <td style="color:#94a3b8; white-space:nowrap;">{{ $acItem->hari }}</td>
+                              <td style="color:#94a3b8; white-space:nowrap;">
+                                {{ \Carbon\Carbon::parse($acItem->jam_mulai)->format('H:i') }}
+                                <span style="opacity:0.5;">–</span>
+                                {{ \Carbon\Carbon::parse($acItem->jam_selesai)->format('H:i') }}
+                              </td>
+                              <td style="color:#94a3b8;">{{ $acItem->tempat }}</td>
+                              <td style="text-align:center; vertical-align:middle;">
+                                @if($acOnAir)
+                                  <span class="badge-live">LIVE</span>
+                                @elseif($acItem->status)
+                                  <span class="label label-info" style="border-radius:99px; padding:3px 8px; font-size:1.1rem; background-color:rgba(99,179,237,0.15)!important; color:#63b3ed!important; border:1px solid rgba(99,179,237,0.3)!important;">
+                                    {{ $acItem->status }}
+                                  </span>
+                                @else
+                                  <span style="color:#475569; font-size:0.85rem;">—</span>
                                 @endif
                               </td>
                             </tr>
@@ -249,6 +336,7 @@
                 </div>
 
                 {{-- ── Quick Links ── --}}
+
                 <div class="row" style="margin-top:1rem;">
                   <div class="col-sm-6 col-md-2" style="margin-bottom:1rem;">
                     <a href="{{ route('admin.informasi') }}" class="btn btn-block btn-default" wire:navigate>
@@ -277,7 +365,7 @@
                   </div>
                   <div class="col-sm-6 col-md-2" style="margin-bottom:1rem;">
                     <a href="{{ route('admin.acara') }}" class="btn btn-block btn-default" wire:navigate>
-                      <i class="fa fa-flag"></i> Kelola Acara
+                      <i class="fa fa-play"></i> Kelola Acara
                     </a>
                   </div>
                 </div>

@@ -9,54 +9,6 @@
     <link rel="icon" type="image/png" href="{{ asset('admin-template/img/favicon.png') }}">
     @include('partials.assets')
     @livewireStyles
-    <style>
-      /* Tooltip container */
-      .tooltip-container {
-        position: relative;
-        width: 100%;
-      }
-
-      /* Tooltip text */
-      .tooltiptext {
-        visibility: hidden;
-        opacity: 0;
-        transition: opacity 0.2s ease, visibility 0.2s ease;
-        background-color: #1e1b4b; /* Premium deep indigo */
-        color: #ffffff;
-        text-align: left;
-        padding: 8px 14px;
-        border-radius: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-        position: absolute;
-        bottom: 125%; /* Position above input field */
-        left: 0;
-        z-index: 999; /* Ensure displayed above content */
-        white-space: pre-wrap;
-        word-break: break-all;
-        font-size: 2rem;
-        min-width: 220px;
-        max-width: 100%;
-      }
-
-      /* Triangle indicator */
-      .tooltiptext::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        left: 20px;
-        margin-left: -5px;
-        border-width: 6px;
-        border-style: solid;
-        border-color: #1e1b4b transparent transparent transparent;
-      }
-
-      /* Show the tooltip text on hover / focus active typing */
-      .tooltip-container.show-tooltip .tooltiptext {
-        visibility: visible;
-        opacity: 1;
-      }
-    </style>
   </head>
   <body class="framed main-scrollable">
     <div class="wrapper">
@@ -126,8 +78,11 @@
                         <div class="form-group">
                           <label class="control-label" for="tempat_nama">Nama Masjid / Tempat Kegiatan</label>
                           <div class="tooltip-container">
-                            <input type="text" id="tempat_nama" name="nama" class="form-control form-control-custom" placeholder="Isi Lokasi Disini" value="{{ old('nama') }}" required autocomplete="off">
-                            <span class="tooltiptext" id="tempat_nama_tooltip"></span>
+                            <input type="text" id="tempat_nama" name="nama" class="form-control form-control-custom" placeholder="Isi Lokasi Disini" value="{{ old('nama') }}" required autocomplete="off"
+                                    oninput="updateTooltip(this, 'Nama masjid/lokasi kegiatan')"
+                                    onfocus="updateTooltip(this, 'Nama masjid/lokasi kegiatan')"
+                                    onblur="hideTooltip(this)">
+                            <span class="tooltiptext">Nama masjid/lokasi kegiatan</span>
                           </div>
                         </div>
                         <div style="display:flex; justify-content:flex-end;">
@@ -254,29 +209,6 @@
           $('.header-navbar-mobile__menu button').off('click').on('click', function() {
             $('.dashboard').toggleClass('dashboard_menu');
           });
-
-          // Dynamic ongoing input tooltip logic
-          const input = document.getElementById('tempat_nama');
-          const tooltip = document.getElementById('tempat_nama_tooltip');
-          const container = input ? input.closest('.tooltip-container') : null;
-
-          if (input && tooltip && container) {
-            const updateTooltip = () => {
-              const val = input.value;
-              if (val.length > 0) {
-                tooltip.textContent = val;
-                container.classList.add('show-tooltip');
-              } else {
-                container.classList.remove('show-tooltip');
-              }
-            };
-
-            input.addEventListener('input', updateTooltip);
-            input.addEventListener('focus', updateTooltip);
-            input.addEventListener('blur', function() {
-              container.classList.remove('show-tooltip');
-            });
-          }
         }
       });
     </script>

@@ -76,8 +76,14 @@
                           <div class="col-sm-8 col-md-9">
                             <div class="form-group">
                               <label class="control-label" for="narasumber_nama">Nama Narasumber / Pembicara</label>
-                              <input id="narasumber_nama" type="text" name="nama" class="form-control form-control-custom"
-                                     placeholder="Isi Nama Disini" value="{{ old('nama') }}" required>
+                              <div class="tooltip-container">
+                                <input id="narasumber_nama" type="text" name="nama" class="form-control form-control-custom"
+                                       placeholder="Isi Nama Disini" value="{{ old('nama') }}" required autocomplete="off"
+                                       oninput="updateTooltip(this, 'Nama narasumber/pembicara')"
+                                       onfocus="updateTooltip(this, 'Nama narasumber/pembicara')"
+                                       onblur="hideTooltip(this)">
+                                <span class="tooltiptext">Nama narasumber/pembicara</span>
+                              </div>
                             </div>
                           </div>
                           <div class="col-sm-4 col-md-3" style="margin-top: 25px;">

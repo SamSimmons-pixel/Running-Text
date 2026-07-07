@@ -76,8 +76,14 @@
                           <div class="col-sm-8 col-md-9">
                             <div class="form-group">
                               <label class="control-label" for="kontak_nama">No. HP / WA / Nama Kontak</label>
-                              <input id="kontak_nama" type="text" name="nama" class="form-control form-control-custom"
-                                     placeholder="Contoh: 0812-3456-7890 (Abu Ahmad)" value="{{ old('nama') }}" required>
+                              <div class="tooltip-container">
+                                <input id="kontak_nama" type="text" name="nama" class="form-control form-control-custom"
+                                       placeholder="Contoh: 0812-3456-7890 (Abu Ahmad)" value="{{ old('nama') }}" required autocomplete="off"
+                                       oninput="updateTooltip(this, 'Nama/Nomor kontak info')"
+                                       onfocus="updateTooltip(this, 'Nama/Nomor kontak info')"
+                                       onblur="hideTooltip(this)">
+                                <span class="tooltiptext">Nama/Nomor kontak info</span>
+                              </div>
                             </div>
                           </div>
                           <div class="col-sm-4 col-md-3" style="margin-top: 25px;">

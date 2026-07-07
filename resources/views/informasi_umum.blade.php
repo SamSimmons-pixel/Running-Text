@@ -213,8 +213,12 @@
                         @csrf
                         <div class="form-group">
                           <label class="control-label" for="add_judul">Judul Informasi</label>
-                          <input id="add_judul" type="text" name="judul" class="form-control form-control-custom"
-                                 placeholder="Judul info berjalan" value="{{ old('judul') }}" required>
+                          <div class="tooltip-container">
+                            <input id="add_judul" type="text" name="judul" class="form-control form-control-custom"
+                                   placeholder="Judul info" value="{{ old('judul') }}" required autocomplete="off"
+                                   oninput="updateTooltip(this)">
+                            <span class="tooltiptext"></span>
+                          </div>
                         </div>
                         <div class="form-group">
                           <label class="control-label" for="add_deskripsi">Deskripsi</label>
@@ -319,7 +323,11 @@
           @csrf
           <div class="form-group">
             <label class="control-label" for="edit_judul">Judul Informasi</label>
-            <input id="edit_judul" type="text" name="judul" class="form-control form-control-custom" required>
+            <div class="tooltip-container">
+              <input id="edit_judul" type="text" name="judul" class="form-control form-control-custom" required autocomplete="off"
+                     oninput="updateTooltip(this)">
+              <span class="tooltiptext">Judul info</span>
+            </div>
           </div>
           <div class="form-group">
             <label class="control-label" for="edit_deskripsi">Deskripsi</label>

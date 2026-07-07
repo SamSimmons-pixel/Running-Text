@@ -34,4 +34,22 @@
       $.fn.tabdrop = function() { return this; };
     }
   }
+
+  // Global robust tooltip helper functions
+  window.updateTooltip = function(input, defaultText) {
+    const container = input.closest('.tooltip-container');
+    if (!container) return;
+    const tooltip = container.querySelector('.tooltiptext');
+    if (!tooltip) return;
+    
+    const val = input.value;
+    tooltip.textContent = val;
+  };
+
+  window.hideTooltip = function(input) {
+    const container = input.closest('.tooltip-container');
+    if (container) {
+      container.classList.remove('show-tooltip');
+    }
+  };
 </script>
