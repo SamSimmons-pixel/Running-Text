@@ -95,4 +95,19 @@ class AcaraController extends Controller
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil dihapus.');
     }
+
+    /**
+     * Toggle the tampilkan flag for an Acara.
+     */
+    public function toggle($id)
+    {
+        $this->requireAdmin();
+
+        $acara = Acara::findOrFail($id);
+        $acara->tampilkan = !$acara->tampilkan;
+        $acara->save();
+
+        return redirect()->route('admin.acara')
+            ->with('success', 'Status visibilitas acara berhasil diperbarui.');
+    }
 }

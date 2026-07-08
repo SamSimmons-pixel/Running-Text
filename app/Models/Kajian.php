@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class running_text_data extends Model
+class Kajian extends Model
 {
     protected $table = 'kajian';
 
@@ -20,12 +20,9 @@ class running_text_data extends Model
         'Tempat',
         'Kontak',
         'Tampilkan',
-        'Logo',
-        'TampilkanLogo',
     ];
 
     protected $casts = [
-        'Tampilkan'     => 'boolean',
-        'TampilkanLogo' => 'boolean',
+        'Tampilkan'     => 'boolean'
     ];
 }

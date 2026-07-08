@@ -49,19 +49,17 @@
               <div class="nav-menu__text"><span>Kelola Kontak</span></div>
             </a>
           </li>
-          <li class="{{ request()->routeIs('admin.logo') ? 'active' : '' }}">
-            <a href="{{ route('admin.logo') }}" wire:navigate>
-              <div class="nav-menu__ico"><i class="fa fa-fw fa-image"></i></div>
-              <div class="nav-menu__text"><span>Logo</span></div>
-            </a>
-          </li>
           <li class="{{ request()->routeIs('admin.hijri') ? 'active' : '' }}">
             <a href="{{ route('admin.hijri') }}" wire:navigate>
               <div class="nav-menu__ico"><i class="fa fa-fw fa-clock-o"></i></div>
               <div class="nav-menu__text"><span>Pewaktuan Hijriah</span></div>
             </a>
           </li>
-          <li>
+          <li class="{{ request()->routeIs('api.vmix.ticker-combined') ? 'active' : '' }}">
+            <a href="{{ route('api.vmix.ticker-combined') }}" target="_blank">
+              <div class="nav-menu__ico"><i class="fa fa-fw fa-code"></i></div>
+              <div class="nav-menu__text"><span>JSON Data</span></div>
+            </a>
           </li>
         </ul>
       </div>

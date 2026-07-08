@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\running_text_data;
+use App\Models\Kajian;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -28,14 +28,13 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
         ]);
 
-        running_text_data::create([
+        Kajian::create([
             'Tanggal' => '2022-01-01',
             'Judul' => 'Judul',
             'Narasumber' => 'Narasumber',
             'Tempat' => 'Tempat',
             'Kontak' => 'Kontak',
             'Tampilkan' => true,
-            'Logo' => 'Logo.png (ini masih dummy)'
         ]);
     }
 }

@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('Tempat');
             $table->string('Kontak');
             $table->boolean('Tampilkan')->default(false);
-            $table->string('Logo')->nullable();
             $table->timestamps();
         });
     }

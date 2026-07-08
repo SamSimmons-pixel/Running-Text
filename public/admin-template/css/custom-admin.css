@@ -191,16 +191,10 @@
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   border-radius: 8px !important;
   color: #e2e8f0 !important;
-  font-size: 1.15rem !important;
+  font-size: 1.5rem !important;
   padding: 8px 14px !important;
   height: auto !important;
   transition: border-color 0.15s;
-}
-
-.form-control-custom:focus {
-  border-color: var(--accent) !important;
-  outline: none !important;
-  box-shadow: none !important;
 }
 
 .form-control-custom::placeholder {

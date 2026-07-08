@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('narasumber');   // denormalized name from narasumber table
             $table->string('tempat');       // denormalized name from tempat table
             $table->string('status')->nullable();
+            $table->boolean('tampilkan')->default(true);
             $table->timestamps();
         });
     }
@@ -30,5 +31,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('acara');
+        Schema::table('acara', function (Blueprint $table) {
+            $table->dropColumn('tampilkan');
+        });
     }
 };

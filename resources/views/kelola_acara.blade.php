@@ -184,11 +184,12 @@
                         <table class="table table-hover" style="margin-bottom:0;">
                           <thead>
                             <tr>
-                              <th>Judul & Narasumber</th>
+                              <th>Judul &amp; Narasumber</th>
                               <th>Hari</th>
                               <th>Jam</th>
                               <th>Tempat</th>
                               <th style="text-align:center;">Status</th>
+                              <th style="text-align:center;">Tampil Di Json</th>
                               <th style="text-align:right;">Aksi</th>
                             </tr>
                           </thead>
@@ -238,6 +239,19 @@
                                   <span style="color:#475569; font-size:0.85rem;">—</span>
                                 @endif
                               </td>
+                              <td style="text-align:center; vertical-align:middle;">
+                                <form method="POST" action="{{ route('admin.acara.toggle', $item->id) }}"
+                                      class="toggle-form" id="toggleForm-{{ $item->id }}">
+                                  @csrf
+                                </form>
+                                <label class="toggle"
+                                       title="{{ $item->tampilkan ? 'Klik untuk sembunyikan' : 'Klik untuk tampilkan' }}">
+                                  <input type="checkbox"
+                                    {{ $item->tampilkan ? 'checked' : '' }}
+                                    onchange="document.getElementById('toggleForm-{{ $item->id }}').submit()">
+                                  <span class="toggle-slider"></span>
+                                </label>
+                              </td>
 
                               <td>
                                 <div class="td-actions" style="justify-content:flex-end;">
@@ -251,7 +265,7 @@
                                       '{{ addslashes($item->narasumber) }}',
                                       '{{ addslashes($item->tempat) }}',
                                       '{{ addslashes($item->status ?? '') }}'
-                                    )">
+                                    )"> 
                                     <i class="fa fa-pencil"></i> Edit
                                   </button>
                                   <button class="btn-kajian-danger"
@@ -287,8 +301,9 @@
         </div>
         <form method="POST" id="editForm">
           @csrf
+          <!-- Row 1: Judul Acara & Hari -->
           <div class="row">
-            <div class="col-sm-12 col-md-6">
+            <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Judul Acara</label>
                 <div class="tooltip-container">
@@ -300,7 +315,8 @@
                 </div>
               </div>
             </div>
-            <div class="col-sm-6 col-md-6">
+            
+            <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Hari</label>
                 <select id="edit_hari" name="hari" class="form-control form-control-custom" required>
@@ -311,30 +327,28 @@
                 </select>
               </div>
             </div>
-            <div class="col-sm-6 col-md-3">
+          </div>
+
+          <!-- Row 2: Jam Mulai & Jam Selesai -->
+          <div class="row" style="margin-top: 1rem;">
+            <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Jam Mulai</label>
                 <input id="edit_jam_mulai" type="time" name="jam_mulai" class="form-control form-control-custom" required>
               </div>
             </div>
-            <div class="col-sm-6 col-md-3">
+
+            <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Jam Selesai</label>
                 <input id="edit_jam_selesai" type="time" name="jam_selesai" class="form-control form-control-custom" required>
               </div>
             </div>
-            <div class="col-sm-6 col-md-6">
-              <div class="form-group">
-                <label class="control-label">Narasumber</label>
-                <select id="edit_narasumber" name="narasumber" class="form-control form-control-custom" required>
-                  <option value="" disabled>Pilih Narasumber</option>
-                  @foreach($narasumberList as $nara)
-                    <option value="{{ $nara->nama }}">{{ $nara->nama }}</option>
-                  @endforeach
-                </select>
-              </div>
-            </div>
-            <div class="col-sm-6 col-md-6">
+          </div>
+
+          <!-- Row 3: Tempat & Narasumber -->
+          <div class="row" style="margin-top: 1rem;">
+            <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Tempat</label>
                 <select id="edit_tempat" name="tempat" class="form-control form-control-custom" required>
@@ -345,9 +359,33 @@
                 </select>
               </div>
             </div>
-            <div class="col-sm-12 col-md-6">
+
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="control-label">Narasumber</label>
+                <select id="edit_narasumber" name="narasumber" class="form-control form-control-custom" required>
+                  <option value="" disabled>Pilih Narasumber</option>
+                  @foreach($narasumberList as $nara)
+                    <option value="{{ $nara->nama }}">{{ $nara->nama }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: Status (opsional) -->
+          <div class="row" style="margin-top: 1rem; margin-bottom: 1rem;">
+            <div class="col-sm-12">
               <div class="form-group">
                 <label class="control-label">Status <small style="color:#64748b;">(opsional)</small></label>
+                <div class="tooltip-container">
+                  <input id="edit_status" type="text" name="status" class="form-control form-control-custom"
+                         placeholder="Contoh: Aktif, Libur, dll." autocomplete="off"
+                         oninput="updateTooltip(this, 'Status (Contoh: Aktif, Libur)')"
+                         onfocus="updateTooltip(this, 'Status (Contoh: Aktif, Libur)')"
+                         onblur="hideTooltip(this)">
+                  <span class="tooltiptext">Status (Contoh: Aktif, Libur)</span>
+                </div>
               </div>
             </div>
           </div>
@@ -398,8 +436,8 @@
         document.getElementById('edit_judul').value       = judul;
         document.getElementById('edit_hari').value        = hari;
         // jam_mulai and jam_selesai from DB come as "HH:MM:SS" — trim to "HH:MM" for time input
-        document.getElementById('edit_jam_mulai').value   = jamMulai.substring(0, 5);
-        document.getElementById('edit_jam_selesai').value = jamSelesai.substring(0, 5);
+        document.getElementById('edit_jam_mulai').value   = jamMulai ? jamMulai.substring(0, 5) : '';
+        document.getElementById('edit_jam_selesai').value = jamSelesai ? jamSelesai.substring(0, 5) : '';
         document.getElementById('edit_narasumber').value  = narasumber;
         document.getElementById('edit_tempat').value      = tempat;
         document.getElementById('edit_status').value      = status;

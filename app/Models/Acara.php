@@ -16,5 +16,10 @@ class Acara extends Model
         'narasumber',
         'tempat',
         'status',
+        'tampilkan',
+    ];
+
+    protected $casts = [
+        'tampilkan' => 'boolean',
     ];
 }

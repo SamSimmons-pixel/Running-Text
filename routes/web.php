@@ -18,6 +18,7 @@ use App\Http\Controllers\TempatController;
 use App\Http\Controllers\KontakController;
 use App\Http\Controllers\InformasiUmumController;
 use App\Http\Controllers\AcaraController;
+use App\Http\Controllers\KajianController;
 
 // ── Admin dashboard (admin only — guarded inside controller) ─────
 Route::get ('/admin_dashboard',                  [admin_dashboard_Controller::class, 'index'])->name('admin.dashboard');
@@ -27,15 +28,14 @@ Route::post('/admin_dashboard/informasi/{id}',   [InformasiUmumController::class
 Route::post('/admin_dashboard/informasi/{id}/toggle', [InformasiUmumController::class, 'toggle'])->name('admin.informasi.toggle');
 Route::post('/admin_dashboard/informasi/{id}/delete', [InformasiUmumController::class, 'destroy'])->name('admin.informasi.destroy');
 
-Route::get ('/admin_dashboard/kajian',            [admin_dashboard_Controller::class, 'kajian'])->name('admin.kajian');
-Route::post('/admin_dashboard',                  [admin_dashboard_Controller::class, 'store'])->name('admin.kajian.store');
-Route::get('/admin_dashboard/logo',               [admin_dashboard_Controller::class, 'logo'])->name('admin.logo');
+Route::get ('/admin_dashboard/kajian',            [KajianController::class, 'kajian'])->name('admin.kajian');
+Route::post('/admin_dashboard',                  [KajianController::class, 'store'])->name('admin.kajian.store');
 // ── Acara Management ──────────────────────────────────────────
 Route::get ('/admin_dashboard/acara',              [AcaraController::class, 'index'])->name('admin.acara');
 Route::post('/admin_dashboard/acara',              [AcaraController::class, 'store'])->name('admin.acara.store');
 Route::post('/admin_dashboard/acara/{id}',         [AcaraController::class, 'update'])->name('admin.acara.update');
 Route::post('/admin_dashboard/acara/{id}/delete',  [AcaraController::class, 'destroy'])->name('admin.acara.destroy');
-Route::post('/admin_dashboard/global-logo',      [admin_dashboard_Controller::class, 'uploadGlobalLogo'])->name('admin.logo.update');
+Route::post('/admin_dashboard/acara/{id}/toggle',  [AcaraController::class, 'toggle'])->name('admin.acara.toggle');
 
 // ── Narasumber Management ──────────────────────────────────────
 Route::get ('/admin_dashboard/narasumber',       [NarasumberController::class, 'index'])->name('admin.narasumber');
@@ -61,8 +61,9 @@ Route::post('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class,
 
 // ── vMix Data API ──────────────────────────────────────────────
 Route::get ('/api/vmix/hijri-ticker',             [VmixDataController::class, 'getTickerData'])->name('api.vmix.hijri-ticker');
+Route::get ('/api/vmix/ticker-combined',           [VmixDataController::class, 'tickerCombined'])->name('api.vmix.ticker-combined');
 
 // ── Kajian Wildcards (Define after static routes to prevent conflicts) ─
-Route::post('/admin_dashboard/{id}',             [admin_dashboard_Controller::class, 'update'])->name('admin.kajian.update');
-Route::post('/admin_dashboard/{id}/toggle',      [admin_dashboard_Controller::class, 'toggle'])->name('admin.kajian.toggle');
-Route::post('/admin_dashboard/{id}/delete',      [admin_dashboard_Controller::class, 'destroy'])->name('admin.kajian.destroy');
+Route::post('/admin_dashboard/{id}',             [KajianController::class, 'update'])->name('admin.kajian.update');
+Route::post('/admin_dashboard/{id}/toggle',      [KajianController::class, 'toggle'])->name('admin.kajian.toggle');
+Route::post('/admin_dashboard/{id}/delete',      [KajianController::class, 'destroy'])->name('admin.kajian.destroy');
