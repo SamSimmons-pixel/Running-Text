@@ -114,8 +114,6 @@
                 {{-- ── Stat Cards ── --}}
                 @php
                   $totalKajian      = $kajian->count();
-                  $activeKajian     = $kajian->where('Tampilkan', 1)->count();
-                  $hiddenKajian     = $totalKajian - $activeKajian;
                   $upcoming         = $kajian->where('Tanggal', '>=', now())->sortBy('Tanggal')->take(5);
                   $pastActiveKajian = $kajian->filter(fn($item) => $item->Tampilkan && \Carbon\Carbon::parse($item->Tanggal)->isPast())->count();
                 @endphp
@@ -131,21 +129,21 @@
                     </div>
                   </div>
                   <div class="stat-card">
-                    <div class="stat-card__icon" style="background:rgba(16,185,129,0.15); color:#34d399;">
-                      <i class="fa fa-eye"></i>
+                    <div class="stat-card__icon" style="background:rgba(16,185,129,0.12); color:#34d399;">
+                      <i class="fa fa-bullhorn"></i>
                     </div>
                     <div>
-                      <div class="stat-card__value" style="color:#34d399;">{{ $activeKajian }}</div>
-                      <div class="stat-card__label">Ditampilkan</div>
+                      <div class="stat-card__value" style="color:#34d399;">{{ $informasiUmumList->count() }}</div>
+                      <div class="stat-card__label">Total Informasi Umum</div>
                     </div>
                   </div>
                   <div class="stat-card">
-                    <div class="stat-card__icon" style="background:rgba(148,163,184,0.1); color:#64748b;">
-                      <i class="fa fa-eye-slash"></i>
+                    <div class="stat-card__icon" style="background:rgba(6,182,212,0.12); color:#22d3ee;">
+                      <i class="fa fa-play"></i>
                     </div>
                     <div>
-                      <div class="stat-card__value" style="color:#64748b;">{{ $hiddenKajian }}</div>
-                      <div class="stat-card__label">Disembunyikan</div>
+                      <div class="stat-card__value" style="color:#22d3ee;">{{ $acaraList->count() }}</div>
+                      <div class="stat-card__label">Total Acara</div>
                     </div>
                   </div>
                   <div class="stat-card">
@@ -203,10 +201,10 @@
                       </div>
                     @else
                       <div class="table-responsive">
-                        <table class="table table-hover" style="margin-bottom:0;">
+                        <table class="table" style="margin-bottom:0;">
                           <thead>
                             <tr>
-                              <th>Judul &amp; Narasumber</th>
+                              <th>Judul &amp; Narasumber  </th>
                               <th>Tanggal</th>
                               <th>Tempat</th>
                               <th style="text-align:center;">Tampilkan Json</th>

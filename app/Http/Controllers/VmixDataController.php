@@ -47,19 +47,21 @@ class VmixDataController extends Controller
                 'ashar'           => $data['ashar'] ?? '',
                 'maghrib'         => $data['maghrib'] ?? '',
                 'isya'            => $data['isya'] ?? '',
+                'Kalender Terpisah'        => $this->hijriService->getCalendarObjects($resolvedTimezone),
             ]);
         } catch (\Exception $e) {
             Log::error("vMix endpoint error: " . $e->getMessage());
 
             // Never crash / return error, output placeholder values to prevent blank TV displays
             return response()->json([
-                'tanggal_masehi'  => date('j F Y'),
-                'tanggal_hijriah' => 'Error Load Data',
-                'subuh'           => '--:--',
-                'dzuhur'          => '--:--',
-                'ashar'           => '--:--',
-                'maghrib'         => '--:--',
-                'isya'            => '--:--',
+                'tanggal_masehi'    => \Carbon\Carbon::now()->locale('id')->translatedFormat('j F Y'),
+                'tanggal_hijriah'   => 'Gagal Memuat Data',
+                'subuh'             => '--:--',
+                'dzuhur'            => '--:--',
+                'ashar'             => '--:--',
+                'maghrib'           => '--:--',
+                'isya'              => '--:--',
+                'Kalender Terpisah' => [],
             ], 200);
         }
     }
@@ -85,13 +87,19 @@ class VmixDataController extends Controller
                 ->implode('       *       ');
 
             // 2. Informasi Kajian (only fetch where Tampilkan = true)
-            $kajian = \App\Models\running_text_data::where('Tampilkan', true)
+            $kajian = \App\Models\Kajian::where('Tampilkan', true)
                 ->orderBy('Tanggal', 'asc')
                 ->get()
                 ->map(function ($item) {
                     $parts = [];
                     if ($item->Tanggal) {
-                        $parts[] = \Carbon\Carbon::parse($item->Tanggal)->locale('id')->translatedFormat('d F, H:i');
+                        $timeStr = \Carbon\Carbon::parse($item->Tanggal)->format('H:i');
+                        if ($item->WaktuSelesai) {
+                            $timeStr .= '-' . $item->WaktuSelesai;
+                        }
+                        $parts[] = \Carbon\Carbon::parse($item->Tanggal)
+                            ->locale('id')
+                            ->translatedFormat('d F') . ' ' . $timeStr;
                     }
                     
                     $details = [];
@@ -191,10 +199,10 @@ class VmixDataController extends Controller
 
             return response()->json([
                 [
-                    'Ticker' => 'Error Load Data',
-                    'Informasi' => 'Error Load Data',
-                    'Kajian' => 'Error Load Data',
-                    'Acara' => 'Error Load Data',
+                    'Ticker' => 'Gagal Memuat Data',
+                    'Informasi' => 'Gagal Memuat Data',
+                    'Kajian' => 'Gagal Memuat Data',
+                    'Acara' => 'Gagal Memuat Data',
                 ]
             ], 200);
         }

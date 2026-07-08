@@ -44,12 +44,14 @@ class KajianController extends Controller
         $this->requireAdmin();
 
         $data = $request->validate([
-            'Tanggal'    => ['required', 'date'],
-            'Judul'      => ['required', 'string', 'max:255'],
-            'Narasumber' => ['required', 'string', 'exists:narasumber,nama'],
-            'Tempat'     => ['required', 'string', 'exists:tempat,nama'],
-            'Kontak'     => ['nullable', 'string', 'exists:kontak,nama'],
-            'Tampilkan'  => ['nullable', 'boolean'],
+            'Tanggal'      => ['required', 'date'],
+            'WaktuSelesai' => ['nullable', 'string', 'max:255'],
+            'Judul'        => ['required', 'string', 'max:255'],
+            'Narasumber'   => ['required', 'string', 'exists:narasumber,nama'],
+            'Tempat'       => ['required', 'string', 'exists:tempat,nama'],
+            'Kontak'       => ['nullable', 'string', 'exists:kontak,nama'],
+            'Informasi'    => ['nullable', 'string', 'max:1000'],
+            'Tampilkan'    => ['nullable', 'boolean'],
         ]);
 
         $data['Tampilkan'] = $request->boolean('Tampilkan');
@@ -70,12 +72,14 @@ class KajianController extends Controller
         $kajian = Kajian::findOrFail($id);
 
         $data = $request->validate([
-            'Tanggal'    => ['required', 'date'],
-            'Judul'      => ['required', 'string', 'max:255'],
-            'Narasumber' => ['required', 'string', 'exists:narasumber,nama'],
-            'Tempat'     => ['required', 'string', 'exists:tempat,nama'],
-            'Kontak'     => ['nullable', 'string', 'exists:kontak,nama'],
-            'Tampilkan'  => ['nullable', 'boolean'],
+            'Tanggal'      => ['required', 'date'],
+            'WaktuSelesai' => ['nullable', 'string', 'max:255'],
+            'Judul'        => ['required', 'string', 'max:255'],
+            'Narasumber'   => ['required', 'string', 'exists:narasumber,nama'],
+            'Tempat'       => ['required', 'string', 'exists:tempat,nama'],
+            'Kontak'       => ['nullable', 'string', 'exists:kontak,nama'],
+            'Informasi'    => ['nullable', 'string', 'max:10000'],
+            'Tampilkan'    => ['nullable', 'boolean'],
         ]);
 
         $data['Tampilkan'] = $request->boolean('Tampilkan');

@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('kajian', function (Blueprint $table) {
             $table->id();
             $table->DATETIME('Tanggal');
+            $table->string('WaktuSelesai')->nullable();
             $table->string('Judul');
             $table->string('Narasumber');
             $table->string('Tempat');
             $table->string('Kontak');
+            $table->longText('Informasi')->nullable();
             $table->boolean('Tampilkan')->default(false);
             $table->timestamps();
         });
@@ -29,6 +31,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('kajian', function (Blueprint $table) {
+            $table->dropColumn('Informasi');
+            $table->dropColumn('WaktuSelesai');
         });
     }
 };

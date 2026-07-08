@@ -33,7 +33,7 @@ class HijriService
         $offsetDays = $settings->hijri_offset_days;
         $providerName = $settings->prayer_time_provider;
 
-        $now = Carbon::now($timezone);
+        $now = Carbon::now($timezone)->locale('id');
 
         // 2. Instantiate Providers
         $primary = $providerName === 'myquran' ? new MyQuranProvider() : new AladhanProvider();
@@ -56,6 +56,92 @@ class HijriService
             'timezone' => $timezone,
             'provider' => $providerName,
         ]);
+    }
+
+    /**
+     * Get separate object list for Masehi and Hijriyah calendars.
+     *
+     * @param string|null $timezoneOverride
+     * @return array
+     */
+    public function getCalendarObjects(?string $timezoneOverride = null): array
+    {
+        $settings = HijriSetting::firstOrCreate([], [
+            'default_city' => 'Jakarta',
+            'default_timezone' => 'Asia/Jakarta',
+            'hijri_offset_days' => 0,
+            'prayer_time_provider' => 'aladhan',
+        ]);
+
+        $city = $settings->default_city;
+        $timezone = $timezoneOverride ?: $settings->default_timezone;
+        $offsetDays = $settings->hijri_offset_days;
+        $providerName = $settings->prayer_time_provider;
+
+        $now = Carbon::now($timezone)->locale('id');
+
+        $primary = $providerName === 'myquran' ? new MyQuranProvider() : new AladhanProvider();
+        $secondary = $providerName === 'myquran' ? new AladhanProvider() : new MyQuranProvider();
+        $schedule = $this->getPrayerScheduleCached($city, $now, $primary, $secondary);
+        $maghribTime = $schedule['maghrib'] ?? '18:00';
+
+        $targetDate = $now->copy();
+        $maghribParts = explode(':', $maghribTime);
+        if (count($maghribParts) === 2) {
+            $maghribCarbon = $targetDate->copy()->setTime((int)$maghribParts[0], (int)$maghribParts[1], 0);
+            if ($targetDate->greaterThanOrEqualTo($maghribCarbon)) {
+                $targetDate->addDay();
+            }
+        }
+        if ($offsetDays !== 0) {
+            $targetDate->addDays($offsetDays);
+        }
+
+        $masehiObj = [
+            'kalender' => 'Masehi',
+            'tanggal'  => $now->translatedFormat('d'),
+            'hari'     => $now->translatedFormat('l'),
+            'bulan'    => $now->translatedFormat('F'),
+            'tahun'    => $now->translatedFormat('Y'),
+        ];
+
+        $formatterDay = new \IntlDateFormatter(
+            'id_ID@calendar=islamic-umalqura',
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::NONE,
+            $timezone,
+            \IntlDateFormatter::TRADITIONAL,
+            'd'
+        );
+        $formatterMonth = new \IntlDateFormatter(
+            'id_ID@calendar=islamic-umalqura',
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::NONE,
+            $timezone,
+            \IntlDateFormatter::TRADITIONAL,
+            'MMMM'
+        );
+        $formatterYear = new \IntlDateFormatter(
+            'id_ID@calendar=islamic-umalqura',
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::NONE,
+            $timezone,
+            \IntlDateFormatter::TRADITIONAL,
+            'yyyy'
+        );
+
+        $hijriDayRaw = $formatterDay->format($targetDate->toDateTime());
+        $hijriDay = is_numeric($hijriDayRaw) ? sprintf('%02d', (int)$hijriDayRaw) : $hijriDayRaw;
+
+        $hijriObj = [
+            'kalender' => 'Hijriyah',
+            'tanggal'  => $hijriDay,
+            'hari'     => $targetDate->translatedFormat('l'),
+            'bulan'    => $formatterMonth->format($targetDate->toDateTime()),
+            'tahun'    => $formatterYear->format($targetDate->toDateTime()),
+        ];
+
+        return [$masehiObj, $hijriObj];
     }
 
     /**

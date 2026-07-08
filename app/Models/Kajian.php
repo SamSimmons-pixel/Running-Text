@@ -15,10 +15,12 @@ class Kajian extends Model
      */
     protected $fillable = [
         'Tanggal',
+        'WaktuSelesai',
         'Judul',
         'Narasumber',
         'Tempat',
         'Kontak',
+        'Informasi',
         'Tampilkan',
     ];
 

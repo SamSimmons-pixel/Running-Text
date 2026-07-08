@@ -75,7 +75,7 @@
                     <div class="panel-body">
                       <form method="POST" action="{{ route('admin.kajian.store') }}" enctype="multipart/form-data">
                         @csrf
-                        <div class="row">
+                        <div class="row" style="display: flex; flex-wrap: wrap;">
                           <div class="col-sm-6 col-md-4">
                             <div class="form-group">
                               <label class="control-label">Judul Kajian</label>
@@ -104,7 +104,7 @@
                           </div>
                           <div class="col-sm-6 col-md-4">
                             <div class="form-group">
-                              <label class="control-label">Tanggal &amp; Waktu</label>
+                              <label class="control-label">Tanggal &amp; Waktu Mulai Kajian</label>
                               <input type="datetime-local" name="Tanggal" class="form-control form-control-custom"
                                      value="{{ old('Tanggal') }}" required>
                             </div>
@@ -133,6 +133,43 @@
                                   </option>
                                 @endforeach
                               </select>
+                            </div>
+                          </div>
+                          <div class="col-sm-6 col-md-4" style="">
+                            <div class="form-group">
+                              <div class="" style="display:flex; justify-content:space-between;">
+                                <label class="control-label">Waktu Selesai Kajian</label>
+                                <div style="display: flex; flex-direction:row; gap: 0.75rem; margin-bottom: 0.5rem;">
+                                  <label class="radio-inline" style="color: #94a3b8; font-size: 1.2rem; padding-left: 0; margin-left: 0; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                                  <input type="radio" name="add_waktu_selesai_mode" value="text" checked onchange="toggleWaktuSelesaiMode('add', this.value)" style="position: static; margin-left: 0; cursor: pointer;"> Teks Pilihan
+                                </label>
+                                <label class="radio-inline" style="color: #94a3b8; font-size: 1.2rem; padding-left: 0; margin-left: 0; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                                  <input type="radio" name="add_waktu_selesai_mode" value="time" onchange="toggleWaktuSelesaiMode('add', this.value)" style="position: static; margin-left: 0; cursor: pointer;"> Jam Presisi
+                                </label>
+                              </div>
+                              </div>
+                              
+                              {{-- Mode 1: Text Options --}}
+                              <div id="add_waktu_selesai_text_wrapper">
+                                <select name="WaktuSelesai" id="add_waktu_selesai_text" class="form-control form-control-custom">
+                                  <option value="" selected>— Pilih Waktu Selesai —</option>
+                                  <option value="Menjelang Dzuhur">Menjelang Dzuhur</option>
+                                  <option value="Menjelang Ashar">Menjelang Ashar</option>
+                                  <option value="Menjelang Maghrib">Menjelang Maghrib</option>
+                                  <option value="Menjelang Isya">Menjelang Isya</option>
+                                </select>
+                              </div>
+
+                              {{-- Mode 2: Time clock --}}
+                              <div id="add_waktu_selesai_time_wrapper" style="display: none;">
+                                <input type="time" id="add_waktu_selesai_time" class="form-control form-control-custom">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-sm-12" style="margin-top: 0.5rem;">
+                            <div class="form-group">
+                              <label class="control-label">Informasi</label>
+                              <textarea name="Informasi" class="form-control form-control-custom" rows="3" placeholder="Informasi tambahan kajian (opsional)...">{{ old('Informasi') }}</textarea>
                             </div>
                           </div>
                         </div>
@@ -205,7 +242,12 @@
                                <td style="white-space:nowrap; color:#94a3b8;">
                                  {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('ddd, D MMM Y') }}
                                  <br>
-                                 <small>{{ \Carbon\Carbon::parse($item->Tanggal)->format('H:i') }}</small>
+                                 <small>
+                                   {{ \Carbon\Carbon::parse($item->Tanggal)->format('H:i') }}
+                                   @if($item->WaktuSelesai)
+                                     – {{ $item->WaktuSelesai }}
+                                   @endif
+                                 </small>
                                </td>
                                <td style="text-align:center; vertical-align:middle;">
                                  @if($isOnAir)
@@ -233,6 +275,10 @@
                               </td>
                               <td>
                                 <div class="td-actions" style="justify-content:flex-end;">
+                                   <button class="btn-kajian-outline" style="background-color: rgba(56, 189, 248, 0.15) !important; color: #38bdf8 !important; border-color: rgba(56, 189, 248, 0.3) !important;"
+                                     onclick="toggleInfoRow({{ $item->id }})">
+                                     <i class="fa fa-info-circle"></i> Info
+                                   </button>
                                   <button class="btn-kajian-outline"
                                     onclick="openEditModal(
                                       '{{ $item->id }}',
@@ -241,6 +287,8 @@
                                       '{{ \Carbon\Carbon::parse($item->Tanggal)->format('Y-m-d\TH:i') }}',
                                       '{{ addslashes($item->Tempat) }}',
                                       '{{ addslashes($item->Kontak ?? '') }}',
+                                      '{{ addslashes($item->Informasi ?? '') }}',
+                                      '{{ addslashes($item->WaktuSelesai ?? '') }}',
                                       '{{ $item->Tampilkan ? 'true' : 'false' }}'
                                     )">
                                     <i class="fa fa-pencil"></i> Edit
@@ -249,6 +297,21 @@
                                     onclick="openDeleteModal({{ $item->id }}, '{{ addslashes($item->Judul) }}')">
                                     <i class="fa fa-trash"></i> Hapus
                                   </button>
+                                  
+                                </div>
+                              </td>
+                            </tr>
+                            <tr id="rowInfo-{{ $item->id }}" style="display: none; background-color: rgba(15, 23, 42, 0.25);">
+                              <td colspan="7" style="padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: left;">
+                                <div style="font-weight: 600; color: #94a3b8; margin-bottom: 0.5rem; font-size: 1.15rem;">
+                                  <i class="fa fa-info-circle" style="color: #38bdf8; margin-right: 0.25rem;"></i> Informasi Kajian
+                                </div>
+                                <div style="color: #cbd5e1; font-size: 1.15rem; line-height: 1.6; white-space: pre-line; padding-left: 1.25rem;">
+                                  @if($item->Informasi)
+                                    {{ $item->Informasi }}
+                                  @else
+                                    <em style="color: #64748b; font-style: italic;">Tidak ada Informasi</em>
+                                  @endif
                                 </div>
                               </td>
                             </tr>
@@ -256,6 +319,7 @@
                           </tbody>
                         </table>
                       </div>
+
                     @endif
                   </div>
                 </div>
@@ -278,8 +342,8 @@
         </div>
         <form method="POST" id="editForm" enctype="multipart/form-data">
           @csrf
-          <div class="row">
-            <div class="col-sm-6">
+          <div class="row" style="display: flex; flex-wrap: wrap;">
+            <div class="col-sm-12">
               <div class="form-group">
                 <label class="control-label">Judul Kajian</label>
                 <div class="tooltip-container">
@@ -291,6 +355,43 @@
                 </div>
               </div>
             </div>
+
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="control-label">Tanggal &amp; Waktu</label>
+                <input id="edit_Tanggal" type="datetime-local" name="Tanggal" class="form-control form-control-custom" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="control-label">Waktu Selesai Kajian</label>
+                <div style="display: flex; gap: 0.75rem; margin-bottom: 0.5rem;">
+                  <label class="radio-inline" style="color: #94a3b8; font-size: 1.2rem; padding-left: 0; margin-left: 0; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                    <input type="radio" id="edit_mode_text" name="edit_waktu_selesai_mode" value="text" checked onchange="toggleWaktuSelesaiMode('edit', this.value)" style="position: static; margin-left: 0; cursor: pointer;"> Teks Pilihan
+                  </label>
+                  <label class="radio-inline" style="color: #94a3b8; font-size: 1.2rem; padding-left: 0; margin-left: 0; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                    <input type="radio" id="edit_mode_time" name="edit_waktu_selesai_mode" value="time" onchange="toggleWaktuSelesaiMode('edit', this.value)" style="position: static; margin-left: 0; cursor: pointer;"> Jam Presisi
+                  </label>
+                </div>
+                
+                {{-- Mode 1: Text Options --}}
+                <div id="edit_waktu_selesai_text_wrapper">
+                  <select name="WaktuSelesai" id="edit_waktu_selesai_text" class="form-control form-control-custom">
+                    <option value="">— Pilih Waktu Selesai —</option>
+                    <option value="Menjelang Dzuhur">Menjelang Dzuhur</option>
+                    <option value="Menjelang Ashar">Menjelang Ashar</option>
+                    <option value="Menjelang Maghrib">Menjelang Maghrib</option>
+                    <option value="Menjelang Isya">Menjelang Isya</option>
+                  </select>
+                </div>
+
+                {{-- Mode 2: Time clock --}}
+                <div id="edit_waktu_selesai_time_wrapper" style="display: none;">
+                  <input type="time" id="edit_waktu_selesai_time" class="form-control form-control-custom">
+                </div>
+              </div>
+            </div>
+
             <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Narasumber</label>
@@ -300,12 +401,6 @@
                     <option value="{{ $nara->nama }}">{{ $nara->nama }}</option>
                   @endforeach
                 </select>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="control-label">Tanggal &amp; Waktu</label>
-                <input id="edit_Tanggal" type="datetime-local" name="Tanggal" class="form-control form-control-custom" required>
               </div>
             </div>
             <div class="col-sm-6">
@@ -330,9 +425,13 @@
                 </select>
               </div>
             </div>
-          </div>
+            <div class="col-sm-12" style="margin-top: 0.5rem;">
+              <div class="form-group">
+                <label class="control-label">Informasi</label>
+                <textarea id="edit_Informasi" name="Informasi" class="form-control form-control-custom" rows="3" placeholder="Informasi tambahan kajian (opsional)..."></textarea>
+              </div>
+            </div>
 
-          <div class="row" style="margin-bottom:1.25rem;">
             <div class="col-sm-12">
               <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-bottom:0;">
                 <label class="toggle" for="edit_Tampilkan">
@@ -385,15 +484,63 @@
         }
       }
 
-      function openEditModal(id, judul, narasumber, tanggal, tempat, kontak, tampilkan) {
+      function toggleInfoRow(id) {
+        const row = document.getElementById(`rowInfo-${id}`);
+        if (row.style.display === 'none') {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+
+      function openEditModal(id, judul, narasumber, tanggal, tempat, kontak, informasi, waktuSelesai, tampilkan) {
         document.getElementById('editForm').action = `/admin_dashboard/${id}`;
         document.getElementById('edit_Judul').value       = judul;
         document.getElementById('edit_Narasumber').value  = narasumber;
         document.getElementById('edit_Tanggal').value     = tanggal;
         document.getElementById('edit_Tempat').value      = tempat;
         document.getElementById('edit_Kontak').value      = kontak;
+        document.getElementById('edit_Informasi').value   = informasi;
+
+        // Handle WaktuSelesai modes and inputs
+        const textOptions = ['Menjelang Dzuhur', 'Menjelang Ashar', 'Menjelang Maghrib', 'Menjelang Isya'];
+        if (waktuSelesai && !textOptions.includes(waktuSelesai)) {
+          // Time mode
+          document.getElementById('edit_mode_time').checked = true;
+          document.getElementById('edit_mode_text').checked = false;
+          toggleWaktuSelesaiMode('edit', 'time');
+          document.getElementById('edit_waktu_selesai_time').value = waktuSelesai;
+          document.getElementById('edit_waktu_selesai_text').value = '';
+        } else {
+          // Text mode
+          document.getElementById('edit_mode_text').checked = true;
+          document.getElementById('edit_mode_time').checked = false;
+          toggleWaktuSelesaiMode('edit', 'text');
+          document.getElementById('edit_waktu_selesai_text').value = waktuSelesai || '';
+          document.getElementById('edit_waktu_selesai_time').value = '';
+        }
+
         document.getElementById('edit_Tampilkan').checked = (tampilkan === 'true');
         document.getElementById('editModalBackdrop').classList.add('open');
+      }
+
+      function toggleWaktuSelesaiMode(prefix, mode) {
+        const textWrapper = document.getElementById(prefix + '_waktu_selesai_text_wrapper');
+        const timeWrapper = document.getElementById(prefix + '_waktu_selesai_time_wrapper');
+        const textInput = document.getElementById(prefix + '_waktu_selesai_text');
+        const timeInput = document.getElementById(prefix + '_waktu_selesai_time');
+
+        if (mode === 'text') {
+          textWrapper.style.display = 'block';
+          timeWrapper.style.display = 'none';
+          textInput.setAttribute('name', 'WaktuSelesai');
+          timeInput.removeAttribute('name');
+        } else {
+          textWrapper.style.display = 'none';
+          timeWrapper.style.display = 'block';
+          timeInput.setAttribute('name', 'WaktuSelesai');
+          textInput.removeAttribute('name');
+        }
       }
 
       function closeEditModal(e) {
@@ -414,6 +561,30 @@
           document.getElementById('deleteModalBackdrop').classList.remove('open');
         }
       }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        const oldWaktuSelesai = "{{ old('WaktuSelesai') }}";
+        if (oldWaktuSelesai) {
+          const textOptions = ['Menjelang Dzuhur', 'Menjelang Ashar', 'Menjelang Maghrib', 'Menjelang Isya'];
+          if (!textOptions.includes(oldWaktuSelesai)) {
+            // Check time radio
+            const timeRadio = document.querySelector('input[name="add_waktu_selesai_mode"][value="time"]');
+            if (timeRadio) {
+              timeRadio.checked = true;
+              toggleWaktuSelesaiMode('add', 'time');
+              document.getElementById('add_waktu_selesai_time').value = oldWaktuSelesai;
+            }
+          } else {
+            // Check text radio
+            const textRadio = document.querySelector('input[name="add_waktu_selesai_mode"][value="text"]');
+            if (textRadio) {
+              textRadio.checked = true;
+              toggleWaktuSelesaiMode('add', 'text');
+              document.getElementById('add_waktu_selesai_text').value = oldWaktuSelesai;
+            }
+          }
+        }
+      });
 
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {

@@ -502,6 +502,14 @@
                         @enderror
                     </div>
 
+                    <!-- Remember Me -->
+                    <div class="form-group" style="display: flex; align-items: center; margin-bottom: 1.5rem; margin-top: -0.25rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; user-select: none; margin-bottom: 0;">
+                            <input type="checkbox" name="remember" value="1" style="accent-color: var(--accent); width: 16px; height: 16px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); cursor: pointer;">
+                            <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Remember me</span>
+                        </label>
+                    </div>
+
                     <!-- Submit -->
                     <button type="submit" class="btn-login" id="loginBtn">
                         <span class="btn-text">Sign in</span>

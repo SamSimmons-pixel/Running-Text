@@ -9,7 +9,22 @@
     <link rel="icon" type="image/png" href="{{ asset('admin-template/img/favicon.png') }}">
     @include('partials.assets')
     @livewireStyles
+    <style>
+      .tooltiph {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+      }
+      .tooltiph:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+      }
+      .tooltiptext {
+        font-size: 16px;
+      }
+    </style>
   </head>
+
   <body class="framed main-scrollable">
     <div class="wrapper">
 
@@ -75,7 +90,7 @@
                     <div class="panel-body">
                       <form method="POST" action="{{ route('admin.acara.store') }}">
                         @csrf
-                        <div class="row">
+                        <div class="row" style="display: flex; flex-wrap: wrap;">
                           <div class="col-sm-6 col-md-4">
                             <div class="form-group">
                               <label class="control-label">Judul Acara</label>
@@ -102,7 +117,11 @@
                           </div>
                           <div class="col-sm-6 col-md-2">
                             <div class="form-group">
-                              <label class="control-label">Jam Mulai</label>
+                              <label class="control-label">Jam Mulai
+                                <label style="color:white; font-size:7px" class="tooltiph">AM = 00.00 - 11.59, PM = 12.00 - 23.59
+                                  <span class="tooltiptext">AM = 00.00 - 11.59<br>PM = 12.00 - 23.59</span>
+                                </label>
+                              </label>
                               <input type="time" name="jam_mulai" class="form-control form-control-custom"
                                      value="{{ old('jam_mulai') }}" required>
                             </div>
@@ -333,7 +352,7 @@
           <div class="row" style="margin-top: 1rem;">
             <div class="col-sm-6">
               <div class="form-group">
-                <label class="control-label">Jam Mulai</label>
+                <label class="control-label">Jam Mulai <small style="color:white">* AM = 00.00 - 12.00, PM = 13.00 - 23.59</small></label>
                 <input id="edit_jam_mulai" type="time" name="jam_mulai" class="form-control form-control-custom" required>
               </div>
             </div>
