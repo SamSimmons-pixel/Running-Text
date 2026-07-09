@@ -221,4 +221,16 @@ class HijriService
 
         return $formatter->format($targetDate->toDateTime());
     }
+
+    /**
+     * Fast conversion of Gregorian Carbon date to Hijri string using 18:00 as default Maghrib rollover.
+     */
+    public function convertToHijriFast(Carbon $date, ?string $timezone = null): string
+    {
+        $settings = HijriSetting::first();
+        $offsetDays = $settings ? $settings->hijri_offset_days : 0;
+        $tz = $timezone ?: ($settings ? $settings->default_timezone : 'Asia/Jakarta');
+
+        return $this->formatToHijri($date, '18:00', $offsetDays, $tz);
+    }
 }

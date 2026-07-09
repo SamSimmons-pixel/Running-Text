@@ -201,14 +201,16 @@
                       </div>
                     @else
                       <div class="table-responsive">
-                        <table class="table" style="margin-bottom:0;">
+                        <table class="table" style="margin-bottom:0; table-layout: fixed; width: 100%;">
                           <thead>
                             <tr>
-                              <th>Judul &amp; Narasumber  </th>
-                              <th>Tanggal</th>
-                              <th>Tempat</th>
-                              <th style="text-align:center;">Tampilkan Json</th>
-                              <th style="text-align:center;">Status</th>
+                              <th style="width: 30%;">Judul &amp; Narasumber</th>
+                              <th style="width: 8%;">Hari</th>
+                              <th style="width: 12%;">Tanggal</th>
+                              <th style="width: 15%;">Jam</th>
+                              <th style="width: 15%;">Tempat</th>
+                              <th style="width: 10%; text-align:center;">Tampilkan Json</th>
+                              <th style="width: 10%; text-align:center;">Status</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -223,19 +225,28 @@
                                 <strong>{{ $item->Judul }}</strong>
                                 <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">{{ $item->Narasumber }}</small>
                               </td>
-                              <td style="white-space:nowrap; color:#94a3b8;">
-                                {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('ddd, D MMM Y') }}<br>
-                                <small>{{ \Carbon\Carbon::parse($item->Tanggal)->format('H:i') }}</small>
+                              <td style="color:#94a3b8; white-space:nowrap;">
+                                {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('dddd') }}
+                              </td>
+                              <td style="color:#94a3b8; white-space:nowrap;">
+                                {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('D MMMM Y') }}
+                              </td>
+                              <td style="color:#94a3b8; white-space:nowrap;">
+                                {{ \Carbon\Carbon::parse($item->Tanggal)->format('H:i') }}
+                                @if($item->WaktuSelesai)
+                                  <span style="opacity:0.5;">–</span>
+                                  {{ $item->WaktuSelesai }}
+                                @endif
                               </td>
                               <td style="color:#94a3b8;">{{ $item->Tempat }}</td>
-                              <td style="text-align:center;">
+                              <td style="text-align:center; vertical-align:middle;">
                                 @if ($item->Tampilkan)
                                   <span class="upcoming-badge badge-on">Tampil</span>
                                 @else
                                   <span class="upcoming-badge badge-off">Tersembunyi</span>
                                 @endif
                               </td>
-                              <td style="text-align:center;">
+                              <td style="text-align:center; vertical-align:middle;">
                                 @if($kajianOnAir)
                                   <span class="badge-live">LIVE</span>
                                 @elseif(\Carbon\Carbon::parse($item->Tanggal)->isPast())
@@ -284,14 +295,15 @@
                         $jamNow  = $nowJkt->format('H:i:s');
                       @endphp
                       <div class="table-responsive">
-                        <table class="table table-hover" style="margin-bottom:0;">
+                        <table class="table table-hover" style="margin-bottom:0; table-layout: fixed; width: 100%;">
                           <thead>
                             <tr>
-                              <th>Judul & Narasumber</th>
-                              <th>Hari</th>
-                              <th>Jam</th>
-                              <th>Tempat</th>
-                              <th style="text-align:center;">Status</th>
+                              <th style="width: 30%;">Judul & Narasumber</th>
+                              <th style="width: 8%;">Hari</th>
+                              <th style="width: 27%;">Jam</th>
+                              <th style="width: 15%;">Tempat</th>
+                              <th style="width: 10%; text-align:center;">Tampilkan Json</th>
+                              <th style="width: 10%; text-align:center;">Status</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -313,6 +325,13 @@
                                 {{ \Carbon\Carbon::parse($acItem->jam_selesai)->format('H:i') }}
                               </td>
                               <td style="color:#94a3b8;">{{ $acItem->tempat }}</td>
+                              <td style="text-align:center; vertical-align:middle;">
+                                @if ($acItem->tampilkan)
+                                  <span class="upcoming-badge badge-on">Tampil</span>
+                                @else
+                                  <span class="upcoming-badge badge-off">Tersembunyi</span>
+                                @endif
+                              </td>
                               <td style="text-align:center; vertical-align:middle;">
                                 @if($acOnAir)
                                   <span class="badge-live">LIVE</span>

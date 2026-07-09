@@ -93,13 +93,17 @@ class VmixDataController extends Controller
                 ->map(function ($item) {
                     $parts = [];
                     if ($item->Tanggal) {
-                        $timeStr = \Carbon\Carbon::parse($item->Tanggal)->format('H:i');
+                        $carbonDate = \Carbon\Carbon::parse($item->Tanggal)->locale('id');
+                        $hari = $carbonDate->translatedFormat('l');
+                        $hijriDate = $this->hijriService->convertToHijriFast($carbonDate);
+                        $masehiDate = $carbonDate->translatedFormat('d F Y');
+                        
+                        $timeStr = $carbonDate->format('H:i');
                         if ($item->WaktuSelesai) {
                             $timeStr .= '-' . $item->WaktuSelesai;
                         }
-                        $parts[] = \Carbon\Carbon::parse($item->Tanggal)
-                            ->locale('id')
-                            ->translatedFormat('d F') . ' ' . $timeStr;
+                        
+                        $parts[] = "{$hari}, {$hijriDate}, {$masehiDate} {$timeStr}";
                     }
                     
                     $details = [];
@@ -134,17 +138,48 @@ class VmixDataController extends Controller
                 ->orderBy('jam_mulai', 'asc')
                 ->get()
                 ->map(function ($item) {
-                    $timeStr = $item->hari;
+                    $daysMap = [
+                        'ahad'   => 'Sunday',
+                        'minggu' => 'Sunday',
+                        'senin'  => 'Monday',
+                        'selasa' => 'Tuesday',
+                        'rabu'   => 'Wednesday',
+                        'kamis'  => 'Thursday',
+                        'jumat'  => 'Friday',
+                        'sabtu'  => 'Saturday',
+                    ];
+
+                    $carbonDate = \Carbon\Carbon::now('Asia/Jakarta')->locale('id');
+                    $englishDay = $daysMap[strtolower($item->hari)] ?? null;
+                    if ($englishDay) {
+                        $todayEnglish = $carbonDate->locale('en')->isoFormat('dddd');
+                        if (strtolower($todayEnglish) !== strtolower($englishDay)) {
+                            $carbonDate->next($englishDay);
+                        }
+                    }
+
+                    if ($item->jam_mulai) {
+                        $timeParts = explode(':', $item->jam_mulai);
+                        if (count($timeParts) >= 2) {
+                            $carbonDate->setTime((int)$timeParts[0], (int)$timeParts[1], isset($timeParts[2]) ? (int)$timeParts[2] : 0);
+                        }
+                    }
+
+                    $hari = $carbonDate->translatedFormat('l');
+                    $hijriDate = $this->hijriService->convertToHijriFast($carbonDate);
+                    $masehiDate = $carbonDate->translatedFormat('d F Y');
+
+                    $timeStr = '';
                     if ($item->jam_mulai) {
                         $jamMulai = date('H:i', strtotime($item->jam_mulai));
-                        $timeStr .= ' ' . $jamMulai;
+                        $timeStr .= $jamMulai;
                         if ($item->jam_selesai) {
                             $jamSelesai = date('H:i', strtotime($item->jam_selesai));
                             $timeStr .= '-' . $jamSelesai;
                         }
                     }
-                    
-                    $parts = [$timeStr];
+
+                    $parts = ["{$hari}, {$hijriDate}, {$masehiDate} {$timeStr}"];
                     
                     $details = [];
                     if ($item->judul) {

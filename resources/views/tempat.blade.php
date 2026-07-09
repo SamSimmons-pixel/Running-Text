@@ -68,7 +68,7 @@
                   <div class="panel panel-primary">
                     <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
                       <h3 class="panel-title"><i class="fa fa-plus-circle"></i> Tambah Tempat Baru</h3>
-                      <button type="button" class="btn btn-xs btn-default" onclick="toggleAddForm()">
+                      <button type="button" class="btn btn-xs btn-danger" onclick="toggleAddForm()">
                         <i class="fa fa-times"></i> Tutup
                       </button>
                     </div>

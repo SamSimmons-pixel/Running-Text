@@ -31,7 +31,7 @@
         pointer-events: none;
       }
       .ticker-title {
-        font-size: 0.9rem;
+        font-size: 1.3rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: #a78bfa;
@@ -58,13 +58,13 @@
         justify-content: center;
       }
       .ticker-segment-label {
-        font-size: 0.72rem;
+        font-size: 1.12rem;
         color: #64748b;
         text-transform: uppercase;
         font-weight: 500;
       }
       .ticker-segment-value {
-        font-size: 1.05rem;
+        font-size: 1.45rem;
         color: #f1f5f9;
         font-weight: 600;
       }
@@ -86,12 +86,12 @@
         min-width: 75px;
       }
       .ticker-prayer-name {
-        font-size: 0.68rem;
+        font-size: 1.08rem;
         color: #94a3b8;
         text-transform: uppercase;
       }
       .ticker-prayer-time {
-        font-size: 0.98rem;
+        font-size: 1.38rem;
         color: #f8fafc;
         font-weight: 700;
       }
@@ -117,7 +117,7 @@
         border: none;
         color: #fff;
         padding: 2px 8px;
-        font-size: 0.75rem;
+        font-size: 1.15rem;
         border-radius: 4px;
         margin-left: 8px;
         cursor: pointer;
@@ -191,7 +191,7 @@
 
                     <div class="ticker-segment" style="min-width: 120px; border-left: 1px solid rgba(255,255,255,0.08); padding-left: 15px;">
                       <span class="ticker-segment-label">Wilayah (Provider)</span>
-                      <span class="ticker-segment-value" style="font-size: 0.95rem; color: #94a3b8;">
+                      <span class="ticker-segment-value" style="font-size: 1.45rem; color: #94a3b8;">
                         {{ $preview['city'] }} ({{ strtoupper($preview['provider']) }})
                       </span>
                     </div>
@@ -226,7 +226,7 @@
                   <div style="font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
                     <i class="fa fa-television" style="color: #a78bfa;"></i> Integrasi vMix Data Source
                   </div>
-                  <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 6px;">
+                  <div style="font-size: 1.35rem; color: #9ca3af; margin-top: 6px;">
                     Gunakan URL endpoint JSON flat di bawah ini sebagai input <strong>JSON Data Source</strong> di software vMix Anda.
                     <span class="vmix-endpoint-url" id="endpointUrl">
                       {{ url('/api/vmix/hijri-ticker') }}?timezone=WIB
@@ -255,7 +255,7 @@
                                 </option>
                               @endforeach
                             </select>
-                            <span class="help-block" style="font-size: 0.8rem; color: #64748b;">
+                            <span class="help-block" style="font-size: 1.4rem; color: #64748b;">
                               Menentukan jadwal sholat dan zona waktu lokal yang digunakan.
                             </span>
                           </div>
@@ -272,7 +272,7 @@
                                 MyQuran API (Standard Kemenag Indonesia - Lokal)
                               </option>
                             </select>
-                            <span class="help-block" style="font-size: 0.8rem; color: #64748b;">
+                            <span class="help-block" style="font-size: 1.4rem; color: #64748b;">
                               Metode lookup API utama. Sistem akan otomatis fallback ke provider cadangan jika provider utama offline.
                             </span>
                           </div>
@@ -288,7 +288,7 @@
                                      class="form-control form-control-custom" 
                                      value="{{ $settings->hijri_offset_days }}" 
                                      min="-5" max="5" required style="width: 100px; display: inline-block;">
-                              <span style="font-size: 0.85rem; color: #94a3b8;">
+                              <span style="font-size: 1.45rem; color: #94a3b8;">
                                 Geser penanggalan Hijriah (misal: isi <code>-1</code> untuk memundurkan sehari, atau <code>1</code> untuk memajukan sehari jika rukyat hilal berbeda).
                               </span>
                             </div>

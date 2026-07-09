@@ -66,8 +66,11 @@
                 {{-- Add Form --}}
                 <div class="form-card-kajian" id="addForm">
                   <div class="panel panel-primary">
-                    <div class="panel-heading">
+                    <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
                       <h3 class="panel-title"><i class="fa fa-plus-circle"></i> Tambah Narasumber Baru</h3>
+                      <button type="button" class="btn btn-xs btn-danger" onclick="toggleAddForm()">
+                        <i class="fa fa-times"></i> Tutup
+                      </button>
                     </div>
                     <div class="panel-body">
                       <form method="POST" action="{{ route('admin.narasumber.store') }}">

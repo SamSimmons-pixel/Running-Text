@@ -61,7 +61,7 @@ Route::post('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class,
 
 // ── vMix Data API ──────────────────────────────────────────────
 Route::get ('/api/vmix/hijri-ticker',             [VmixDataController::class, 'getTickerData'])->name('api.vmix.hijri-ticker');
-Route::get ('/api/vmix/ticker-combined',           [VmixDataController::class, 'tickerCombined'])->name('api.vmix.ticker-combined');
+Route::get ('/api/vmix/ticker-running-text',           [VmixDataController::class, 'tickerCombined'])->name('api.vmix.ticker-combined');
 
 // ── Kajian Wildcards (Define after static routes to prevent conflicts) ─
 Route::post('/admin_dashboard/{id}',             [KajianController::class, 'update'])->name('admin.kajian.update');
