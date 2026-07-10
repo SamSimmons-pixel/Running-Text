@@ -18,9 +18,9 @@ class admin_dashboard_Controller extends Controller
     /**
      * Guard: only admin role may access any method in this controller.
      */
-    private function requireAdmin(): void
+    private function requireOperator(): void
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
             abort(403, 'Unauthorized!');
         }
     }
@@ -34,7 +34,7 @@ class admin_dashboard_Controller extends Controller
      */
     public function index()
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $kajian = Kajian::orderBy('Tanggal', 'asc')->get();
         $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
@@ -50,13 +50,13 @@ class admin_dashboard_Controller extends Controller
 
     public function informasi()
     {
-        $this->requireAdmin();
+        $this->requireOperator();
         return view('informasi_umum');
     }
 
     public function acara()
     {
-        $this->requireAdmin();
+        $this->requireOperator();
         return view('kelola_acara');
     }
 }

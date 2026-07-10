@@ -12,6 +12,8 @@ class InformasiUmum extends Model
         'judul',
         'deskripsi',
         'tampilkan',
+        'author',
+        'last_modified_by',
     ];
 
     protected $casts = [

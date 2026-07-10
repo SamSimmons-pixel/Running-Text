@@ -14,9 +14,9 @@ class KajianController extends Controller
     /**
      * Guard: only admin role may access any method in this controller.
      */
-    private function requireAdmin(): void
+    private function requireOperator(): void
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
             abort(403, 'Unauthorized!');
         }
     }
@@ -26,7 +26,7 @@ class KajianController extends Controller
      */
     public function kajian()
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $kajian         = Kajian::orderBy('Tanggal', 'asc')->get();
         $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
@@ -41,7 +41,7 @@ class KajianController extends Controller
      */
     public function store(Request $request)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $data = $request->validate([
             'Tanggal'      => ['required', 'date'],
@@ -55,6 +55,8 @@ class KajianController extends Controller
         ]);
 
         $data['Tampilkan'] = $request->boolean('Tampilkan');
+        $data['author'] = Auth::user()->name;
+        $data['last_modified_by'] = Auth::user()->name;
 
         Kajian::create($data);
 
@@ -67,7 +69,7 @@ class KajianController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $kajian = Kajian::findOrFail($id);
 
@@ -83,6 +85,7 @@ class KajianController extends Controller
         ]);
 
         $data['Tampilkan'] = $request->boolean('Tampilkan');
+        $data['last_modified_by'] = Auth::user()->name;
 
         $kajian->update($data);
 
@@ -95,10 +98,13 @@ class KajianController extends Controller
      */
     public function toggle($id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $kajian = Kajian::findOrFail($id);
-        $kajian->update(['Tampilkan' => !$kajian->Tampilkan]);
+        $kajian->update([
+            'Tampilkan' => !$kajian->Tampilkan,
+            'last_modified_by' => Auth::user()->name
+        ]);
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Status tampil kajian diperbarui.');
@@ -109,7 +115,7 @@ class KajianController extends Controller
      */
     public function destroy($id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $kajian = Kajian::findOrFail($id);
         $kajian->delete();

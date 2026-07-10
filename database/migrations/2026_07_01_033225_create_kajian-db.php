@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('Kontak');
             $table->longText('Informasi')->nullable();
             $table->boolean('Tampilkan')->default(false);
+            $table->string('author')->nullable();
+            $table->string('last_modified_by')->nullable();
             $table->timestamps();
         });
     }
@@ -33,6 +35,7 @@ return new class extends Migration
         Schema::table('kajian', function (Blueprint $table) {
             $table->dropColumn('Informasi');
             $table->dropColumn('WaktuSelesai');
+            $table->dropColumn(['author', 'last_modified_by']);
         });
     }
 };

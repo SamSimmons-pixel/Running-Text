@@ -17,11 +17,20 @@ class HijriTickerController extends Controller
         $this->hijriService = $hijriService;
     }
 
+    private function requireOperator(): void
+    {
+        if (!\Illuminate\Support\Facades\Auth::check() || !in_array(\Illuminate\Support\Facades\Auth::user()->role, ['admin_operator', 'operator'])) {
+            abort(403, 'Unauthorized!');
+        }
+    }
+
     /**
      * Display the Hijri timing settings panel and live preview.
      */
     public function index()
     {
+        $this->requireOperator();
+
         $settings = HijriSetting::firstOrCreate([], [
             'default_city' => 'Jakarta',
             'default_timezone' => 'Asia/Jakarta',
@@ -42,6 +51,8 @@ class HijriTickerController extends Controller
      */
     public function update(Request $request)
     {
+        $this->requireOperator();
+
         $validated = $request->validate([
             'default_city' => 'required|string',
             'hijri_offset_days' => 'required|integer|min:-5|max:5',

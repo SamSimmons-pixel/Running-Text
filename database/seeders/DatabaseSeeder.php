@@ -19,13 +19,13 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Admin',
             'password' => 'Admin123',
-            'role' => 'admin',
+            'role' => 'admin_operator',
         ]);
 
         User::factory()->create([
             'name' => 'User',
             'password' => 'User123',
-            'role' => 'user',
+            'role' => 'operator',
         ]);
 
         Kajian::create([

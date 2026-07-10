@@ -286,14 +286,30 @@
                               </td>
                               <td>
                                 <div class="td-actions" style="justify-content:flex-end;">
+                                  <button class="btn-kajian-outline" style="background-color: rgba(56, 189, 248, 0.15) !important; color: #38bdf8 !important; border-color: rgba(56, 189, 248, 0.3) !important;"
+                                    onclick="toggleInfoRow({{ $item->id }})">
+                                    <i class="fa fa-info-circle"></i> Info
+                                  </button>
                                   <button class="btn-kajian-outline"
-                                    onclick="openEditModal({{ $item->id }}, '{{ addslashes($item->judul) }}', '{{ addslashes($item->deskripsi) }}', '{{ $item->tampilkan ? 'true' : 'false' }}')">
+                                    onclick="openEditModal({{ $item->id }}, '{{ addslashes($item->judul) }}', '{{ str_replace(["\r", "\n"], ["\\r", "\\n"], addslashes($item->deskripsi)) }}', '{{ $item->tampilkan ? 'true' : 'false' }}')">
                                     <i class="fa fa-pencil"></i> Edit
                                   </button>
                                   <button class="btn-kajian-danger"
                                     onclick="openDeleteModal({{ $item->id }}, '{{ addslashes($item->judul) }}')">
                                     <i class="fa fa-trash"></i> Hapus
                                   </button>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr id="rowInfo-{{ $item->id }}" style="display: none; background-color: rgba(15, 23, 42, 0.25);">
+                              <td colspan="5" style="padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: left;">
+                                <div style="font-weight: 600; color: #94a3b8; margin-bottom: 0.5rem; font-size: 1.15rem;">
+                                  <i class="fa fa-info-circle" style="color: #38bdf8; margin-right: 0.25rem;"></i> Informasi Umum Metadata
+                                </div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 2.5rem; padding-top: 1rem; font-size: 1.1rem; color: #94a3b8; padding-left: 1.25rem;">
+                                  <div><strong style="color: #38bdf8;">Pembuat (Author):</strong> <span style="color: #e2e8f0;">{{ $item->author ?: 'Sistem' }}</span></div>
+                                  <div><strong style="color: #38bdf8;">Terakhir Diubah (Last Modified):</strong> <span style="color: #e2e8f0;">{{ $item->updated_at ? $item->updated_at->locale('id')->translatedFormat('l, d F Y H:i') : 'Sistem' }}</span></div>
+                                  <div><strong style="color: #38bdf8;">Pengubah Terakhir (Last Modified Author):</strong> <span style="color: #e2e8f0;">{{ $item->last_modified_by ?: 'Sistem' }}</span></div>
                                 </div>
                               </td>
                             </tr>
@@ -378,6 +394,15 @@
         form.classList.toggle('open');
         if (form.classList.contains('open')) {
           form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
+      function toggleInfoRow(id) {
+        var row = document.getElementById('rowInfo-' + id);
+        if (row.style.display === 'none') {
+          row.style.display = 'table-row';
+        } else {
+          row.style.display = 'none';
         }
       }
 

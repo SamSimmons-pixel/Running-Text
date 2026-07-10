@@ -17,6 +17,8 @@ class Acara extends Model
         'tempat',
         'status',
         'tampilkan',
+        'author',
+        'last_modified_by',
     ];
 
     protected $casts = [

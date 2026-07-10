@@ -11,9 +11,9 @@ class KontakController extends Controller
     /**
      * Guard: only admin role may access any method in this controller.
      */
-    private function requireAdmin(): void
+    private function requireOperator(): void
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
             abort(403, 'Unauthorized!');
         }
     }
@@ -23,7 +23,7 @@ class KontakController extends Controller
      */
     public function index()
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $kontakList = Kontak::orderBy('nama', 'asc')->get();
 
@@ -35,7 +35,7 @@ class KontakController extends Controller
      */
     public function store(Request $request)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:255', 'unique:kontak,nama'],
@@ -52,7 +52,7 @@ class KontakController extends Controller
      */
     public function destroy($id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $kontak = Kontak::findOrFail($id);
         $kontak->delete();

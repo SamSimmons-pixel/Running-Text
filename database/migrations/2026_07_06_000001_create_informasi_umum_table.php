@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('judul');
             $table->text('deskripsi');
             $table->boolean('tampilkan')->default(true);
+            $table->string('author')->nullable();
+            $table->string('last_modified_by')->nullable();
             $table->timestamps();
         });
     }
@@ -26,5 +28,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('informasi_umum');
+        Schema::table('informasi_umum', function (Blueprint $table) {
+            $table->dropColumn(['author', 'last_modified_by']);
+        });
     }
 };

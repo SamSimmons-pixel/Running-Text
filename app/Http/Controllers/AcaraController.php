@@ -13,9 +13,9 @@ class AcaraController extends Controller
     /**
      * Guard: only admin role may access any method in this controller.
      */
-    private function requireAdmin(): void
+    private function requireOperator(): void
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
             abort(403, 'Unauthorized!');
         }
     }
@@ -25,7 +25,7 @@ class AcaraController extends Controller
      */
     public function index()
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $acara          = Acara::orderBy('hari', 'asc')->orderBy('jam_mulai', 'asc')->get();
         $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
@@ -39,7 +39,7 @@ class AcaraController extends Controller
      */
     public function store(Request $request)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $data = $request->validate([
             'judul'       => ['required', 'string', 'max:255'],
@@ -50,6 +50,9 @@ class AcaraController extends Controller
             'tempat'      => ['required', 'string', 'exists:tempat,nama'],
             'status'      => ['nullable', 'string', 'max:100'],
         ]);
+
+        $data['author'] = Auth::user()->name;
+        $data['last_modified_by'] = Auth::user()->name;
 
         Acara::create($data);
 
@@ -62,7 +65,7 @@ class AcaraController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $acara = Acara::findOrFail($id);
 
@@ -76,6 +79,8 @@ class AcaraController extends Controller
             'status'      => ['nullable', 'string', 'max:100'],
         ]);
 
+        $data['last_modified_by'] = Auth::user()->name;
+
         $acara->update($data);
 
         return redirect()->route('admin.acara')
@@ -87,7 +92,7 @@ class AcaraController extends Controller
      */
     public function destroy($id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $acara = Acara::findOrFail($id);
         $acara->delete();
@@ -101,10 +106,11 @@ class AcaraController extends Controller
      */
     public function toggle($id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $acara = Acara::findOrFail($id);
         $acara->tampilkan = !$acara->tampilkan;
+        $acara->last_modified_by = Auth::user()->name;
         $acara->save();
 
         return redirect()->route('admin.acara')

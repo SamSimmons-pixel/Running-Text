@@ -32,7 +32,7 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
-            if ($user->role === 'admin') {
+            if (in_array($user->role, ['admin_operator', 'operator'])) {
                 return redirect()->route('admin.dashboard')
                     ->with('success', 'Welcome back, ' . $user->name . '!');
             }

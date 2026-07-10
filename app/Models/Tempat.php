@@ -10,5 +10,6 @@ class Tempat extends Model
 
     protected $fillable = [
         'nama',
+        'deskripsi_alamat',
     ];
 }

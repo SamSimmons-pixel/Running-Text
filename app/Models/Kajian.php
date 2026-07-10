@@ -22,6 +22,8 @@ class Kajian extends Model
         'Kontak',
         'Informasi',
         'Tampilkan',
+        'author',
+        'last_modified_by',
     ];
 
     protected $casts = [

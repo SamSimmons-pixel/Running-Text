@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tempat', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->text('deskripsi_alamat')->nullable();
             $table->timestamps();
         });
     }
@@ -24,5 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('tempat');
+        Schema::table('tempat', function (Blueprint $table) {
+            $table->dropColumn('deskripsi_alamat');
+        });
     }
 };

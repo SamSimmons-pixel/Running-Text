@@ -55,6 +55,14 @@
               <div class="nav-menu__text"><span>Pewaktuan Hijriah</span></div>
             </a>
           </li>
+          @if(Auth::check() && Auth::user()->role === 'admin_operator')
+          <li class="{{ request()->routeIs('admin.operator') ? 'active' : '' }}">
+            <a href="{{ route('admin.operator') }}" wire:navigate>
+              <div class="nav-menu__ico"><i class="fa fa-fw fa-users"></i></div>
+              <div class="nav-menu__text"><span>Kelola Operator</span></div>
+            </a>
+          </li>
+          @endif
           <li class="{{ request()->routeIs('api.vmix.ticker-combined') ? 'active' : '' }}">
             <a href="{{ route('api.vmix.ticker-combined') }}" target="_blank">
               <div class="nav-menu__ico"><i class="fa fa-fw fa-code"></i></div>

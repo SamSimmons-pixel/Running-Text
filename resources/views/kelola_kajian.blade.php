@@ -287,7 +287,7 @@
                                       '{{ \Carbon\Carbon::parse($item->Tanggal)->format('Y-m-d\TH:i') }}',
                                       '{{ addslashes($item->Tempat) }}',
                                       '{{ addslashes($item->Kontak ?? '') }}',
-                                      '{{ addslashes($item->Informasi ?? '') }}',
+                                      '{{ str_replace(["\r", "\n"], ["\\r", "\\n"], addslashes($item->Informasi ?? '')) }}',
                                       '{{ addslashes($item->WaktuSelesai ?? '') }}',
                                       '{{ $item->Tampilkan ? 'true' : 'false' }}'
                                     )">
@@ -306,12 +306,17 @@
                                 <div style="font-weight: 600; color: #94a3b8; margin-bottom: 0.5rem; font-size: 1.15rem;">
                                   <i class="fa fa-info-circle" style="color: #38bdf8; margin-right: 0.25rem;"></i> Informasi Kajian
                                 </div>
-                                <div style="color: #cbd5e1; font-size: 1.15rem; line-height: 1.6; white-space: pre-line; padding-left: 1.25rem;">
+                                <div style="color: #cbd5e1; font-size: 1.15rem; line-height: 1.6; white-space: pre-line; padding-left: 1.25rem; margin-bottom: 1rem;">
                                   @if($item->Informasi)
                                     {{ $item->Informasi }}
                                   @else
                                     <em style="color: #64748b; font-style: italic;">Tidak ada Informasi</em>
                                   @endif
+                                </div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 2.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); font-size: 1.1rem; color: #94a3b8; padding-left: 1.25rem;">
+                                  <div><strong style="color: #38bdf8;">Pembuat (Author):</strong> <span style="color: #e2e8f0;">{{ $item->author ?: 'Sistem' }}</span></div>
+                                  <div><strong style="color: #38bdf8;">Terakhir Diubah (Last Modified):</strong> <span style="color: #e2e8f0;">{{ $item->updated_at ? $item->updated_at->locale('id')->translatedFormat('l, d F Y H:i') : 'Sistem' }}</span></div>
+                                  <div><strong style="color: #38bdf8;">Pengubah Terakhir (Last Modified Author):</strong> <span style="color: #e2e8f0;">{{ $item->last_modified_by ?: 'Sistem' }}</span></div>
                                 </div>
                               </td>
                             </tr>

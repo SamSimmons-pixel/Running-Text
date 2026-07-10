@@ -11,9 +11,9 @@ class InformasiUmumController extends Controller
     /**
      * Guard: only admin role may access any method in this controller.
      */
-    private function requireAdmin(): void
+    private function requireOperator(): void
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
             abort(403, 'Unauthorized!');
         }
     }
@@ -23,7 +23,7 @@ class InformasiUmumController extends Controller
      */
     public function index()
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $informasiList = InformasiUmum::orderBy('created_at', 'desc')->get();
 
@@ -35,7 +35,7 @@ class InformasiUmumController extends Controller
      */
     public function store(Request $request)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $data = $request->validate([
             'judul'     => ['required', 'string', 'max:255'],
@@ -44,6 +44,8 @@ class InformasiUmumController extends Controller
         ]);
 
         $data['tampilkan'] = $request->has('tampilkan');
+        $data['author'] = Auth::user()->name;
+        $data['last_modified_by'] = Auth::user()->name;
 
         InformasiUmum::create($data);
 
@@ -56,7 +58,7 @@ class InformasiUmumController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $info = InformasiUmum::findOrFail($id);
 
@@ -67,6 +69,7 @@ class InformasiUmumController extends Controller
         ]);
 
         $data['tampilkan'] = $request->has('tampilkan');
+        $data['last_modified_by'] = Auth::user()->name;
 
         $info->update($data);
 
@@ -79,10 +82,13 @@ class InformasiUmumController extends Controller
      */
     public function toggle($id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $info = InformasiUmum::findOrFail($id);
-        $info->update(['tampilkan' => !$info->tampilkan]);
+        $info->update([
+            'tampilkan' => !$info->tampilkan,
+            'last_modified_by' => Auth::user()->name
+        ]);
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Status tampil informasi diperbarui.');
@@ -93,7 +99,7 @@ class InformasiUmumController extends Controller
      */
     public function destroy($id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $info = InformasiUmum::findOrFail($id);
         $info->delete();

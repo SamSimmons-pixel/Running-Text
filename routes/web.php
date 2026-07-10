@@ -45,6 +45,7 @@ Route::post('/admin_dashboard/narasumber/{id}/delete', [NarasumberController::cl
 // ── Tempat Management ──────────────────────────────────────────
 Route::get ('/admin_dashboard/tempat',           [TempatController::class, 'index'])->name('admin.tempat');
 Route::post('/admin_dashboard/tempat',           [TempatController::class, 'store'])->name('admin.tempat.store');
+Route::post('/admin_dashboard/tempat/{id}',      [TempatController::class, 'update'])->name('admin.tempat.update');
 Route::post('/admin_dashboard/tempat/{id}/delete', [TempatController::class, 'destroy'])->name('admin.tempat.destroy');
 
 // ── Kontak Management ──────────────────────────────────────────
@@ -55,9 +56,16 @@ Route::post('/admin_dashboard/kontak/{id}/delete', [KontakController::class, 'de
 // ── Pewaktuan Hijriah ──────────────────────────────────────────
 use App\Http\Controllers\HijriTickerController;
 use App\Http\Controllers\VmixDataController;
+use App\Http\Controllers\OperatorController;
 
 Route::get ('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class, 'index'])->name('admin.hijri');
 Route::post('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class, 'update'])->name('admin.hijri.update');
+
+// ── Operator Management ─────────────────────────────────────────
+Route::get ('/admin_dashboard/operator',             [OperatorController::class, 'index'])->name('admin.operator');
+Route::post('/admin_dashboard/operator',             [OperatorController::class, 'store'])->name('admin.operator.store');
+Route::post('/admin_dashboard/operator/{id}',         [OperatorController::class, 'update'])->name('admin.operator.update');
+Route::post('/admin_dashboard/operator/{id}/delete',  [OperatorController::class, 'destroy'])->name('admin.operator.destroy');
 
 // ── vMix Data API ──────────────────────────────────────────────
 Route::get ('/api/vmix/hijri-ticker',             [VmixDataController::class, 'getTickerData'])->name('api.vmix.hijri-ticker');

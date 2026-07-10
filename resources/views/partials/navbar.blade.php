@@ -37,11 +37,11 @@
       <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
         <a href="{{ route('admin.dashboard') }}" wire:navigate><span>Dashboard</span></a>
       </li>
-      <li>
+      {{-- <li>
         <a href="{{ url('/mainpage') }}" target="_blank">
           <span><i class="fa fa-external-link" style="font-size:0.75em;"></i> MainPage</span>
         </a>
-      </li>
+      </li> --}}
     </ul>
     <ul class="userbar nav navbar-nav">
       <li class="dropdown">

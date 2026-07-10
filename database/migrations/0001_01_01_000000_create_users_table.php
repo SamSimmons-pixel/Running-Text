@@ -33,15 +33,27 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+        // 1. Change role column from enum to string with default 'operator'
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('role')->default('operator')->change();
+        });
+
     }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
+    
     {
+
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+
+        // 2. Change column back to enum
+        Schema::table('users', function (Blueprint $table) {
+            $table->enum('role', ['admin', 'user'])->default('user')->change();
+        });
     }
 };

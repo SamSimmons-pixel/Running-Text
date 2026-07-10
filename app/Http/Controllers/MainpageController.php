@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\running_text_data;
+use App\Models\Kajian;
 
 class MainpageController extends Controller
 {
@@ -12,17 +12,10 @@ class MainpageController extends Controller
     public function index()
     {
         // Only fetch records where Tampilkan = true, ordered by Tanggal ascending
-        $kajian = running_text_data::where('Tampilkan', true)
+        $kajian = Kajian::where('Tampilkan', true)
             ->orderBy('Tanggal', 'asc')
             ->get();
 
-        // Get single global logo if exists
-        $logoUrl = null;
-        $files = glob(public_path('logo/global_logo.*'));
-        if (!empty($files)) {
-            $logoUrl = asset('logo/' . basename($files[0])) . '?v=' . filemtime($files[0]);
-        }
-
-        return view('mainpage', compact('kajian', 'logoUrl'));
+        return view('mainpage', compact('kajian'));
     }
 }
