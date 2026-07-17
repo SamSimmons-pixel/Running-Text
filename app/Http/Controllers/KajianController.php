@@ -28,12 +28,84 @@ class KajianController extends Controller
     {
         $this->requireOperator();
 
-        $kajian         = Kajian::orderBy('Tanggal', 'asc')->get();
+        self::autoUpdateExpiredKajian();
+
+        $kajian         = Kajian::with(['narasumber', 'tempat', 'kontak'])->orderBy('Tanggal', 'asc')->get();
         $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
         $tempatList     = Tempat::orderBy('nama', 'asc')->get();
         $kontakList     = Kontak::orderBy('nama', 'asc')->get();
 
         return view('kelola_kajian', compact('kajian', 'narasumberList', 'tempatList', 'kontakList'));
+    }
+
+    /**
+     * Automatically update expired kajian records to not display in JSON feed.
+     */
+    public static function autoUpdateExpiredKajian(): void
+    {
+        $now = \Carbon\Carbon::now('Asia/Jakarta');
+        $kajianList = Kajian::where('Tampilkan', true)->get();
+
+        foreach ($kajianList as $item) {
+            $start = \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta');
+            $end = null;
+
+            if ($item->WaktuSelesai) {
+                if (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $item->WaktuSelesai)) {
+                    $parts = explode(':', $item->WaktuSelesai);
+                    $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1], (int)($parts[2] ?? 0));
+                } else {
+                    $textMap = [
+                        'Menjelang Dzuhur'  => '12:00',
+                        'Menjelang Ashar'   => '15:30',
+                        'Menjelang Maghrib' => '18:00',
+                        'Menjelang Isya'    => '19:30',
+                    ];
+                    if (isset($textMap[$item->WaktuSelesai])) {
+                        $parts = explode(':', $textMap[$item->WaktuSelesai]);
+                        $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1]);
+                    } else {
+                        $end = $start->copy()->addHour();
+                    }
+                }
+            } else {
+                $end = $start->copy()->addHour();
+            }
+
+            if ($now->greaterThan($end)) {
+                $item->update(['Tampilkan' => false]);
+            }
+        }
+    }
+
+    public static function isKajianOnAir($tanggal, $waktuSelesai): bool
+    {
+        $start = \Carbon\Carbon::parse($tanggal, 'Asia/Jakarta');
+        $end = null;
+
+        if ($waktuSelesai) {
+            if (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $waktuSelesai)) {
+                $parts = explode(':', $waktuSelesai);
+                $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1], (int)($parts[2] ?? 0));
+            } else {
+                $textMap = [
+                    'Menjelang Dzuhur'  => '12:00',
+                    'Menjelang Ashar'   => '15:30',
+                    'Menjelang Maghrib' => '18:00',
+                    'Menjelang Isya'    => '19:30',
+                ];
+                if (isset($textMap[$waktuSelesai])) {
+                    $parts = explode(':', $textMap[$waktuSelesai]);
+                    $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1]);
+                } else {
+                    $end = $start->copy()->addHour();
+                }
+            }
+        } else {
+            $end = $start->copy()->addHour();
+        }
+
+        return \Carbon\Carbon::now('Asia/Jakarta')->between($start, $end);
     }
 
     /**
@@ -47,9 +119,9 @@ class KajianController extends Controller
             'Tanggal'      => ['required', 'date'],
             'WaktuSelesai' => ['nullable', 'string', 'max:255'],
             'Judul'        => ['required', 'string', 'max:255'],
-            'Narasumber'   => ['required', 'string', 'exists:narasumber,nama'],
-            'Tempat'       => ['required', 'string', 'exists:tempat,nama'],
-            'Kontak'       => ['nullable', 'string', 'exists:kontak,nama'],
+            'narasumber_id'=> ['required', 'integer', 'exists:narasumber,id'],
+            'tempat_id'    => ['required', 'integer', 'exists:tempat,id'],
+            'kontak_id'    => ['nullable', 'integer', 'exists:kontak,id'],
             'Informasi'    => ['nullable', 'string', 'max:1000'],
             'Tampilkan'    => ['nullable', 'boolean'],
         ]);
@@ -77,9 +149,9 @@ class KajianController extends Controller
             'Tanggal'      => ['required', 'date'],
             'WaktuSelesai' => ['nullable', 'string', 'max:255'],
             'Judul'        => ['required', 'string', 'max:255'],
-            'Narasumber'   => ['required', 'string', 'exists:narasumber,nama'],
-            'Tempat'       => ['required', 'string', 'exists:tempat,nama'],
-            'Kontak'       => ['nullable', 'string', 'exists:kontak,nama'],
+            'narasumber_id'=> ['required', 'integer', 'exists:narasumber,id'],
+            'tempat_id'    => ['required', 'integer', 'exists:tempat,id'],
+            'kontak_id'    => ['nullable', 'integer', 'exists:kontak,id'],
             'Informasi'    => ['nullable', 'string', 'max:10000'],
             'Tampilkan'    => ['nullable', 'boolean'],
         ]);
@@ -94,16 +166,52 @@ class KajianController extends Controller
     }
 
     /**
-     * Toggle the Tampilkan (show/hide kajian) flag.
+     * Check if kajian time has expired.
+     */
+    public static function isKajianExpired($tanggal, $waktuSelesai): bool
+    {
+        $start = \Carbon\Carbon::parse($tanggal, 'Asia/Jakarta');
+        $end = null;
+        if ($waktuSelesai) {
+            if (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $waktuSelesai)) {
+                $parts = explode(':', $waktuSelesai);
+                $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1], (int)($parts[2] ?? 0));
+            } else {
+                $textMap = [
+                    'Menjelang Dzuhur'  => '12:00',
+                    'Menjelang Ashar'   => '15:30',
+                    'Menjelang Maghrib' => '18:00',
+                    'Menjelang Isya'    => '19:30',
+                ];
+                if (isset($textMap[$waktuSelesai])) {
+                    $parts = explode(':', $textMap[$waktuSelesai]);
+                    $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1]);
+                } else {
+                    $end = $start->copy()->addHour();
+                }
+            }
+        } else {
+            $end = $start->copy()->addHour();
+        }
+        return \Carbon\Carbon::now('Asia/Jakarta')->greaterThan($end);
+    }
+
+    /**
+     * Toggle the Tampilkan flag.
      */
     public function toggle($id)
     {
         $this->requireOperator();
 
         $kajian = Kajian::findOrFail($id);
+        if (self::isKajianExpired($kajian->Tanggal, $kajian->WaktuSelesai)) {
+            return redirect()->route('admin.kajian')
+                ->with('error', 'Status tampil tidak dapat diubah karena waktu kajian sudah terlewati.');
+        }
+
         $kajian->update([
             'Tampilkan' => !$kajian->Tampilkan,
-            'last_modified_by' => Auth::user()->name
+            'last_modified_by' => Auth::user()->name,
         ]);
 
         return redirect()->route('admin.kajian')
@@ -123,5 +231,4 @@ class KajianController extends Controller
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil dihapus.');
     }
-
 }

@@ -8,18 +8,13 @@ class Kajian extends Model
 {
     protected $table = 'kajian';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'Tanggal',
         'WaktuSelesai',
         'Judul',
-        'Narasumber',
-        'Tempat',
-        'Kontak',
+        'narasumber_id',
+        'tempat_id',
+        'kontak_id',
         'Informasi',
         'Tampilkan',
         'author',
@@ -27,6 +22,21 @@ class Kajian extends Model
     ];
 
     protected $casts = [
-        'Tampilkan'     => 'boolean'
+        'Tampilkan' => 'boolean'
     ];
+
+    public function narasumber()
+    {
+        return $this->belongsTo(Narasumber::class, 'narasumber_id');
+    }
+
+    public function tempat()
+    {
+        return $this->belongsTo(Tempat::class, 'tempat_id');
+    }
+
+    public function kontak()
+    {
+        return $this->belongsTo(Kontak::class, 'kontak_id');
+    }
 }

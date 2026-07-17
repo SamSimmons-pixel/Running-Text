@@ -102,9 +102,12 @@
 
                 {{-- Table --}}
                 <div class="panel panel-default">
-                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> Daftar Narasumber</h3>
-                    <small class="section-count">Total: {{ $narasumberList->count() }} orang</small>
+                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                    <h3 class="panel-title" style="margin:0;"><i class="fa fa-list"></i> Daftar Narasumber <small style="margin-left:8px; color:rgba(255,255,255,0.4);" class="section-count">Total: {{ $narasumberList->count() }} orang</small></h3>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:nowrap;">
+                      <input type="search" id="narasumberSearchInput" placeholder="Cari narasumber..." class="form-control form-control-custom" style="width:200px; padding:6px 12px; height:34px; margin:0;" onkeyup="filterNarasumberTable()">
+                      <button class="btn btn-primary" onclick="filterNarasumberTable()" style="padding:6px 15px; height:34px; line-height:20px; font-size:1.15rem; margin:0;"><i class="fa fa-search"></i> Cari</button>
+                    </div>
                   </div>
                   <div class="panel-body" style="padding:0;">
                     @if ($narasumberList->isEmpty())
@@ -119,21 +122,35 @@
                             <tr>
                               <th style="width: 80px;">No.</th>
                               <th>Nama Narasumber</th>
-                              <th style="text-align:right; width: 150px;">Aksi</th>
+                              <th style="text-align:right; width: 220px;">Aksi</th>
                             </tr>
                           </thead>
                           <tbody>
                             @foreach ($narasumberList as $index => $item)
-                            <tr>
+                            <tr id="mainRow-{{ $item->id }}" class="searchable-row">
                               <td>{{ $index + 1 }}</td>
                               <td><strong>{{ $item->nama }}</strong></td>
                               <td>
-                                <div class="td-actions" style="justify-content:flex-end;">
+                                <div class="td-actions" style="justify-content:flex-end; gap:8px;">
+                                  <button class="btn-kajian-outline" style="background-color: rgba(56, 189, 248, 0.15) !important; color: #38bdf8 !important; border-color: rgba(56, 189, 248, 0.3) !important;"
+                                    onclick="toggleInfoRow({{ $item->id }})">
+                                    <i class="fa fa-info-circle"></i> Info
+                                  </button>
                                   <button class="btn-kajian-danger"
-                                    onclick="openDeleteModal({{ $item->id }}, '{{ addslashes($item->nama) }}')">
+                                    onclick="openDeleteModal(
+                                      {{ $item->id }},
+                                      '{{ addslashes($item->nama) }}',
+                                      {{ json_encode($item->kajian->map(fn($k) => $k->Judul)->values()) }},
+                                      {{ json_encode($item->acara->map(fn($a) => $a->judul)->values()) }}
+                                    )">
                                     <i class="fa fa-trash"></i> Hapus
                                   </button>
                                 </div>
+                              </td>
+                            </tr>
+                            <tr id="rowInfo-{{ $item->id }}" style="display: none; background-color: rgba(15, 23, 42, 0.25);">
+                              <td colspan="3" style="padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: left;">
+                                @include('partials.metadata')
                               </td>
                             </tr>
                             @endforeach
@@ -157,8 +174,16 @@
       <div class="modal-confirm">
         <div style="font-size:2.5rem; margin-bottom:1rem;">🗑️</div>
         <div style="font-size:1rem; font-weight:700; margin-bottom:0.5rem; color:#e2e8f0;">Hapus Narasumber?</div>
-        <div style="font-size:0.85rem; color:#64748b; margin-bottom:1.5rem;" id="deleteDesc">
-          Narasumber ini akan dihapus secara permanen.
+        <div style="font-size:0.85rem; color:#64748b; margin-bottom:0.75rem;" id="deleteDesc"></div>
+        {{-- Usage warning panel (shown only when there are usages) --}}
+        <div id="deleteUsageWarning" style="display:none; margin-bottom:1rem; background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:8px; padding:0.75rem 1rem; text-align:left;">
+          <div style="font-size:0.8rem; font-weight:700; color:#fbbf24; margin-bottom:0.5rem;">
+            <i class="fa fa-exclamation-triangle"></i> Data ini masih digunakan oleh:
+          </div>
+          <div id="deleteUsageList" style="font-size:0.78rem; color:#cbd5e1; max-height:120px; overflow-y:auto;"></div>
+          <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.5rem;">
+            Setelah dihapus, Kajian/Acara terkait akan menampilkan "—" untuk Narasumber.
+          </div>
         </div>
         <div style="display:flex; justify-content:center; gap:1rem;">
           <button class="btn btn-default" onclick="closeDeleteModal(null)">Batal</button>
@@ -180,20 +205,69 @@
         form.classList.toggle('open');
       }
 
+      function filterNarasumberTable() {
+        var input = document.getElementById('narasumberSearchInput');
+        var filter = input.value.toLowerCase();
+        var mainRows = document.getElementsByClassName('searchable-row');
+        
+        for (var i = 0; i < mainRows.length; i++) {
+          var row = mainRows[i];
+          var text = row.innerText.toLowerCase();
+          
+          if (text.indexOf(filter) > -1) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        }
+      }
+
       @if ($errors->any() && old('nama'))
       toggleAddForm();
       @endif
 
-      function openDeleteModal(id, nama) {
+      function openDeleteModal(id, nama, kajianUsage, acaraUsage) {
         document.getElementById('deleteForm').action = `/admin_dashboard/narasumber/${id}/delete`;
         document.getElementById('deleteDesc').textContent =
           `"${nama}" akan dihapus secara permanen dari daftar narasumber.`;
+
+        // Build usage warning
+        var usageItems = [];
+        if (kajianUsage && kajianUsage.length > 0) {
+          kajianUsage.forEach(function(judul) {
+            usageItems.push('<div style="padding:2px 0;"><i class="fa fa-calendar" style="color:#38bdf8; margin-right:5px;"></i><strong>Kajian:</strong> ' + judul + '</div>');
+          });
+        }
+        if (acaraUsage && acaraUsage.length > 0) {
+          acaraUsage.forEach(function(judul) {
+            usageItems.push('<div style="padding:2px 0;"><i class="fa fa-play" style="color:#a78bfa; margin-right:5px;"></i><strong>Acara:</strong> ' + judul + '</div>');
+          });
+        }
+
+        var warningEl = document.getElementById('deleteUsageWarning');
+        var listEl = document.getElementById('deleteUsageList');
+        if (usageItems.length > 0) {
+          listEl.innerHTML = usageItems.join('');
+          warningEl.style.display = 'block';
+        } else {
+          warningEl.style.display = 'none';
+        }
+
         document.getElementById('deleteModalBackdrop').classList.add('open');
       }
 
       function closeDeleteModal(e) {
         if (e === null || e.target === document.getElementById('deleteModalBackdrop')) {
           document.getElementById('deleteModalBackdrop').classList.remove('open');
+        }
+      }
+
+      function toggleInfoRow(id) {
+        var row = document.getElementById('rowInfo-' + id);
+        if (row.style.display === 'none') {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
         }
       }
 

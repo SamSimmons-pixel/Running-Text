@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AcaraController extends Controller
 {
-    /**
-     * Guard: only admin role may access any method in this controller.
-     */
     private function requireOperator(): void
     {
         if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
@@ -20,35 +17,29 @@ class AcaraController extends Controller
         }
     }
 
-    /**
-     * Show the Kelola Acara management page.
-     */
     public function index()
     {
         $this->requireOperator();
 
-        $acara          = Acara::orderBy('hari', 'asc')->orderBy('jam_mulai', 'asc')->get();
+        $acara          = Acara::with(['narasumber', 'tempat'])->orderBy('hari', 'asc')->orderBy('jam_mulai', 'asc')->get();
         $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
         $tempatList     = Tempat::orderBy('nama', 'asc')->get();
 
         return view('kelola_acara', compact('acara', 'narasumberList', 'tempatList'));
     }
 
-    /**
-     * Store a new Acara record.
-     */
     public function store(Request $request)
     {
         $this->requireOperator();
 
         $data = $request->validate([
-            'judul'       => ['required', 'string', 'max:255'],
-            'hari'        => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Ahad'],
-            'jam_mulai'   => ['required', 'date_format:H:i'],
-            'jam_selesai' => ['required', 'date_format:H:i', 'after:jam_mulai'],
-            'narasumber'  => ['required', 'string', 'exists:narasumber,nama'],
-            'tempat'      => ['required', 'string', 'exists:tempat,nama'],
-            'status'      => ['nullable', 'string', 'max:100'],
+            'judul'        => ['required', 'string', 'max:255'],
+            'hari'         => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Ahad'],
+            'jam_mulai'    => ['required', 'date_format:H:i'],
+            'jam_selesai'  => ['required', 'date_format:H:i', 'after:jam_mulai'],
+            'narasumber_id'=> ['required', 'integer', 'exists:narasumber,id'],
+            'tempat_id'    => ['required', 'integer', 'exists:tempat,id'],
+            'status'       => ['nullable', 'string', 'max:100'],
         ]);
 
         $data['author'] = Auth::user()->name;
@@ -60,9 +51,6 @@ class AcaraController extends Controller
             ->with('success', 'Acara berhasil ditambahkan.');
     }
 
-    /**
-     * Update an existing Acara record.
-     */
     public function update(Request $request, $id)
     {
         $this->requireOperator();
@@ -70,13 +58,13 @@ class AcaraController extends Controller
         $acara = Acara::findOrFail($id);
 
         $data = $request->validate([
-            'judul'       => ['required', 'string', 'max:255'],
-            'hari'        => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Ahad'],
-            'jam_mulai'   => ['required', 'date_format:H:i'],
-            'jam_selesai' => ['required', 'date_format:H:i', 'after:jam_mulai'],
-            'narasumber'  => ['required', 'string', 'exists:narasumber,nama'],
-            'tempat'      => ['required', 'string', 'exists:tempat,nama'],
-            'status'      => ['nullable', 'string', 'max:100'],
+            'judul'        => ['required', 'string', 'max:255'],
+            'hari'         => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Ahad'],
+            'jam_mulai'    => ['required', 'date_format:H:i'],
+            'jam_selesai'  => ['required', 'date_format:H:i', 'after:jam_mulai'],
+            'narasumber_id'=> ['required', 'integer', 'exists:narasumber,id'],
+            'tempat_id'    => ['required', 'integer', 'exists:tempat,id'],
+            'status'       => ['nullable', 'string', 'max:100'],
         ]);
 
         $data['last_modified_by'] = Auth::user()->name;
@@ -87,9 +75,6 @@ class AcaraController extends Controller
             ->with('success', 'Acara berhasil diperbarui.');
     }
 
-    /**
-     * Delete an Acara record.
-     */
     public function destroy($id)
     {
         $this->requireOperator();
@@ -101,9 +86,6 @@ class AcaraController extends Controller
             ->with('success', 'Acara berhasil dihapus.');
     }
 
-    /**
-     * Toggle the tampilkan flag for an Acara.
-     */
     public function toggle($id)
     {
         $this->requireOperator();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\HijriService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class VmixDataController extends Controller
 {
@@ -37,11 +38,12 @@ class VmixDataController extends Controller
 
         try {
             $data = $this->hijriService->getLiveTickerData($resolvedTimezone);
+            $dayName = Carbon::now($resolvedTimezone ?? 'Asia/Jakarta')->locale('id')->translatedFormat('l');
 
             // Return flat JSON response exactly matching the PRD structure
             return response()->json([
-                'tanggal_masehi'  => $data['tanggal_masehi'] ?? '',
-                'tanggal_hijriah' => $data['tanggal_hijriah'] ?? '',
+                'tanggal_masehi'  => $dayName . ', ' . ($data['tanggal_masehi'] ?? ''),
+                'tanggal_hijriah' => $dayName . ', ' . ($data['tanggal_hijriah'] ?? ''),
                 'subuh'           => $data['subuh'] ?? '',
                 'dzuhur'          => $data['dzuhur'] ?? '',
                 'ashar'           => $data['ashar'] ?? '',
@@ -53,8 +55,9 @@ class VmixDataController extends Controller
             Log::error("vMix endpoint error: " . $e->getMessage());
 
             // Never crash / return error, output placeholder values to prevent blank TV displays
+            $dayName = \Carbon\Carbon::now()->locale('id')->translatedFormat('l');
             return response()->json([
-                'tanggal_masehi'    => \Carbon\Carbon::now()->locale('id')->translatedFormat('j F Y'),
+                'tanggal_masehi'    => $dayName . ', ' . \Carbon\Carbon::now()->locale('id')->translatedFormat('j F Y'),
                 'tanggal_hijriah'   => 'Gagal Memuat Data',
                 'subuh'             => '--:--',
                 'dzuhur'            => '--:--',
@@ -87,7 +90,7 @@ class VmixDataController extends Controller
                 ->implode('       *       ');
 
             // 2. Informasi Kajian (only fetch where Tampilkan = true)
-            $kajian = \App\Models\Kajian::where('Tampilkan', true)
+            $kajian = \App\Models\Kajian::with(['narasumber', 'tempat'])->where('Tampilkan', true)
                 ->orderBy('Tanggal', 'asc')
                 ->get()
                 ->map(function ($item) {
@@ -110,11 +113,13 @@ class VmixDataController extends Controller
                     if ($item->Judul) {
                         $details[] = $item->Judul;
                     }
-                    if ($item->Narasumber) {
-                        $details[] = $item->Narasumber;
+                    $narasumberNama = $item->narasumber->nama ?? null;
+                    if ($narasumberNama) {
+                        $details[] = $narasumberNama;
                     }
-                    if ($item->Tempat) {
-                        $details[] = '📍 ' . $item->Tempat;
+                    $tempatNama = $item->tempat->nama ?? null;
+                    if ($tempatNama) {
+                        $details[] = '📍 ' . $tempatNama;
                     }
                     
                     if (!empty($details)) {
@@ -133,26 +138,35 @@ class VmixDataController extends Controller
             }
 
             // 3. Program Acara
-            $acara = \App\Models\Acara::where('tampilkan', true)
+            $acaraList = \App\Models\Acara::with(['narasumber', 'tempat'])->where('tampilkan', true)
                 ->orderBy('hari', 'asc')
                 ->orderBy('jam_mulai', 'asc')
-                ->get()
-                ->map(function ($item) {
-                    $daysMap = [
-                        'ahad'   => 'Sunday',
-                        'minggu' => 'Sunday',
-                        'senin'  => 'Monday',
-                        'selasa' => 'Tuesday',
-                        'rabu'   => 'Wednesday',
-                        'kamis'  => 'Thursday',
-                        'jumat'  => 'Friday',
-                        'sabtu'  => 'Saturday',
-                    ];
+                ->get();
 
+            $daysMap = [
+                'ahad'   => 'Sunday',
+                'minggu' => 'Sunday',
+                'senin'  => 'Monday',
+                'selasa' => 'Tuesday',
+                'rabu'   => 'Wednesday',
+                'kamis'  => 'Thursday',
+                'jumat'  => 'Friday',
+                'sabtu'  => 'Saturday',
+            ];
+
+            // Group by status (use empty string if status is empty)
+            $groupedAcara = $acaraList->groupBy(function ($item) {
+                return trim($item->status) !== '' ? trim($item->status) : '';
+            });
+
+            $acaraGroups = [];
+
+            foreach ($groupedAcara as $statusName => $items) {
+                $groupItemsText = $items->map(function ($item) use ($daysMap) {
                     $carbonDate = \Carbon\Carbon::now('Asia/Jakarta')->locale('id');
                     $englishDay = $daysMap[strtolower($item->hari)] ?? null;
                     if ($englishDay) {
-                        $todayEnglish = $carbonDate->locale('en')->isoFormat('dddd');
+                        $todayEnglish = $carbonDate->copy()->locale('en')->isoFormat('dddd');
                         if (strtolower($todayEnglish) !== strtolower($englishDay)) {
                             $carbonDate->next($englishDay);
                         }
@@ -185,11 +199,13 @@ class VmixDataController extends Controller
                     if ($item->judul) {
                         $details[] = $item->judul;
                     }
-                    if ($item->narasumber) {
-                        $details[] = $item->narasumber;
+                    $narasumberNama = $item->narasumber->nama ?? null;
+                    if ($narasumberNama) {
+                        $details[] = $narasumberNama;
                     }
-                    if ($item->tempat) {
-                        $details[] = '📍 ' . $item->tempat;
+                    $tempatNama = $item->tempat->nama ?? null;
+                    if ($tempatNama) {
+                        $details[] = '📍 ' . $tempatNama;
                     }
                     
                     if (!empty($details)) {
@@ -200,6 +216,17 @@ class VmixDataController extends Controller
                 })
                 ->filter()
                 ->implode('       *       ');
+
+                if ($groupItemsText !== '') {
+                    if ($statusName !== '') {
+                        $acaraGroups[] = "{$statusName} : {$groupItemsText}";
+                    } else {
+                        $acaraGroups[] = $groupItemsText;
+                    }
+                }
+            }
+
+            $acara = implode('       *       ', $acaraGroups);
 
             if ($acara !== '') {
                 $acara = 'Informasi Acara TV : ' . $acara;

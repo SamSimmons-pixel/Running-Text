@@ -36,6 +36,11 @@ return new class extends Migration
             $table->dropColumn('Informasi');
             $table->dropColumn('WaktuSelesai');
             $table->dropColumn(['author', 'last_modified_by']);
+            $table->dropColumn('Tempat');
+            $table->dropColumn('Kontak');
+            $table->dropColumn('Tanggal');
+            $table->dropColumn('Judul');
+            $table->dropColumn('Narasumber');
         });
     }
 };

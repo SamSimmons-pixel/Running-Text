@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class KontakController extends Controller
 {
-    /**
-     * Guard: only admin role may access any method in this controller.
-     */
     private function requireOperator(): void
     {
         if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
@@ -18,28 +15,29 @@ class KontakController extends Controller
         }
     }
 
-    /**
-     * Show the Kontak management page.
-     */
     public function index()
     {
         $this->requireOperator();
 
-        $kontakList = Kontak::orderBy('nama', 'asc')->get();
+        $kontakList = Kontak::withCount(['kajian'])
+            ->with(['kajian:id,kontak_id,Judul'])
+            ->orderBy('nama', 'asc')
+            ->get();
 
         return view('kontak', compact('kontakList'));
     }
 
-    /**
-     * Store a new Kontak.
-     */
     public function store(Request $request)
     {
         $this->requireOperator();
 
         $data = $request->validate([
-            'nama' => ['required', 'string', 'max:255', 'unique:kontak,nama'],
+            'nama'         => ['required', 'string', 'max:255'],
+            'nomor_kontak' => ['required', 'string', 'max:255', 'unique:kontak,nomor_kontak'],
         ]);
+
+        $data['author'] = Auth::user()->name;
+        $data['last_modified_by'] = Auth::user()->name;
 
         Kontak::create($data);
 
@@ -47,9 +45,6 @@ class KontakController extends Controller
             ->with('success', 'Kontak berhasil ditambahkan.');
     }
 
-    /**
-     * Delete a Kontak.
-     */
     public function destroy($id)
     {
         $this->requireOperator();
@@ -58,6 +53,6 @@ class KontakController extends Controller
         $kontak->delete();
 
         return redirect()->route('admin.kontak')
-            ->with('success', 'Kontak berhasil dihapus.');
+            ->with('success', 'Kontak "' . $kontak->nama . '" berhasil dihapus. Data terkait di Kajian telah diset ke kosong (—).');
     }
 }

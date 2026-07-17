@@ -92,10 +92,10 @@
                           <div class="col-sm-6 col-md-4">
                             <div class="form-group">
                               <label class="control-label">Narasumber</label>
-                              <select name="Narasumber" class="form-control form-control-custom" required>
+                              <select name="narasumber_id" class="form-control form-control-custom" required>
                                 <option value="" disabled selected>Pilih Narasumber</option>
                                 @foreach($narasumberList as $nara)
-                                  <option value="{{ $nara->nama }}" {{ old('Narasumber') == $nara->nama ? 'selected' : '' }}>
+                                  <option value="{{ $nara->id }}" {{ old('narasumber_id') == $nara->id ? 'selected' : '' }}>
                                     {{ $nara->nama }}
                                   </option>
                                 @endforeach
@@ -112,10 +112,10 @@
                           <div class="col-sm-6 col-md-4">
                             <div class="form-group">
                               <label class="control-label">Tempat</label>
-                              <select name="Tempat" class="form-control form-control-custom" required>
+                              <select name="tempat_id" class="form-control form-control-custom" required>
                                 <option value="" disabled selected>Pilih Tempat</option>
                                 @foreach($tempatList as $temp)
-                                  <option value="{{ $temp->nama }}" {{ old('Tempat') == $temp->nama ? 'selected' : '' }}>
+                                  <option value="{{ $temp->id }}" {{ old('tempat_id') == $temp->id ? 'selected' : '' }}>
                                     {{ $temp->nama }}
                                   </option>
                                 @endforeach
@@ -125,11 +125,11 @@
                           <div class="col-sm-6 col-md-4">
                             <div class="form-group">
                               <label class="control-label">Kontak</label>
-                              <select name="Kontak" class="form-control form-control-custom">
-                                <option value="" selected>— Tanpa Kontak —</option>
+                              <select name="kontak_id" class="form-control form-control-custom">
+                                <option value="">— Tanpa Kontak —</option>
                                 @foreach($kontakList as $kon)
-                                  <option value="{{ $kon->nama }}" {{ old('Kontak') == $kon->nama ? 'selected' : '' }}>
-                                    {{ $kon->nama }}
+                                  <option value="{{ $kon->id }}" {{ old('kontak_id') == $kon->id ? 'selected' : '' }}>
+                                    {{ $kon->nama }} ({{ $kon->nomor_kontak }})
                                   </option>
                                 @endforeach
                               </select>
@@ -201,9 +201,12 @@
 
                 {{-- ── Kajian Table ── --}}
                 <div class="panel panel-default">
-                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> Daftar Kajian</h3>
-                    <small class="section-count">Total: {{ $kajian->count() }} kajian</small>
+                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                    <h3 class="panel-title" style="margin:0;"><i class="fa fa-list"></i> Daftar Kajian <small style="margin-left:8px; color:rgba(255,255,255,0.4);" class="section-count">Total: {{ $kajian->count() }} kajian</small></h3>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:nowrap;">
+                      <input type="search" id="kajianSearchInput" placeholder="Cari kajian..." class="form-control form-control-custom" style="width:200px; padding:6px 12px; height:34px; margin:0;" onkeyup="filterKajianTable()">
+                      <button class="btn btn-primary" onclick="filterKajianTable()" style="padding:6px 15px; height:34px; line-height:20px; font-size:1.15rem; margin:0;"><i class="fa fa-search"></i> Cari</button>
+                    </div>
                   </div>
                   <div class="panel-body" style="padding:0;">
                     @if ($kajian->isEmpty())
@@ -228,15 +231,15 @@
                           <tbody>
                             @foreach ($kajian as $item)
                              @php
-                              $kajianStart = \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta');
-                              $kajianEnd   = $kajianStart->copy()->addHour();
-                              $isOnAir     = now('Asia/Jakarta')->between($kajianStart, $kajianEnd);
+                               $kajianStart = \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta');
+                               $kajianEnd   = null;
+                               $isOnAir = \App\Http\Controllers\KajianController::isKajianOnAir($item->Tanggal, $item->WaktuSelesai);
                              @endphp
-                             <tr class="{{ $isOnAir ? 'row-on-air' : '' }}">
+                             <tr id="mainRow-{{ $item->id }}" class="searchable-row {{ $isOnAir ? 'row-on-air' : '' }}">
                                <td>
                                  <strong>{{ $item->Judul }}</strong>
                                  <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">
-                                   {{ $item->Narasumber }}
+                                   {{ $item->narasumber->nama ?? '—' }}
                                  </small>
                                </td>
                                <td style="white-space:nowrap; color:#94a3b8;">
@@ -250,16 +253,16 @@
                                  </small>
                                </td>
                                <td style="text-align:center; vertical-align:middle;">
-                                 @if($isOnAir)
+                                 @if($isOnAir && $item->Tampilkan)
                                    <span class="badge-live">LIVE</span>
-                                 @elseif(\Carbon\Carbon::parse($item->Tanggal)->isPast())
-                                   <span class="label label-danger" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(239, 68, 68, 0.15) !important; color: #fb7185 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important;">terlewat</span>
+                                 @elseif(\Carbon\Carbon::parse($item->Tanggal)->isPast() || !$item->Tampilkan)
+                                   <span class="label label-danger" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(239, 68, 68, 0.15) !important; color: #fb7185 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important;">Off</span>
                                  @else
-                                   <span class="label label-success" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(34, 197, 94, 0.15) !important; color: #34d399 !important; border: 1px solid rgba(34, 197, 94, 0.3) !important;">terjadwal</span>
+                                   <span class="label label-success" style="border-radius: 99px; padding: 3px 8px; font-size: 1.25rem; background-color: rgba(34, 197, 94, 0.15) !important; color: #34d399 !important; border: 1px solid rgba(34, 197, 94, 0.3) !important;">On</span>
                                  @endif
                                </td>
-                               <td style="color:#94a3b8;">{{ $item->Tempat }}</td>
-                              <td style="color:#94a3b8;">{{ $item->Kontak ?: '—' }}</td>
+                               <td style="color:#94a3b8;">{{ $item->tempat->nama ?? '—' }}</td>
+                              <td style="color:#94a3b8;">{{ $item->kontak->nama ?? '—' }}</td>
                               <td style="text-align:center;">
                                 <form method="POST" action="{{ route('admin.kajian.toggle', $item->id) }}"
                                       class="toggle-form" id="toggleForm-{{ $item->id }}">
@@ -283,10 +286,10 @@
                                     onclick="openEditModal(
                                       '{{ $item->id }}',
                                       '{{ addslashes($item->Judul) }}',
-                                      '{{ addslashes($item->Narasumber) }}',
+                                      '{{ $item->narasumber_id }}',
                                       '{{ \Carbon\Carbon::parse($item->Tanggal)->format('Y-m-d\TH:i') }}',
-                                      '{{ addslashes($item->Tempat) }}',
-                                      '{{ addslashes($item->Kontak ?? '') }}',
+                                      '{{ $item->tempat_id }}',
+                                      '{{ $item->kontak_id ?? '' }}',
                                       '{{ str_replace(["\r", "\n"], ["\\r", "\\n"], addslashes($item->Informasi ?? '')) }}',
                                       '{{ addslashes($item->WaktuSelesai ?? '') }}',
                                       '{{ $item->Tampilkan ? 'true' : 'false' }}'
@@ -313,11 +316,7 @@
                                     <em style="color: #64748b; font-style: italic;">Tidak ada Informasi</em>
                                   @endif
                                 </div>
-                                <div style="display: flex; flex-wrap: wrap; gap: 2.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); font-size: 1.1rem; color: #94a3b8; padding-left: 1.25rem;">
-                                  <div><strong style="color: #38bdf8;">Pembuat (Author):</strong> <span style="color: #e2e8f0;">{{ $item->author ?: 'Sistem' }}</span></div>
-                                  <div><strong style="color: #38bdf8;">Terakhir Diubah (Last Modified):</strong> <span style="color: #e2e8f0;">{{ $item->updated_at ? $item->updated_at->locale('id')->translatedFormat('l, d F Y H:i') : 'Sistem' }}</span></div>
-                                  <div><strong style="color: #38bdf8;">Pengubah Terakhir (Last Modified Author):</strong> <span style="color: #e2e8f0;">{{ $item->last_modified_by ?: 'Sistem' }}</span></div>
-                                </div>
+                                @include('partials.metadata')
                               </td>
                             </tr>
                             @endforeach
@@ -400,10 +399,10 @@
             <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Narasumber</label>
-                <select id="edit_Narasumber" name="Narasumber" class="form-control form-control-custom" required>
+                <select id="edit_narasumber_id" name="narasumber_id" class="form-control form-control-custom" required>
                   <option value="" disabled>Pilih Narasumber</option>
                   @foreach($narasumberList as $nara)
-                    <option value="{{ $nara->nama }}">{{ $nara->nama }}</option>
+                    <option value="{{ $nara->id }}">{{ $nara->nama }}</option>
                   @endforeach
                 </select>
               </div>
@@ -411,10 +410,10 @@
             <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Tempat</label>
-                <select id="edit_Tempat" name="Tempat" class="form-control form-control-custom" required>
+                <select id="edit_tempat_id" name="tempat_id" class="form-control form-control-custom" required>
                   <option value="" disabled>Pilih Tempat</option>
                   @foreach($tempatList as $temp)
-                    <option value="{{ $temp->nama }}">{{ $temp->nama }}</option>
+                    <option value="{{ $temp->id }}">{{ $temp->nama }}</option>
                   @endforeach
                 </select>
               </div>
@@ -422,10 +421,10 @@
             <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Kontak</label>
-                <select id="edit_Kontak" name="Kontak" class="form-control form-control-custom">
+                <select id="edit_kontak_id" name="kontak_id" class="form-control form-control-custom">
                   <option value="">— Tanpa Kontak —</option>
                   @foreach($kontakList as $kon)
-                    <option value="{{ $kon->nama }}">{{ $kon->nama }}</option>
+                    <option value="{{ $kon->id }}">{{ $kon->nama }} ({{ $kon->nomor_kontak }})</option>
                   @endforeach
                 </select>
               </div>
@@ -498,14 +497,40 @@
         }
       }
 
-      function openEditModal(id, judul, narasumber, tanggal, tempat, kontak, informasi, waktuSelesai, tampilkan) {
+      function filterKajianTable() {
+        var input = document.getElementById('kajianSearchInput');
+        var filter = input.value.toLowerCase();
+        var mainRows = document.getElementsByClassName('searchable-row');
+        
+        for (var i = 0; i < mainRows.length; i++) {
+          var row = mainRows[i];
+          var id = row.id.split('-')[1];
+          var infoRow = document.getElementById('rowInfo-' + id);
+          
+          var text = row.innerText.toLowerCase();
+          if (infoRow) {
+            text += ' ' + infoRow.innerText.toLowerCase();
+          }
+          
+          if (text.indexOf(filter) > -1) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+            if (infoRow) {
+              infoRow.style.display = 'none';
+            }
+          }
+        }
+      }
+
+      function openEditModal(id, judul, narasumberId, tanggal, tempatId, kontakId, informasi, waktuSelesai, tampilkan) {
         document.getElementById('editForm').action = `/admin_dashboard/${id}`;
-        document.getElementById('edit_Judul').value       = judul;
-        document.getElementById('edit_Narasumber').value  = narasumber;
-        document.getElementById('edit_Tanggal').value     = tanggal;
-        document.getElementById('edit_Tempat').value      = tempat;
-        document.getElementById('edit_Kontak').value      = kontak;
-        document.getElementById('edit_Informasi').value   = informasi;
+        document.getElementById('edit_Judul').value            = judul;
+        document.getElementById('edit_narasumber_id').value    = narasumberId;
+        document.getElementById('edit_Tanggal').value          = tanggal;
+        document.getElementById('edit_tempat_id').value        = tempatId;
+        document.getElementById('edit_kontak_id').value        = kontakId;
+        document.getElementById('edit_Informasi').value        = informasi;
 
         // Handle WaktuSelesai modes and inputs
         const textOptions = ['Menjelang Dzuhur', 'Menjelang Ashar', 'Menjelang Maghrib', 'Menjelang Isya'];

@@ -13,8 +13,8 @@ class Acara extends Model
         'hari',
         'jam_mulai',
         'jam_selesai',
-        'narasumber',
-        'tempat',
+        'narasumber_id',
+        'tempat_id',
         'status',
         'tampilkan',
         'author',
@@ -24,4 +24,14 @@ class Acara extends Model
     protected $casts = [
         'tampilkan' => 'boolean',
     ];
+
+    public function narasumber()
+    {
+        return $this->belongsTo(Narasumber::class, 'narasumber_id');
+    }
+
+    public function tempat()
+    {
+        return $this->belongsTo(Tempat::class, 'tempat_id');
+    }
 }

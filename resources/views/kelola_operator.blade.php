@@ -114,9 +114,12 @@
 
                 {{-- Table --}}
                 <div class="panel panel-default">
-                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> Daftar Akun Operator</h3>
-                    <small class="section-count">Total: {{ $operators->count() }} akun</small>
+                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                    <h3 class="panel-title" style="margin:0;"><i class="fa fa-list"></i> Daftar Akun Operator <small style="margin-left:8px; color:rgba(255,255,255,0.4);" class="section-count">Total: {{ $operators->count() }} akun</small></h3>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:nowrap;">
+                      <input type="search" id="operatorSearchInput" placeholder="Cari operator..." class="form-control form-control-custom" style="width:200px; padding:6px 12px; height:34px; margin:0;" onkeyup="filterOperatorTable()">
+                      <button class="btn btn-primary" onclick="filterOperatorTable()" style="padding:6px 15px; height:34px; line-height:20px; font-size:1.15rem; margin:0;"><i class="fa fa-search"></i> Cari</button>
+                    </div>
                   </div>
                   <div class="panel-body" style="padding:0;">
                     @if ($operators->isEmpty())
@@ -137,7 +140,7 @@
                           </thead>
                           <tbody>
                             @foreach ($operators as $index => $item)
-                            <tr>
+                            <tr id="mainRow-{{ $item->id }}" class="searchable-row">
                               <td>{{ $index + 1 }}</td>
                               <td><strong>{{ $item->name }}</strong></td>
                               <td>
@@ -239,6 +242,23 @@
       function toggleAddForm() {
         var form = document.getElementById('addForm');
         form.classList.toggle('open');
+      }
+
+      function filterOperatorTable() {
+        var input = document.getElementById('operatorSearchInput');
+        var filter = input.value.toLowerCase();
+        var mainRows = document.getElementsByClassName('searchable-row');
+        
+        for (var i = 0; i < mainRows.length; i++) {
+          var row = mainRows[i];
+          var text = row.innerText.toLowerCase();
+          
+          if (text.indexOf(filter) > -1) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        }
       }
 
       @if ($errors->any() && (old('name') && !old('_edit_id')))

@@ -56,7 +56,7 @@ class HijriTickerController extends Controller
         $validated = $request->validate([
             'default_city' => 'required|string',
             'hijri_offset_days' => 'required|integer|min:-5|max:5',
-            'prayer_time_provider' => 'required|string|in:aladhan,myquran',
+            'prayer_time_provider' => 'required|string|in:aladhan,myquran,alhabib',
         ]);
 
         $city = $validated['default_city'];

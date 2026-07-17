@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->text('deskripsi_alamat')->nullable();
+            $table->string('author')->nullable();
+            $table->string('last_modified_by')->nullable();
             $table->timestamps();
         });
     }

@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('kontak', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->string('nomor_kontak');
+            $table->string('author')->nullable();
+            $table->string('last_modified_by')->nullable();
             $table->timestamps();
         });
     }

@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class NarasumberController extends Controller
 {
-    /**
-     * Guard: only admin role may access any method in this controller.
-     */
     private function requireOperator(): void
     {
         if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
@@ -18,21 +15,19 @@ class NarasumberController extends Controller
         }
     }
 
-    /**
-     * Show the Narasumber management page.
-     */
     public function index()
     {
         $this->requireOperator();
 
-        $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
+        // Eager-load kajian and acara counts for usage warnings
+        $narasumberList = Narasumber::withCount(['kajian', 'acara'])
+            ->with(['kajian:id,narasumber_id,Judul', 'acara:id,narasumber_id,judul'])
+            ->orderBy('nama', 'asc')
+            ->get();
 
         return view('narasumber', compact('narasumberList'));
     }
 
-    /**
-     * Store a new Narasumber.
-     */
     public function store(Request $request)
     {
         $this->requireOperator();
@@ -41,23 +36,24 @@ class NarasumberController extends Controller
             'nama' => ['required', 'string', 'max:255', 'unique:narasumber,nama'],
         ]);
 
+        $data['author'] = Auth::user()->name;
+        $data['last_modified_by'] = Auth::user()->name;
+
         Narasumber::create($data);
 
         return redirect()->route('admin.narasumber')
             ->with('success', 'Narasumber berhasil ditambahkan.');
     }
 
-    /**
-     * Delete a Narasumber.
-     */
     public function destroy($id)
     {
         $this->requireOperator();
 
         $narasumber = Narasumber::findOrFail($id);
+        // FK is SET NULL on delete — Eloquent will fire the delete and DB handles nullification
         $narasumber->delete();
 
         return redirect()->route('admin.narasumber')
-            ->with('success', 'Narasumber berhasil dihapus.');
+            ->with('success', 'Narasumber "' . $narasumber->nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
     }
 }

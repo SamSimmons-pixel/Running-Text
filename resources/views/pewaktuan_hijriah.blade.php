@@ -271,6 +271,9 @@
                               <option value="myquran" {{ $settings->prayer_time_provider === 'myquran' ? 'selected' : '' }}>
                                 MyQuran API (Standard Kemenag Indonesia - Lokal)
                               </option>
+                              <option value="alhabib" {{ $settings->prayer_time_provider === 'alhabib' ? 'selected' : '' }}>
+                                Al-Habib (Jadwal Shalat & Kalender Hijriyah - Lokal)
+                              </option>
                             </select>
                             <span class="help-block" style="font-size: 1.4rem; color: #64748b;">
                               Metode lookup API utama. Sistem akan otomatis fallback ke provider cadangan jika provider utama offline.

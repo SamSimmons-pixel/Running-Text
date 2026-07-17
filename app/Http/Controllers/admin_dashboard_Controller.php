@@ -36,11 +36,11 @@ class admin_dashboard_Controller extends Controller
     {
         $this->requireOperator();
 
-        $kajian = Kajian::orderBy('Tanggal', 'asc')->get();
+        $kajian = Kajian::with(['narasumber', 'tempat', 'kontak'])->orderBy('Tanggal', 'asc')->get();
         $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
         $tempatList     = Tempat::orderBy('nama', 'asc')->get();
         $kontakList     = Kontak::orderBy('nama', 'asc')->get();
-        $acaraList      = Acara::orderBy('hari', 'asc')->orderBy('jam_mulai', 'asc')->get();
+        $acaraList      = Acara::with(['narasumber', 'tempat'])->orderBy('hari', 'asc')->orderBy('jam_mulai', 'asc')->get()->where('tampilkan', true);
         $informasiUmumList = InformasiUmum::orderBy('created_at', 'desc')->get();
 
         return view('admin_dashboard', compact('kajian', 'narasumberList', 'tempatList', 'kontakList', 'acaraList', 'informasiUmumList'));

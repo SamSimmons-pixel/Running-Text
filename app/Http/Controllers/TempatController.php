@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class TempatController extends Controller
 {
-    /**
-     * Guard: only admin role may access any method in this controller.
-     */
     private function requireOperator(): void
     {
         if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
@@ -18,21 +15,18 @@ class TempatController extends Controller
         }
     }
 
-    /**
-     * Show the Tempat management page.
-     */
     public function index()
     {
         $this->requireOperator();
 
-        $tempatList = Tempat::orderBy('nama', 'asc')->get();
+        $tempatList = Tempat::withCount(['kajian', 'acara'])
+            ->with(['kajian:id,tempat_id,Judul', 'acara:id,tempat_id,judul'])
+            ->orderBy('nama', 'asc')
+            ->get();
 
         return view('tempat', compact('tempatList'));
     }
 
-    /**
-     * Store a new Tempat.
-     */
     public function store(Request $request)
     {
         $this->requireOperator();
@@ -42,15 +36,15 @@ class TempatController extends Controller
             'deskripsi_alamat' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        $data['author'] = Auth::user()->name;
+        $data['last_modified_by'] = Auth::user()->name;
+
         Tempat::create($data);
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil ditambahkan.');
     }
 
-    /**
-     * Update an existing Tempat.
-     */
     public function update(Request $request, $id)
     {
         $this->requireOperator();
@@ -62,15 +56,14 @@ class TempatController extends Controller
             'deskripsi_alamat' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        $data['last_modified_by'] = Auth::user()->name;
+
         $tempat->update($data);
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil diperbarui.');
     }
 
-    /**
-     * Delete a Tempat.
-     */
     public function destroy($id)
     {
         $this->requireOperator();
@@ -79,6 +72,6 @@ class TempatController extends Controller
         $tempat->delete();
 
         return redirect()->route('admin.tempat')
-            ->with('success', 'Tempat berhasil dihapus.');
+            ->with('success', 'Tempat "' . $tempat->nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
     }
 }

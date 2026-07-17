@@ -114,8 +114,8 @@
                 {{-- ── Stat Cards ── --}}
                 @php
                   $totalKajian      = $kajian->count();
-                  $upcoming         = $kajian->where('Tanggal', '>=', now())->sortBy('Tanggal')->take(5);
-                  $pastActiveKajian = $kajian->filter(fn($item) => $item->Tampilkan && \Carbon\Carbon::parse($item->Tanggal)->isPast())->count();
+                  $upcoming         = $kajian->filter(fn($item) => \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta')->isToday() && $item->Tampilkan)->sortBy('Tanggal')->take(3);
+                  $liveKajianCount  = $kajian->filter(fn($item) => \App\Http\Controllers\KajianController::isKajianOnAir($item->Tanggal, $item->WaktuSelesai) && $item->Tampilkan)->count();
                 @endphp
 
                 <div class="stat-row">
@@ -174,12 +174,12 @@
                     </div>
                   </div>
                   <div class="stat-card">
-                    <div class="stat-card__icon" style="background:rgba(239,68,68,0.12); color:#fca5a5;">
-                      <i class="fa fa-calendar-times-o"></i>
+                    <div class="stat-card__icon" style="background:rgba(239,68,68,0.15); color:#f87171;">
+                      <i class="fa fa-play-circle"></i>
                     </div>
                     <div>
-                      <div class="stat-card__value" style="color:#fca5a5;">{{ $pastActiveKajian }}</div>
-                      <div class="stat-card__label">Kajian terlewat yang di tampilkan</div>
+                      <div class="stat-card__value" style="color:#f87171;">{{ $liveKajianCount }}</div>
+                      <div class="stat-card__label">Kajian Sedang LIVE</div>
                     </div>
                   </div>
                 </div>
@@ -216,14 +216,12 @@
                           <tbody>
                             @foreach ($upcoming as $item)
                             @php
-                              $kajianStart  = \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta');
-                              $kajianEnd    = $kajianStart->copy()->addHour();
-                              $kajianOnAir  = now('Asia/Jakarta')->between($kajianStart, $kajianEnd);
+                              $kajianOnAir = \App\Http\Controllers\KajianController::isKajianOnAir($item->Tanggal, $item->WaktuSelesai, $item->Tampilkan);
                             @endphp
                             <tr class="{{ $kajianOnAir ? 'row-on-air' : '' }}">
                               <td>
                                 <strong>{{ $item->Judul }}</strong>
-                                <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">{{ $item->Narasumber }}</small>
+                                <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">{{ $item->narasumber->nama ?? '—' }}</small>
                               </td>
                               <td style="color:#94a3b8; white-space:nowrap;">
                                 {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('dddd') }}
@@ -238,12 +236,10 @@
                                   {{ $item->WaktuSelesai }}
                                 @endif
                               </td>
-                              <td style="color:#94a3b8;">{{ $item->Tempat }}</td>
+                              <td style="color:#94a3b8;">{{ $item->tempat->nama ?? '—' }}</td>
                               <td style="text-align:center; vertical-align:middle;">
                                 @if ($item->Tampilkan)
                                   <span class="upcoming-badge badge-on">Tampil</span>
-                                @else
-                                  <span class="upcoming-badge badge-off">Tersembunyi</span>
                                 @endif
                               </td>
                               <td style="text-align:center; vertical-align:middle;">
@@ -316,7 +312,7 @@
                             <tr class="{{ $acOnAir ? 'row-on-air' : '' }}">
                               <td>
                                 <strong>{{ $acItem->judul }}</strong>
-                                <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">{{ $acItem->narasumber }}</small>
+                                <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">{{ $acItem->narasumber->nama ?? '—' }}</small>
                               </td>
                               <td style="color:#94a3b8; white-space:nowrap;">{{ $acItem->hari }}</td>
                               <td style="color:#94a3b8; white-space:nowrap;">
@@ -324,12 +320,10 @@
                                 <span style="opacity:0.5;">–</span>
                                 {{ \Carbon\Carbon::parse($acItem->jam_selesai)->format('H:i') }}
                               </td>
-                              <td style="color:#94a3b8;">{{ $acItem->tempat }}</td>
+                              <td style="color:#94a3b8;">{{ $acItem->tempat->nama ?? '—' }}</td>
                               <td style="text-align:center; vertical-align:middle;">
                                 @if ($acItem->tampilkan)
                                   <span class="upcoming-badge badge-on">Tampil</span>
-                                @else
-                                  <span class="upcoming-badge badge-off">Tersembunyi</span>
                                 @endif
                               </td>
                               <td style="text-align:center; vertical-align:middle;">

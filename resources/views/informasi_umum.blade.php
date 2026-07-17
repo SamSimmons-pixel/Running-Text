@@ -243,9 +243,12 @@
 
                 {{-- Table --}}
                 <div class="panel panel-default">
-                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> Daftar Informasi Umum</h3>
-                    <small class="section-count">Total: {{ $informasiList->count() }} records</small>
+                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                    <h3 class="panel-title" style="margin:0;"><i class="fa fa-list"></i> Daftar Informasi Umum <small style="margin-left:8px; color:rgba(255,255,255,0.4);" class="section-count">Total: {{ $informasiList->count() }} records</small></h3>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:nowrap;">
+                      <input type="search" id="informasiSearchInput" placeholder="Cari info umum..." class="form-control form-control-custom" style="width:200px; padding:6px 12px; height:34px; margin:0;" onkeyup="filterInformasiTable()">
+                      <button class="btn btn-primary" onclick="filterInformasiTable()" style="padding:6px 15px; height:34px; line-height:20px; font-size:1.15rem; margin:0;"><i class="fa fa-search"></i> Cari</button>
+                    </div>
                   </div>
                   <div class="panel-body" style="padding:0;">
                     @if ($informasiList->isEmpty())
@@ -267,7 +270,7 @@
                           </thead>
                           <tbody>
                             @foreach ($informasiList as $index => $item)
-                            <tr>
+                            <tr id="mainRow-{{ $item->id }}" class="searchable-row">
                               <td>{{ $index + 1 }}</td>
                               <td><strong>{{ $item->judul }}</strong></td>
                               <td><span style="color:#94a3b8; font-size:0.9em;">{{ $item->deskripsi }}</span></td>
@@ -306,11 +309,7 @@
                                 <div style="font-weight: 600; color: #94a3b8; margin-bottom: 0.5rem; font-size: 1.15rem;">
                                   <i class="fa fa-info-circle" style="color: #38bdf8; margin-right: 0.25rem;"></i> Informasi Umum Metadata
                                 </div>
-                                <div style="display: flex; flex-wrap: wrap; gap: 2.5rem; padding-top: 1rem; font-size: 1.1rem; color: #94a3b8; padding-left: 1.25rem;">
-                                  <div><strong style="color: #38bdf8;">Pembuat (Author):</strong> <span style="color: #e2e8f0;">{{ $item->author ?: 'Sistem' }}</span></div>
-                                  <div><strong style="color: #38bdf8;">Terakhir Diubah (Last Modified):</strong> <span style="color: #e2e8f0;">{{ $item->updated_at ? $item->updated_at->locale('id')->translatedFormat('l, d F Y H:i') : 'Sistem' }}</span></div>
-                                  <div><strong style="color: #38bdf8;">Pengubah Terakhir (Last Modified Author):</strong> <span style="color: #e2e8f0;">{{ $item->last_modified_by ?: 'Sistem' }}</span></div>
-                                </div>
+                                @include('partials.metadata')
                               </td>
                             </tr>
                             @endforeach
@@ -403,6 +402,32 @@
           row.style.display = 'table-row';
         } else {
           row.style.display = 'none';
+        }
+      }
+
+      function filterInformasiTable() {
+        var input = document.getElementById('informasiSearchInput');
+        var filter = input.value.toLowerCase();
+        var mainRows = document.getElementsByClassName('searchable-row');
+        
+        for (var i = 0; i < mainRows.length; i++) {
+          var row = mainRows[i];
+          var id = row.id.split('-')[1];
+          var infoRow = document.getElementById('rowInfo-' + id);
+          
+          var text = row.innerText.toLowerCase();
+          if (infoRow) {
+            text += ' ' + infoRow.innerText.toLowerCase();
+          }
+          
+          if (text.indexOf(filter) > -1) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+            if (infoRow) {
+              infoRow.style.display = 'none';
+            }
+          }
         }
       }
 

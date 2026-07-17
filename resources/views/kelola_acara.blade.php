@@ -136,10 +136,10 @@
                           <div class="col-sm-6 col-md-4">
                             <div class="form-group">
                               <label class="control-label">Narasumber</label>
-                              <select name="narasumber" class="form-control form-control-custom" required>
+                              <select name="narasumber_id" class="form-control form-control-custom" required>
                                 <option value="" disabled selected>Pilih Narasumber</option>
                                 @foreach($narasumberList as $nara)
-                                  <option value="{{ $nara->nama }}" {{ old('narasumber') == $nara->nama ? 'selected' : '' }}>
+                                  <option value="{{ $nara->id }}" {{ old('narasumber_id') == $nara->id ? 'selected' : '' }}>
                                     {{ $nara->nama }}
                                   </option>
                                 @endforeach
@@ -149,10 +149,10 @@
                           <div class="col-sm-6 col-md-4">
                             <div class="form-group">
                               <label class="control-label">Tempat</label>
-                              <select name="tempat" class="form-control form-control-custom" required>
+                              <select name="tempat_id" class="form-control form-control-custom" required>
                                 <option value="" disabled selected>Pilih Tempat</option>
                                 @foreach($tempatList as $temp)
-                                  <option value="{{ $temp->nama }}" {{ old('tempat') == $temp->nama ? 'selected' : '' }}>
+                                  <option value="{{ $temp->id }}" {{ old('tempat_id') == $temp->id ? 'selected' : '' }}>
                                     {{ $temp->nama }}
                                   </option>
                                 @endforeach
@@ -188,9 +188,12 @@
 
                 {{-- ── Acara Table ── --}}
                 <div class="panel panel-default">
-                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
-                    <h3 class="panel-title"><i class="fa fa-play"></i> Daftar Acara</h3>
-                    <small class="section-count">Total: {{ $acara->count() }} acara</small>
+                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                    <h3 class="panel-title" style="margin:0;"><i class="fa fa-play"></i> Daftar Acara <small style="margin-left:8px; color:rgba(255,255,255,0.4);" class="section-count">Total: {{ $acara->count() }} acara</small></h3>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:nowrap;">
+                      <input type="search" id="acaraSearchInput" placeholder="Cari acara..." class="form-control form-control-custom" style="width:200px; padding:6px 12px; height:34px; margin:0;" onkeyup="filterAcaraTable()">
+                      <button class="btn btn-primary" onclick="filterAcaraTable()" style="padding:6px 15px; height:34px; line-height:20px; font-size:1.15rem; margin:0;"><i class="fa fa-search"></i> Cari</button>
+                    </div>
                   </div>
                   <div class="panel-body" style="padding:0;">
                     @if ($acara->isEmpty())
@@ -233,11 +236,11 @@
                                       && ($jamNow >= $item->jam_mulai)
                                       && ($jamNow <= $item->jam_selesai);
                             @endphp
-                            <tr class="{{ $isOnAir ? 'row-on-air' : '' }}">
+                             <tr id="mainRow-{{ $item->id }}" class="searchable-row {{ $isOnAir ? 'row-on-air' : '' }}">
                               <td>
                                 <strong>{{ $item->judul }}</strong>
                                 <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">
-                                  {{ $item->narasumber }}
+                                  {{ $item->narasumber->nama ?? '—' }}
                                 </small>
                               </td>
                               <td style="color:#94a3b8; white-space:nowrap;">{{ $item->hari }}</td>
@@ -246,11 +249,15 @@
                                 <span style="opacity:0.5;">–</span>
                                 {{ \Carbon\Carbon::parse($item->jam_selesai)->format('H:i') }}
                               </td>
-                              <td style="color:#94a3b8;">{{ $item->tempat }}</td>
+                              <td style="color:#94a3b8;">{{ $item->tempat->nama ?? '—' }}</td>
                               <td style="text-align:center; vertical-align:middle;">
-                                @if($isOnAir)
+                                @if($isOnAir && $item->tampilkan)
                                   <span class="badge-live">LIVE</span>
-                                @elseif($item->status)
+                                @elseif ($isOnAir && !$item->tampilkan)
+                                  <span class="label label-info" style="border-radius:99px; padding:3px 8px; font-size:1.1rem; background-color:rgba(239,68,68,0.15)!important; color:#ef4444!important; border:1px solid rgba(239,68,68,0.3)!important;">
+                                    Off
+                                  </span>
+                                @elseif(!$item->tampilkan || $item->tampilkan)
                                   <span class="label label-info" style="border-radius:99px; padding:3px 8px; font-size:1.1rem; background-color:rgba(99,179,237,0.15)!important; color:#63b3ed!important; border:1px solid rgba(99,179,237,0.3)!important;">
                                     {{ $item->status }}
                                   </span>
@@ -285,8 +292,8 @@
                                       '{{ addslashes($item->hari) }}',
                                       '{{ $item->jam_mulai }}',
                                       '{{ $item->jam_selesai }}',
-                                      '{{ addslashes($item->narasumber) }}',
-                                      '{{ addslashes($item->tempat) }}',
+                                      '{{ $item->narasumber_id }}',
+                                      '{{ $item->tempat_id }}',
                                       '{{ addslashes($item->status ?? '') }}'
                                     )"> 
                                     <i class="fa fa-pencil"></i> Edit
@@ -303,11 +310,7 @@
                                 <div style="font-weight: 600; color: #94a3b8; margin-bottom: 0.5rem; font-size: 1.15rem;">
                                   <i class="fa fa-info-circle" style="color: #38bdf8; margin-right: 0.25rem;"></i> Acara Metadata
                                 </div>
-                                <div style="display: flex; flex-wrap: wrap; gap: 2.5rem; padding-top: 1rem; font-size: 1.1rem; color: #94a3b8; padding-left: 1.25rem;">
-                                  <div><strong style="color: #38bdf8;">Pembuat (Author):</strong> <span style="color: #e2e8f0;">{{ $item->author ?: 'Sistem' }}</span></div>
-                                  <div><strong style="color: #38bdf8;">Terakhir Diubah (Last Modified):</strong> <span style="color: #e2e8f0;">{{ $item->updated_at ? $item->updated_at->locale('id')->translatedFormat('l, d F Y H:i') : 'Sistem' }}</span></div>
-                                  <div><strong style="color: #38bdf8;">Pengubah Terakhir (Last Modified Author):</strong> <span style="color: #e2e8f0;">{{ $item->last_modified_by ?: 'Sistem' }}</span></div>
-                                </div>
+                                @include('partials.metadata')
                               </td>
                             </tr>
                             @endforeach
@@ -386,10 +389,10 @@
             <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Tempat</label>
-                <select id="edit_tempat" name="tempat" class="form-control form-control-custom" required>
+                <select id="edit_tempat_id" name="tempat_id" class="form-control form-control-custom" required>
                   <option value="" disabled>Pilih Tempat</option>
                   @foreach($tempatList as $temp)
-                    <option value="{{ $temp->nama }}">{{ $temp->nama }}</option>
+                    <option value="{{ $temp->id }}">{{ $temp->nama }}</option>
                   @endforeach
                 </select>
               </div>
@@ -398,10 +401,10 @@
             <div class="col-sm-6">
               <div class="form-group">
                 <label class="control-label">Narasumber</label>
-                <select id="edit_narasumber" name="narasumber" class="form-control form-control-custom" required>
+                <select id="edit_narasumber_id" name="narasumber_id" class="form-control form-control-custom" required>
                   <option value="" disabled>Pilih Narasumber</option>
                   @foreach($narasumberList as $nara)
-                    <option value="{{ $nara->nama }}">{{ $nara->nama }}</option>
+                    <option value="{{ $nara->id }}">{{ $nara->nama }}</option>
                   @endforeach
                 </select>
               </div>
@@ -475,16 +478,41 @@
         }
       }
 
-      function openEditModal(id, judul, hari, jamMulai, jamSelesai, narasumber, tempat, status) {
+      function filterAcaraTable() {
+        var input = document.getElementById('acaraSearchInput');
+        var filter = input.value.toLowerCase();
+        var mainRows = document.getElementsByClassName('searchable-row');
+        
+        for (var i = 0; i < mainRows.length; i++) {
+          var row = mainRows[i];
+          var id = row.id.split('-')[1];
+          var infoRow = document.getElementById('rowInfo-' + id);
+          
+          var text = row.innerText.toLowerCase();
+          if (infoRow) {
+            text += ' ' + infoRow.innerText.toLowerCase();
+          }
+          
+          if (text.indexOf(filter) > -1) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+            if (infoRow) {
+              infoRow.style.display = 'none';
+            }
+          }
+        }
+      }
+
+      function openEditModal(id, judul, hari, jamMulai, jamSelesai, narasumberId, tempatId, status) {
         document.getElementById('editForm').action = `/admin_dashboard/acara/${id}`;
-        document.getElementById('edit_judul').value       = judul;
-        document.getElementById('edit_hari').value        = hari;
-        // jam_mulai and jam_selesai from DB come as "HH:MM:SS" — trim to "HH:MM" for time input
-        document.getElementById('edit_jam_mulai').value   = jamMulai ? jamMulai.substring(0, 5) : '';
-        document.getElementById('edit_jam_selesai').value = jamSelesai ? jamSelesai.substring(0, 5) : '';
-        document.getElementById('edit_narasumber').value  = narasumber;
-        document.getElementById('edit_tempat').value      = tempat;
-        document.getElementById('edit_status').value      = status;
+        document.getElementById('edit_judul').value          = judul;
+        document.getElementById('edit_hari').value           = hari;
+        document.getElementById('edit_jam_mulai').value      = jamMulai ? jamMulai.substring(0, 5) : '';
+        document.getElementById('edit_jam_selesai').value    = jamSelesai ? jamSelesai.substring(0, 5) : '';
+        document.getElementById('edit_narasumber_id').value  = narasumberId;
+        document.getElementById('edit_tempat_id').value      = tempatId;
+        document.getElementById('edit_status').value         = status;
         document.getElementById('editModalBackdrop').classList.add('open');
       }
 
