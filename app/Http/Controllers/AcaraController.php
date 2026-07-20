@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationChange;
 use App\Models\Acara;
 use App\Models\Narasumber;
 use App\Models\Tempat;
@@ -45,7 +46,9 @@ class AcaraController extends Controller
         $data['author'] = Auth::user()->name;
         $data['last_modified_by'] = Auth::user()->name;
 
-        Acara::create($data);
+        $acara = Acara::create($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan acara baru: " . $acara->judul))->toOthers();
 
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil ditambahkan.');
@@ -71,6 +74,8 @@ class AcaraController extends Controller
 
         $acara->update($data);
 
+        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah acara " . $acara->judul))->toOthers();
+
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil diperbarui.');
     }
@@ -80,7 +85,10 @@ class AcaraController extends Controller
         $this->requireOperator();
 
         $acara = Acara::findOrFail($id);
+        $judul = $acara->judul;
         $acara->delete();
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus acara " . $judul))->toOthers();
 
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil dihapus.');
@@ -94,6 +102,9 @@ class AcaraController extends Controller
         $acara->tampilkan = !$acara->tampilkan;
         $acara->last_modified_by = Auth::user()->name;
         $acara->save();
+
+        $statusText = $acara->tampilkan ? "ditampilkan" : "disembunyikan";
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah status tampil acara '{$acara->judul}' menjadi {$statusText}"))->toOthers();
 
         return redirect()->route('admin.acara')
             ->with('success', 'Status visibilitas acara berhasil diperbarui.');

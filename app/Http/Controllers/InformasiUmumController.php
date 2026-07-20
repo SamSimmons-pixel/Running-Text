@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationChange;
 use App\Models\InformasiUmum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +48,9 @@ class InformasiUmumController extends Controller
         $data['author'] = Auth::user()->name;
         $data['last_modified_by'] = Auth::user()->name;
 
-        InformasiUmum::create($data);
+        $info = InformasiUmum::create($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan informasi umum baru: " . $info->judul))->toOthers();
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil ditambahkan.');
@@ -73,6 +76,8 @@ class InformasiUmumController extends Controller
 
         $info->update($data);
 
+        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah informasi umum " . $info->judul))->toOthers();
+
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil diperbarui.');
     }
@@ -90,6 +95,9 @@ class InformasiUmumController extends Controller
             'last_modified_by' => Auth::user()->name
         ]);
 
+        $statusText = $info->tampilkan ? "ditampilkan" : "disembunyikan";
+        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah status tampil informasi '{$info->judul}' menjadi {$statusText}"))->toOthers();
+
         return redirect()->route('admin.informasi')
             ->with('success', 'Status tampil informasi diperbarui.');
     }
@@ -102,7 +110,10 @@ class InformasiUmumController extends Controller
         $this->requireOperator();
 
         $info = InformasiUmum::findOrFail($id);
+        $judul = $info->judul;
         $info->delete();
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus informasi umum " . $judul))->toOthers();
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil dihapus.');

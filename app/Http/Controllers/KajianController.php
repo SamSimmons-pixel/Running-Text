@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationChange;
 use App\Models\Kajian;
 use App\Models\Narasumber;
 use App\Models\Tempat;
@@ -130,7 +131,9 @@ class KajianController extends Controller
         $data['author'] = Auth::user()->name;
         $data['last_modified_by'] = Auth::user()->name;
 
-        Kajian::create($data);
+        $kajian = Kajian::create($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan kajian baru: " . $kajian->Judul))->toOthers();
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil ditambahkan.');
@@ -160,6 +163,8 @@ class KajianController extends Controller
         $data['last_modified_by'] = Auth::user()->name;
 
         $kajian->update($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah kajian " . $kajian->Judul))->toOthers();
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil diperbarui.');
@@ -214,6 +219,9 @@ class KajianController extends Controller
             'last_modified_by' => Auth::user()->name,
         ]);
 
+        $statusText = $kajian->Tampilkan ? "ditampilkan" : "disembunyikan";
+        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah status tampil kajian '{$kajian->Judul}' menjadi {$statusText}"))->toOthers();
+
         return redirect()->route('admin.kajian')
             ->with('success', 'Status tampil kajian diperbarui.');
     }
@@ -226,7 +234,10 @@ class KajianController extends Controller
         $this->requireOperator();
 
         $kajian = Kajian::findOrFail($id);
+        $judul = $kajian->Judul;
         $kajian->delete();
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus kajian " . $judul))->toOthers();
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil dihapus.');

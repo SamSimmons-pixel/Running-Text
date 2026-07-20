@@ -43,6 +43,12 @@
         </a>
       </li> --}}
     </ul>
+    
+    @persist('notification')
+    {{-- Kontainer Notifikasi Persisten untuk Livewire 3 --}}
+    <div id="toast-container" wire:persist="notifications"></div>
+    @endpersist
+
     <ul class="userbar nav navbar-nav">
       <li class="dropdown">
         <a class="userbar__settings dropdown-toggle" href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

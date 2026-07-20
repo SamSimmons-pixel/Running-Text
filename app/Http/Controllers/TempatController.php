@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationChange;
 use App\Models\Tempat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +40,9 @@ class TempatController extends Controller
         $data['author'] = Auth::user()->name;
         $data['last_modified_by'] = Auth::user()->name;
 
-        Tempat::create($data);
+        $tempat = Tempat::create($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan tempat baru: " . $tempat->nama))->toOthers();
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil ditambahkan.');
@@ -60,6 +63,8 @@ class TempatController extends Controller
 
         $tempat->update($data);
 
+        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah tempat " . $tempat->nama))->toOthers();
+
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil diperbarui.');
     }
@@ -69,9 +74,12 @@ class TempatController extends Controller
         $this->requireOperator();
 
         $tempat = Tempat::findOrFail($id);
+        $nama = $tempat->nama;
         $tempat->delete();
 
+        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus tempat " . $nama))->toOthers();
+
         return redirect()->route('admin.tempat')
-            ->with('success', 'Tempat "' . $tempat->nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
+            ->with('success', 'Tempat "' . $nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
     }
 }

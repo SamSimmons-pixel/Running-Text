@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationChange;
 use App\Models\Kontak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +40,9 @@ class KontakController extends Controller
         $data['author'] = Auth::user()->name;
         $data['last_modified_by'] = Auth::user()->name;
 
-        Kontak::create($data);
+        $kontak = Kontak::create($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan kontak baru: " . $kontak->nama))->toOthers();
 
         return redirect()->route('admin.kontak')
             ->with('success', 'Kontak berhasil ditambahkan.');
@@ -50,9 +53,12 @@ class KontakController extends Controller
         $this->requireOperator();
 
         $kontak = Kontak::findOrFail($id);
+        $nama = $kontak->nama;
         $kontak->delete();
 
+        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus kontak " . $nama))->toOthers();
+
         return redirect()->route('admin.kontak')
-            ->with('success', 'Kontak "' . $kontak->nama . '" berhasil dihapus. Data terkait di Kajian telah diset ke kosong (—).');
+            ->with('success', 'Kontak "' . $nama . '" berhasil dihapus. Data terkait di Kajian telah diset ke kosong (—).');
     }
 }

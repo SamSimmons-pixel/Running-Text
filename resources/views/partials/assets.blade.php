@@ -17,6 +17,8 @@
 <script src="{{ asset('admin-template/libs/ionrangeslider/js/ion.rangeSlider.min.js') }}"></script>
 <script src="{{ asset('admin-template/libs/inputNumber/js/inputNumber.js') }}"></script>
 
+<meta name="user-id" content="{{ auth()->id() }}">
+
 <!-- Safeguard jQuery overrides for missing theme dependencies -->
 <script>
   if (window.jQuery) {
@@ -53,3 +55,6 @@
     }
   };
 </script>
+
+<!--  Laravel Echo dan WebSocket -->
+@vite(['resources/js/app.js'])

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationChange;
 use App\Models\Narasumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +40,9 @@ class NarasumberController extends Controller
         $data['author'] = Auth::user()->name;
         $data['last_modified_by'] = Auth::user()->name;
 
-        Narasumber::create($data);
+        $narasumber = Narasumber::create($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan narasumber baru: " . $narasumber->nama))->toOthers();
 
         return redirect()->route('admin.narasumber')
             ->with('success', 'Narasumber berhasil ditambahkan.');
@@ -50,10 +53,13 @@ class NarasumberController extends Controller
         $this->requireOperator();
 
         $narasumber = Narasumber::findOrFail($id);
+        $nama = $narasumber->nama;
         // FK is SET NULL on delete — Eloquent will fire the delete and DB handles nullification
         $narasumber->delete();
 
+        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus narasumber " . $nama))->toOthers();
+
         return redirect()->route('admin.narasumber')
-            ->with('success', 'Narasumber "' . $narasumber->nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
+            ->with('success', 'Narasumber "' . $nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
     }
 }
