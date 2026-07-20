@@ -10,6 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ActivityLog;
 
 class NotificationChange implements ShouldBroadcast
 {
@@ -24,6 +25,9 @@ class NotificationChange implements ShouldBroadcast
     {
         $this->message = $message;
         $this->userId = Auth::id();
+        ActivityLog::create([
+            'message'=> $message
+        ]);
     }
 
     /**

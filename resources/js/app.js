@@ -101,16 +101,39 @@ function showToast(message) {
 
 const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
 
-// Dengarkan event dan panggil fungsi showToast
+function appendActivityLog(message) {
+    const logBox = document.getElementById('activity-log-box');
+    if (!logBox) return;
+
+    // Dapatkan waktu saat ini (HH:mm)
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false});
+
+    // Buat item log baru
+    const item = document.createElement('div');
+    item.className = 'log-item';
+    item.style.cssText = 'font-size: 1.1rem; color: #cbd5e1; line-height: 1.4; word-break: break-word;';
+    item.innerHTML = `<span style="color: #64748b; font-size: 1rem; margin-right: 4px;">[${timeStr}]</span> <span>${message}</span>`;
+    
+
+    logBox.appendChild(item);
+
+    // Otomatis scroll ke paling bawah (seperti World Chat game)
+    logBox.scrollTop = logBox.scrollHeight;
+}
+
+// Panggil appendActivityLog di dalam Echo listener:
 window.Echo.channel('notifications')
     .listen('.NotificationChange', (e) => {
-        if (e.userId && currentUserId && e.userId == currentUserId) {
+        // Filter toast melayang agar tidak muncul di diri sendiri
+        const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
+        if (e.userId && currentUserId && String(e.userId) === String(currentUserId)) {
             return;
         }
 
-        showToast(e.message); // <-- Panggil fungsi toast di sini
+        appendActivityLog(e.message);
+        showToast(e.message);
     });
-
 
 
 
