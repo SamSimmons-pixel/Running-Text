@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('narasumber', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->string('author')->nullable();
+            $table->string('last_modified_by')->nullable();
             $table->timestamps();
         });
     }

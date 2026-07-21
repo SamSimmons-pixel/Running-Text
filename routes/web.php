@@ -16,29 +16,64 @@ Route::get('/mainpage', [MainpageController::class, 'index'])->name('mainpage');
 use App\Http\Controllers\NarasumberController;
 use App\Http\Controllers\TempatController;
 use App\Http\Controllers\KontakController;
+use App\Http\Controllers\InformasiUmumController;
+use App\Http\Controllers\AcaraController;
+use App\Http\Controllers\KajianController;
 
 // ── Admin dashboard (admin only — guarded inside controller) ─────
 Route::get ('/admin_dashboard',                  [admin_dashboard_Controller::class, 'index'])->name('admin.dashboard');
-Route::post('/admin_dashboard',                  [admin_dashboard_Controller::class, 'store'])->name('admin.kajian.store');
-Route::post('/admin_dashboard/global-logo',      [admin_dashboard_Controller::class, 'uploadGlobalLogo'])->name('admin.logo.update');
-Route::get ('/admin_dashboard/logo',             [admin_dashboard_Controller::class, 'logo'])->name('admin.logo');
+Route::get ('/admin_dashboard/informasi',        [InformasiUmumController::class, 'index'])->name('admin.informasi');
+Route::post('/admin_dashboard/informasi',        [InformasiUmumController::class, 'store'])->name('admin.informasi.store');
+Route::post('/admin_dashboard/informasi/{id}',   [InformasiUmumController::class, 'update'])->name('admin.informasi.update');
+Route::post('/admin_dashboard/informasi/{id}/toggle', [InformasiUmumController::class, 'toggle'])->name('admin.informasi.toggle');
+Route::post('/admin_dashboard/informasi/{id}/delete', [InformasiUmumController::class, 'destroy'])->name('admin.informasi.destroy');
+
+Route::get ('/admin_dashboard/kajian',            [KajianController::class, 'kajian'])->name('admin.kajian');
+Route::post('/admin_dashboard',                  [KajianController::class, 'store'])->name('admin.kajian.store');
+// ── Acara Management ──────────────────────────────────────────
+Route::get ('/admin_dashboard/acara',              [AcaraController::class, 'index'])->name('admin.acara');
+Route::post('/admin_dashboard/acara',              [AcaraController::class, 'store'])->name('admin.acara.store');
+Route::post('/admin_dashboard/acara/{id}',         [AcaraController::class, 'update'])->name('admin.acara.update');
+Route::post('/admin_dashboard/acara/{id}/delete',  [AcaraController::class, 'destroy'])->name('admin.acara.destroy');
+Route::post('/admin_dashboard/acara/{id}/toggle',  [AcaraController::class, 'toggle'])->name('admin.acara.toggle');
 
 // ── Narasumber Management ──────────────────────────────────────
 Route::get ('/admin_dashboard/narasumber',       [NarasumberController::class, 'index'])->name('admin.narasumber');
 Route::post('/admin_dashboard/narasumber',       [NarasumberController::class, 'store'])->name('admin.narasumber.store');
+Route::post('/admin_dashboard/narasumber/{id}',   [NarasumberController::class, 'update'])->name('admin.narasumber.update');
 Route::post('/admin_dashboard/narasumber/{id}/delete', [NarasumberController::class, 'destroy'])->name('admin.narasumber.destroy');
 
 // ── Tempat Management ──────────────────────────────────────────
 Route::get ('/admin_dashboard/tempat',           [TempatController::class, 'index'])->name('admin.tempat');
 Route::post('/admin_dashboard/tempat',           [TempatController::class, 'store'])->name('admin.tempat.store');
+Route::post('/admin_dashboard/tempat/{id}',      [TempatController::class, 'update'])->name('admin.tempat.update');
 Route::post('/admin_dashboard/tempat/{id}/delete', [TempatController::class, 'destroy'])->name('admin.tempat.destroy');
 
 // ── Kontak Management ──────────────────────────────────────────
 Route::get ('/admin_dashboard/kontak',           [KontakController::class, 'index'])->name('admin.kontak');
 Route::post('/admin_dashboard/kontak',           [KontakController::class, 'store'])->name('admin.kontak.store');
+Route::post('/admin_dashboard/kontak/{id}',        [KontakController::class, 'update'])->name('admin.kontak.update');
 Route::post('/admin_dashboard/kontak/{id}/delete', [KontakController::class, 'destroy'])->name('admin.kontak.destroy');
 
+// ── Pewaktuan Hijriah ──────────────────────────────────────────
+use App\Http\Controllers\HijriTickerController;
+use App\Http\Controllers\VmixDataController;
+use App\Http\Controllers\OperatorController;
+
+Route::get ('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class, 'index'])->name('admin.hijri');
+Route::post('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class, 'update'])->name('admin.hijri.update');
+
+// ── Operator Management ─────────────────────────────────────────
+Route::get ('/admin_dashboard/operator',             [OperatorController::class, 'index'])->name('admin.operator');
+Route::post('/admin_dashboard/operator',             [OperatorController::class, 'store'])->name('admin.operator.store');
+Route::post('/admin_dashboard/operator/{id}',         [OperatorController::class, 'update'])->name('admin.operator.update');
+Route::post('/admin_dashboard/operator/{id}/delete',  [OperatorController::class, 'destroy'])->name('admin.operator.destroy');
+
+// ── vMix Data API ──────────────────────────────────────────────
+Route::get ('/api/vmix/hijri-ticker',             [VmixDataController::class, 'getTickerData'])->name('api.vmix.hijri-ticker');
+Route::get ('/api/vmix/ticker-running-text',           [VmixDataController::class, 'tickerCombined'])->name('api.vmix.ticker-combined');
+
 // ── Kajian Wildcards (Define after static routes to prevent conflicts) ─
-Route::post('/admin_dashboard/{id}',             [admin_dashboard_Controller::class, 'update'])->name('admin.kajian.update');
-Route::post('/admin_dashboard/{id}/toggle',      [admin_dashboard_Controller::class, 'toggle'])->name('admin.kajian.toggle');
-Route::post('/admin_dashboard/{id}/delete',      [admin_dashboard_Controller::class, 'destroy'])->name('admin.kajian.destroy');
+Route::post('/admin_dashboard/{id}',             [KajianController::class, 'update'])->name('admin.kajian.update');
+Route::post('/admin_dashboard/{id}/toggle',      [KajianController::class, 'toggle'])->name('admin.kajian.toggle');
+Route::post('/admin_dashboard/{id}/delete',      [KajianController::class, 'destroy'])->name('admin.kajian.destroy');

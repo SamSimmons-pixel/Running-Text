@@ -10,5 +10,18 @@ class Tempat extends Model
 
     protected $fillable = [
         'nama',
+        'deskripsi_alamat',
+        'author',
+        'last_modified_by',
     ];
+
+    public function kajian()
+    {
+        return $this->hasMany(Kajian::class, 'tempat_id');
+    }
+
+    public function acara()
+    {
+        return $this->hasMany(Acara::class, 'tempat_id');
+    }
 }

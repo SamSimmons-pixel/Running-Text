@@ -1,0 +1,542 @@
+/* ── Color variables ── */
+:root {
+  --accent: #6d28d9;
+  --accent-h: #7c3aed;
+  --green: #10b981;
+  --red: #ef4444;
+  --red-h: #dc2626;
+}
+
+/* ── Toggle switch ── */
+.toggle-form {
+  display: inline;
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+  vertical-align: middle;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  transition: background 0.2s;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle input:checked+.toggle-slider {
+  background: var(--green);
+}
+
+.toggle input:checked+.toggle-slider::before {
+  transform: translateX(20px);
+}
+
+/* ── Add/Edit form card ── */
+.form-card-kajian {
+  display: none;
+  margin-bottom: 1.5rem;
+}
+
+.form-card-kajian.open {
+  display: block;
+}
+
+/* ── Table actions ── */
+.td-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+/* ── Alerts ── */
+.alert-kajian {
+  border-radius: 8px;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.alert-kajian.success {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+}
+
+.alert-kajian.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* ── Section count badge ── */
+.section-count {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* ── Edit/Delete modal backdrops ── */
+.modal-backdrop-custom {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 1060;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-backdrop-custom.open {
+  display: flex;
+}
+
+.modal-kajian {
+  background: #1a1d27;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalIn 0.2s ease;
+}
+
+.modal-confirm {
+  background: #1a1d27;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-title-custom {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 1.3rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+
+.btn-close-modal:hover {
+  color: var(--red);
+}
+
+/* ── Custom form controls ── */
+.form-control-custom {
+  background: #22263a !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 8px !important;
+  color: #e2e8f0 !important;
+  font-size: 1.5rem !important;
+  padding: 8px 14px !important;
+  height: auto !important;
+  transition: border-color 0.15s;
+}
+
+.form-control-custom::placeholder {
+  color: #64748b;
+}
+
+/* ── Action buttons ── */
+.btn-kajian-outline {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  gap: 4px;
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-kajian-outline:hover {
+  border-color: var(--accent);
+  color: #a78bfa;
+}
+
+.btn-kajian-danger {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  gap: 4px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.btn-kajian-danger:hover {
+  background: var(--red-h);
+  color: #fff;
+}
+
+.topbar-user-info {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1rem;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.topbar-user-info strong {
+  color: #e2e8f0;
+  margin-left: 4px;
+}
+
+/* ── Stat cards (from admin_dashboard) ── */
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  flex: 1 1 160px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: border-color 0.15s;
+}
+
+.stat-card:hover {
+  border-color: var(--accent);
+}
+
+.stat-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.stat-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #e2e8f0;
+}
+
+.stat-card__label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Upcoming table & status badges (from admin_dashboard) ── */
+.upcoming-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.badge-on {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-off {
+  background: rgba(148, 163, 184, 0.1);
+  color: #64748b;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* ── On-Air / Live row highlight ── */
+/* Must out-specificate right.dark.css: .table-hover > tbody > tr:hover { background-color: #353c42 } */
+.table>tbody>tr.row-on-air,
+.table-hover>tbody>tr.row-on-air {
+  background-color: rgba(16, 185, 129, 0.10) !important;
+}
+
+.table-hover>tbody>tr.row-on-air:hover {
+  background-color: rgba(16, 185, 129, 0.16) !important;
+}
+
+/* Green left-accent stripe: first td gets a left border */
+.table>tbody>tr.row-on-air>td:first-child {
+  border-left: 3px solid #10b981 !important;
+  padding-left: 5px !important;
+}
+
+/* Subtle row top/bottom border tint */
+.table>tbody>tr.row-on-air>td {
+  border-bottom-color: rgba(16, 185, 129, 0.22) !important;
+}
+
+/* Live pulse badge */
+.badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  letter-spacing: 0.03em;
+  animation: live-pulse-border 2s ease-in-out infinite;
+}
+
+.badge-live::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: live-pulse-dot 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes live-pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes live-pulse-border {
+
+  0%,
+  100% {
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+
+  50% {
+    border-color: rgba(16, 185, 129, 0.9);
+  }
+}
+
+/* ── Logo view (from logo.blade.php) ── */
+.td-logo img {
+  max-height: 80px;
+  width: auto;
+  border-radius: 8px;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 5px;
+}
+
+.td-logo .no-logo {
+  padding: 15px 25px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  display: inline-block;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+/* ── Summernote dark overrides ── */
+.note-editor.note-frame {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: #1a1d27 !important;
+}
+
+.note-toolbar {
+  background-color: #22263a !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.note-btn {
+  background-color: #1a1d27 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #e2e8f0 !important;
+}
+
+.note-btn:hover,
+.note-btn.active {
+  background-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+.note-editable {
+  background-color: #22263a !important;
+  color: #e2e8f0 !important;
+  font-size: 1.15rem !important;
+}
+
+.note-resizebar {
+  background-color: #22263a !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.note-dropdown-menu {
+  background-color: #1a1d27 !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+}
+
+.note-dropdown-menu>li>a {
+  color: #e2e8f0 !important;
+}
+
+.note-dropdown-menu>li>a:hover {
+  background-color: var(--accent) !important;
+}
+
+.note-modal-content {
+  background-color: #1a1d27 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+}
+
+.note-form-label {
+  color: #e2e8f0 !important;
+}
+
+.note-input {
+  background-color: #22263a !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+/* ── Tooltip container ── */
+.tooltip-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Tooltip text */
+.tooltiptext {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  background-color: #1e1b4b;
+  /* Premium deep indigo */
+  color: #ffffff;
+  text-align: left;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  position: absolute;
+  bottom: 125%;
+  /* Position above input field */
+  left: 0;
+  z-index: 999;
+  /* Ensure displayed above content */
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 2rem;
+  min-width: 220px;
+  max-width: 100%;
+}
+
+/* Triangle indicator */
+.tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 20px;
+  margin-left: -5px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #1e1b4b transparent transparent transparent;
+}
+
+/* Show the tooltip text on hover / focus active typing */
+.tooltip-container.show-tooltip .tooltiptext,
+.tooltip-container:focus-within:not(:has(input:placeholder-shown)) .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}

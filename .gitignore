@@ -23,3 +23,8 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /Template
+/.agents
+/.gemini
+/graphify-out
+# Added by code-review-graph
+.code-review-graph/

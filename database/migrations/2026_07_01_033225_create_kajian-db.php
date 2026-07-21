@@ -14,12 +14,15 @@ return new class extends Migration
         Schema::create('kajian', function (Blueprint $table) {
             $table->id();
             $table->DATETIME('Tanggal');
+            $table->string('WaktuSelesai')->nullable();
             $table->string('Judul');
             $table->string('Narasumber');
             $table->string('Tempat');
-            $table->string('Kontak')->nullable();
+            $table->string('Kontak');
+            $table->longText('Informasi')->nullable();
             $table->boolean('Tampilkan')->default(false);
-            $table->string('Logo')->nullable();
+            $table->string('author')->nullable();
+            $table->string('last_modified_by')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +33,14 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('kajian', function (Blueprint $table) {
+            $table->dropColumn('Informasi');
+            $table->dropColumn('WaktuSelesai');
+            $table->dropColumn(['author', 'last_modified_by']);
+            $table->dropColumn('Tempat');
+            $table->dropColumn('Kontak');
+            $table->dropColumn('Tanggal');
+            $table->dropColumn('Judul');
+            $table->dropColumn('Narasumber');
         });
     }
 };

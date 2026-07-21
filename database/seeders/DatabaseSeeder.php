@@ -3,7 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\running_text_data;
+use App\Models\Kajian;
+use App\Models\Narasumber;
+use App\Models\Tempat;
+use App\Models\Kontak;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -11,31 +14,40 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         User::factory()->create([
             'name' => 'Admin',
             'password' => 'Admin123',
-            'role' => 'admin',
+            'role' => 'admin_operator',
         ]);
 
         User::factory()->create([
             'name' => 'User',
             'password' => 'User123',
-            'role' => 'user',
+            'role' => 'operator',
         ]);
 
-        running_text_data::create([
-            'Tanggal' => '2022-01-01',
-            'Judul' => 'Judul',
-            'Narasumber' => 'Narasumber',
-            'Tempat' => 'Tempat',
-            'Kontak' => 'Kontak',
-            'Tampilkan' => true,
-            'Logo' => 'Logo.png (ini masih dummy)'
+        $narasumber = Narasumber::create([
+            'nama' => 'Narasumber',
+        ]);
+
+        $tempat = Tempat::create([
+            'nama' => 'Tempat',
+        ]);
+
+        $kontak = Kontak::create([
+            'nama' => 'Abu Ahmad',
+            'nomor_kontak' => '0812-3456-7890',
+        ]);
+
+        Kajian::create([
+            'Tanggal'       => '2022-01-01',
+            'Judul'         => 'Judul',
+            'narasumber_id' => $narasumber->id,
+            'tempat_id'     => $tempat->id,
+            'kontak_id'     => $kontak->id,
+            'Tampilkan'     => true,
         ]);
     }
 }

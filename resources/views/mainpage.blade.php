@@ -655,11 +655,6 @@
                             <span class="ticker-title">{{ $item->Judul }}</span>
                             <span class="ticker-narasumber">{{ $item->Narasumber }}</span>
                             <span class="ticker-tempat">📍 {{ $item->Tempat }}</span>
-                            @if ($logoUrl)
-                                <img src="{{ $logoUrl }}"
-                                    alt="Logo"
-                                    class="ticker-logo">
-                            @endif
                         </div>
                         <span class="ticker-bullet">◆</span>
                         @endforeach
@@ -672,11 +667,6 @@
                             <span class="ticker-title">{{ $item->Judul }}</span>
                             <span class="ticker-narasumber">{{ $item->Narasumber }}</span>
                             <span class="ticker-tempat">📍 {{ $item->Tempat }}</span>
-                            @if ($logoUrl)
-                                <img src="{{ $logoUrl }}"
-                                    alt="Logo"
-                                    class="ticker-logo">
-                            @endif
                         </div>
                         <span class="ticker-bullet">◆</span>
                         @endforeach

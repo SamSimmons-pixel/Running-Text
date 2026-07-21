@@ -7,233 +7,18 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kelola Kontak — Jadwal Kajian</title>
     <link rel="icon" type="image/png" href="{{ asset('admin-template/img/favicon.png') }}">
-    <link href="{{ asset('admin-template/libs/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,300,400italic,500,700,900" rel="stylesheet" type="text/css">
-    <link href="{{ asset('admin-template/libs/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.css') }}" rel="stylesheet">
-    <link href="{{ asset('admin-template/css/right.dark.css') }}" rel="stylesheet">
-
-    <style>
-      /* ── Custom overrides ── */
-      :root {
-        --accent:   #6d28d9;
-        --accent-h: #7c3aed;
-        --green:    #10b981;
-        --red:      #ef4444;
-        --red-h:    #dc2626;
-      }
-
-      .form-card-kajian {
-        margin-bottom: 1.5rem;
-      }
-
-      .td-actions {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: nowrap;
-      }
-
-      .alert-kajian {
-        border-radius: 8px;
-        padding: 0.75rem 1.1rem;
-        font-size: 0.875rem;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      }
-      .alert-kajian.success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
-      .alert-kajian.error   { background: rgba(239,68,68,0.1);   border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
-
-      .empty-state {
-        padding: 3rem;
-        text-align: center;
-        color: #64748b;
-        font-size: 0.9rem;
-      }
-
-      .form-control-custom {
-        background: #22263a !important;
-        border: 1px solid rgba(255,255,255,0.07) !important;
-        border-radius: 8px !important;
-        color: #e2e8f0 !important;
-        font-size: 0.875rem !important;
-        transition: border-color 0.15s;
-      }
-      .form-control-custom:focus {
-        border-color: var(--accent) !important;
-        outline: none !important;
-        box-shadow: none !important;
-      }
-      .form-control-custom::placeholder { color: #64748b; }
-
-      .btn-kajian-danger {
-        background: var(--red);
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        padding: 4px 10px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        transition: background 0.15s;
-        white-space: nowrap;
-      }
-      .btn-kajian-danger:hover { background: var(--red-h); color: #fff; }
-
-      .topbar-user-info {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        padding: 0 1rem;
-        font-size: 0.82rem;
-        color: #94a3b8;
-      }
-      .topbar-user-info strong { color: #e2e8f0; margin-left: 4px; }
-    </style>
+    @include('partials.assets')
+    @livewireStyles
   </head>
   <body class="framed main-scrollable">
     <div class="wrapper">
 
-      {{-- ── Top Navbar ── --}}
-      <nav class="navbar navbar-static-top header-navbar">
-        <div class="header-navbar-mobile">
-          <div class="header-navbar-mobile__menu">
-            <button class="btn" type="button"><i class="fa fa-bars"></i></button>
-          </div>
-          <div class="header-navbar-mobile__title"><span>Kelola Kontak</span></div>
-          <div class="header-navbar-mobile__settings dropdown">
-            <a class="btn dropdown-toggle" href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-              <i class="fa fa-power-off"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-right">
-              <li>
-                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
-                  <i class="fa fa-sign-out"></i> Logout
-                </a>
-                <form id="logout-form-mobile" method="POST" action="{{ route('logout') }}" style="display:none;">@csrf</form>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="navbar-header">
-          <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
-            <div class="logo text-nowrap">
-              <div class="logo__img"><i class="fa fa-book"></i></div>
-              <span class="logo__text">Jadwal Kajian</span>
-            </div>
-          </a>
-        </div>
-
-        <div class="topnavbar">
-          <ul class="nav navbar-nav navbar-left">
-            <li><a href="{{ route('admin.dashboard') }}"><span>Dashboard</span></a></li>
-          </ul>
-          <ul class="userbar nav navbar-nav">
-            <li class="dropdown">
-              <a class="userbar__settings dropdown-toggle" href="" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                <i class="fa fa-power-off"></i>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <li>
-                  <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-top').submit();">
-                    <i class="fa fa-sign-out"></i> Logout
-                  </a>
-                  <form id="logout-form-top" method="POST" action="{{ route('logout') }}" style="display:none;">@csrf</form>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      @include('partials.navbar')
 
       {{-- ── Dashboard Wrapper ── --}}
       <div class="dashboard">
 
-        {{-- ── Sidebar ── --}}
-        <div class="sidebar">
-          <div class="quickmenu">
-            <div class="quickmenu__cont">
-              <div class="quickmenu__list">
-                <div class="quickmenu__item active" title="Dashboard">
-                  <div class="fa fa-fw fa-home"></div>
-                </div>
-                <div class="quickmenu__item" title="Running Text">
-                  <div class="fa fa-fw fa-television"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="scrollable scrollbar-macosx">
-            <div class="sidebar__cont">
-
-              <div class="sidebar__menu">
-                <div class="sidebar__title">Menu Utama</div>
-                <ul class="nav nav-menu">
-                  <li>
-                    <a href="{{ route('admin.dashboard') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-home"></i></div>
-                      <div class="nav-menu__text"><span>Dashboard</span></div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('admin.narasumber') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-user"></i></div>
-                      <div class="nav-menu__text"><span>Kelola Narasumber</span></div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('admin.tempat') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-map-marker"></i></div>
-                      <div class="nav-menu__text"><span>Kelola Tempat</span></div>
-                    </a>
-                  </li>
-                  <li class="active">
-                    <a href="{{ route('admin.kontak') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-phone"></i></div>
-                      <div class="nav-menu__text"><span>Kelola Kontak</span></div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('admin.logo') }}">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-image"></i></div>
-                      <div class="nav-menu__text"><span>Kelola Logo</span></div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ url('/') }}" target="_blank">
-                      <div class="nav-menu__ico"><i class="fa fa-fw fa-television"></i></div>
-                      <div class="nav-menu__text"><span>Running Text</span></div>
-                      <div class="nav-menu__right">
-                        <i class="fa fa-fw fa-external-link" style="font-size:0.7em; opacity:0.5;"></i>
-                      </div>
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              {{-- Stats --}}
-              <div class="sidebar__menu">
-                <div class="sidebar__title">Statistik</div>
-                <div class="sidestat">
-                  <div class="sidestat__cont">
-                    <div class="sidestat__item">
-                      <div class="sidestat__value">{{ $kontakList->count() }}</div>
-                      <div class="sidestat__text">total kontak</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
+        @include('partials.sidebar')
 
         {{-- ── Main Content ── --}}
         <div class="main">
@@ -246,6 +31,11 @@
                     <li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
                     <li class="active">Kelola Kontak</li>
                   </ol>
+                </div>
+                <div class="main-filter">
+                  <button class="btn btn-primary" onclick="toggleAddForm()">
+                    <i class="fa fa-plus"></i> Tambah Kontak
+                  </button>
                 </div>
               </div>
 
@@ -274,23 +64,45 @@
                 @endif
 
                 {{-- Add Form --}}
-                <div class="form-card-kajian">
+                <div class="form-card-kajian" id="addForm">
                   <div class="panel panel-primary">
-                    <div class="panel-heading">
+                    <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
                       <h3 class="panel-title"><i class="fa fa-plus-circle"></i> Tambah Kontak Baru</h3>
+                      <button type="button" class="btn btn-xs btn-danger" onclick="toggleAddForm()">
+                        <i class="fa fa-times"></i> Tutup
+                      </button>
                     </div>
                     <div class="panel-body">
                       <form method="POST" action="{{ route('admin.kontak.store') }}">
                         @csrf
                         <div class="row">
-                          <div class="col-sm-8 col-md-9">
+                          <div class="col-sm-5 col-md-5">
                             <div class="form-group">
-                              <label class="control-label" for="kontak_nama">No. HP / WA / Nama Kontak</label>
-                              <input id="kontak_nama" type="text" name="nama" class="form-control form-control-custom"
-                                     placeholder="Contoh: 0812-3456-7890 (Abu Ahmad)" value="{{ old('nama') }}" required>
+                              <label class="control-label" for="kontak_nama">Nama</label>
+                              <div class="tooltip-container">
+                                <input id="kontak_nama" type="text" name="nama" class="form-control form-control-custom"
+                                       placeholder="Contoh: Abu Ahmad" value="{{ old('nama') }}" required autocomplete="off"
+                                       oninput="updateTooltip(this, 'Nama pemilik kontak')"
+                                       onfocus="updateTooltip(this, 'Nama pemilik kontak')"
+                                       onblur="hideTooltip(this)">
+                                <span class="tooltiptext">Nama pemilik kontak</span>
+                              </div>
                             </div>
                           </div>
-                          <div class="col-sm-4 col-md-3" style="margin-top: 25px;">
+                          <div class="col-sm-5 col-md-5">
+                            <div class="form-group">
+                              <label class="control-label" for="kontak_nomor">Nomor Kontak (HP / WA)</label>
+                              <div class="tooltip-container">
+                                <input id="kontak_nomor" type="text" name="nomor_kontak" class="form-control form-control-custom"
+                                       placeholder="Contoh: 0812-3456-7890" value="{{ old('nomor_kontak') }}" required autocomplete="off"
+                                       oninput="updateTooltip(this, 'Nomor HP atau WA')"
+                                       onfocus="updateTooltip(this, 'Nomor HP atau WA')"
+                                       onblur="hideTooltip(this)">
+                                <span class="tooltiptext">Nomor HP atau WA</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-sm-2 col-md-2" style="margin-top: 25px;">
                             <button type="submit" class="btn btn-primary btn-block">
                               <i class="fa fa-check"></i> Simpan
                             </button>
@@ -303,9 +115,12 @@
 
                 {{-- Table --}}
                 <div class="panel panel-default">
-                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between;">
-                    <h3 class="panel-title"><i class="fa fa-list"></i> Daftar Kontak</h3>
-                    <small class="section-count">Total: {{ $kontakList->count() }} kontak</small>
+                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                    <h3 class="panel-title" style="margin:0;"><i class="fa fa-list"></i> Daftar Kontak <small style="margin-left:8px; color:rgba(255,255,255,0.4);" class="section-count">Total: {{ $kontakList->count() }} kontak</small></h3>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:nowrap;">
+                      <input type="search" id="kontakSearchInput" placeholder="Cari kontak..." class="form-control form-control-custom" style="width:200px; padding:6px 12px; height:34px; margin:0;" onkeyup="filterKontakTable()">
+                      <button class="btn btn-primary" onclick="filterKontakTable()" style="padding:6px 15px; height:34px; line-height:20px; font-size:1.15rem; margin:0;"><i class="fa fa-search"></i> Cari</button>
+                    </div>
                   </div>
                   <div class="panel-body" style="padding:0;">
                     @if ($kontakList->isEmpty())
@@ -319,22 +134,41 @@
                           <thead>
                             <tr>
                               <th style="width: 80px;">No.</th>
-                              <th>Nama Kontak / Informasi</th>
-                              <th style="text-align:right; width: 150px;">Aksi</th>
+                              <th>Nama Pemilik</th>
+                              <th>Nomor Kontak (HP / WA)</th>
+                              <th style="text-align:right; width: 220px;">Aksi</th>
                             </tr>
                           </thead>
                           <tbody>
                             @foreach ($kontakList as $index => $item)
-                            <tr>
+                            <tr id="mainRow-{{ $item->id }}" class="searchable-row">
                               <td>{{ $index + 1 }}</td>
                               <td><strong>{{ $item->nama }}</strong></td>
+                              <td><span style="color:#94a3b8;">{{ $item->nomor_kontak }}</span></td>
                               <td>
-                                <div class="td-actions" style="justify-content:flex-end;">
-                                  <button class="btn-kajian-danger"
-                                    onclick="openDeleteModal({{ $item->id }}, '{{ addslashes($item->nama) }}')">
-                                    <i class="fa fa-trash"></i> Hapus
+                                <div class="td-actions" style="justify-content:flex-end; gap:8px;">
+                                  <button class="btn-kajian-outline" style="background-color: rgba(56, 189, 248, 0.15) !important; color: #38bdf8 !important; border-color: rgba(56, 189, 248, 0.3) !important;"
+                                    onclick="toggleInfoRow({{ $item->id }})">
+                                    <i class="fa fa-info-circle"></i> Info
                                   </button>
+                                  <button class="btn-kajian-outline"
+                                      onclick="openEditModal({{ $item->id }}, '{{ addslashes($item->nama) }}', '{{ addslashes($item->nomor_kontak) }}')">
+                                       <i class="fa fa-pencil"></i> Edit
+                                  </button>
+                                  <button class="btn-kajian-danger"
+                                     onclick="openDeleteModal(
+                                       {{ $item->id }},
+                                       '{{ addslashes($item->nama) }} ({{ addslashes($item->nomor_kontak) }})',
+                                       {{ json_encode($item->kajian->map(fn($k) => $k->Judul)->values()) }}
+                                     )">
+                                     <i class="fa fa-trash"></i> Hapus
+                                   </button>
                                 </div>
+                              </td>
+                            </tr>
+                            <tr id="rowInfo-{{ $item->id }}" style="display: none; background-color: rgba(15, 23, 42, 0.25);">
+                              <td colspan="4" style="padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: left;">
+                                @include('partials.metadata')
                               </td>
                             </tr>
                             @endforeach
@@ -353,13 +187,54 @@
       </div>{{-- end dashboard --}}
     </div>{{-- end wrapper --}}
 
+    {{-- Edit Modal --}}
+    <div class="modal-backdrop-custom" id="editModalBackdrop" onclick="closeEditModal(event)">
+      <div class="modal-card-custom" style="max-width: 450px; text-align: left;">
+        <h3 style="margin-top:0; margin-bottom:1.5rem; color:#e2e8f0; font-weight:600;">
+          <i class="fa fa-pencil" style="color:var(--accent);"></i> Edit Kontak
+        </h3>
+        <form method="POST" id="editForm">
+          @csrf
+          <div class="form-group">
+            <label class="control-label" for="edit_nama">Nama Pemilik <span class="text-danger">*</span></label>
+            <div class="tooltip-container">
+              <input id="edit_nama" type="text" name="nama" class="form-control form-control-custom" required autocomplete="off"
+                     oninput="updateTooltip(this)">
+              <span class="tooltiptext">Nama pemilik kontak</span>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 15px;">
+            <label class="control-label" for="edit_nomor_kontak">Nomor Kontak (HP / WA) <span class="text-danger">*</span></label>
+            <div class="tooltip-container">
+              <input id="edit_nomor_kontak" type="text" name="nomor_kontak" class="form-control form-control-custom" required autocomplete="off"
+                     oninput="updateTooltip(this)">
+              <span class="tooltiptext">Nomor kontak HP/WA</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-default" onclick="closeEditModal(null)">Batal</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa fa-check"></i> Simpan Perubahan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     {{-- Delete Modal --}}
     <div class="modal-backdrop-custom" id="deleteModalBackdrop" onclick="closeDeleteModal(event)">
       <div class="modal-confirm">
         <div style="font-size:2.5rem; margin-bottom:1rem;">🗑️</div>
         <div style="font-size:1rem; font-weight:700; margin-bottom:0.5rem; color:#e2e8f0;">Hapus Kontak?</div>
-        <div style="font-size:0.85rem; color:#64748b; margin-bottom:1.5rem;" id="deleteDesc">
-          Kontak ini akan dihapus secara permanen.
+        <div style="font-size:0.85rem; color:#64748b; margin-bottom:0.75rem;" id="deleteDesc"></div>
+        <div id="deleteUsageWarning" style="display:none; margin-bottom:1rem; background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:8px; padding:0.75rem 1rem; text-align:left;">
+          <div style="font-size:0.8rem; font-weight:700; color:#fbbf24; margin-bottom:0.5rem;">
+            <i class="fa fa-exclamation-triangle"></i> Data ini masih digunakan oleh:
+          </div>
+          <div id="deleteUsageList" style="font-size:0.78rem; color:#cbd5e1; max-height:120px; overflow-y:auto;"></div>
+          <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.5rem;">
+            Setelah dihapus, Kajian terkait akan menampilkan "—" untuk Kontak.
+          </div>
         </div>
         <div style="display:flex; justify-content:center; gap:1rem;">
           <button class="btn btn-default" onclick="closeDeleteModal(null)">Batal</button>
@@ -373,16 +248,69 @@
       </div>
     </div>
 
-    <script src="{{ asset('admin-template/libs/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('admin-template/libs/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('admin-template/libs/jquery.scrollbar/jquery.scrollbar.min.js') }}"></script>
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
 
     <script>
-      function openDeleteModal(id, nama) {
+      function openEditModal(id, nama, nomorKontak) {
+        document.getElementById('editForm').action = `/admin_dashboard/kontak/${id}`;
+        document.getElementById('edit_nama').value = nama;
+        document.getElementById('edit_nomor_kontak').value = nomorKontak;
+        document.getElementById('editModalBackdrop').classList.add('open');
+      }
+
+      function closeEditModal(e) {
+        if (e === null || e.target === document.getElementById('editModalBackdrop')) {
+          document.getElementById('editModalBackdrop').classList.remove('open');
+        }
+      }
+
+      function toggleAddForm() {
+        var form = document.getElementById('addForm');
+        form.classList.toggle('open');
+      }
+
+      function filterKontakTable() {
+        var input = document.getElementById('kontakSearchInput');
+        var filter = input.value.toLowerCase();
+        var mainRows = document.getElementsByClassName('searchable-row');
+        
+        for (var i = 0; i < mainRows.length; i++) {
+          var row = mainRows[i];
+          var text = row.innerText.toLowerCase();
+          
+          if (text.indexOf(filter) > -1) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        }
+      }
+
+      @if ($errors->any() && (old('nama') || old('nomor_kontak')))
+      toggleAddForm();
+      @endif
+
+      function openDeleteModal(id, nama, kajianUsage) {
         document.getElementById('deleteForm').action = `/admin_dashboard/kontak/${id}/delete`;
         document.getElementById('deleteDesc').textContent =
           `"${nama}" akan dihapus secara permanen dari daftar kontak.`;
+
+        var usageItems = [];
+        if (kajianUsage && kajianUsage.length > 0) {
+          kajianUsage.forEach(function(judul) {
+            usageItems.push('<div style="padding:2px 0;"><i class="fa fa-calendar" style="color:#38bdf8; margin-right:5px;"></i><strong>Kajian:</strong> ' + judul + '</div>');
+          });
+        }
+
+        var warningEl = document.getElementById('deleteUsageWarning');
+        var listEl = document.getElementById('deleteUsageList');
+        if (usageItems.length > 0) {
+          listEl.innerHTML = usageItems.join('');
+          warningEl.style.display = 'block';
+        } else {
+          warningEl.style.display = 'none';
+        }
+
         document.getElementById('deleteModalBackdrop').classList.add('open');
       }
 
@@ -392,9 +320,33 @@
         }
       }
 
+      function toggleInfoRow(id) {
+        var row = document.getElementById('rowInfo-' + id);
+        if (row.style.display === 'none') {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
+          closeEditModal(null);
           closeDeleteModal(null);
+        }
+      });
+    </script>
+    @livewireScripts
+    <script>
+      document.addEventListener('livewire:navigated', function() {
+        if (window.jQuery) {
+          var $ = window.jQuery;
+          $('body.main-scrollable .main__scroll').scrollbar();
+          $('.scrollable').scrollbar({'disableBodyScroll' : true});
+          
+          $('.header-navbar-mobile__menu button').off('click').on('click', function() {
+            $('.dashboard').toggleClass('dashboard_menu');
+          });
         }
       });
     </script>

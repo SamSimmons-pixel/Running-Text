@@ -2,62 +2,84 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationChange;
 use App\Models\Tempat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TempatController extends Controller
 {
-    /**
-     * Guard: only admin role may access any method in this controller.
-     */
-    private function requireAdmin(): void
+    private function requireOperator(): void
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin_operator', 'operator'])) {
             abort(403, 'Unauthorized!');
         }
     }
 
-    /**
-     * Show the Tempat management page.
-     */
     public function index()
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
-        $tempatList = Tempat::orderBy('nama', 'asc')->get();
+        $tempatList = Tempat::withCount(['kajian', 'acara'])
+            ->with(['kajian:id,tempat_id,Judul', 'acara:id,tempat_id,judul'])
+            ->orderBy('nama', 'asc')
+            ->get();
 
         return view('tempat', compact('tempatList'));
     }
 
-    /**
-     * Store a new Tempat.
-     */
     public function store(Request $request)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $data = $request->validate([
-            'nama' => ['required', 'string', 'max:255', 'unique:tempat,nama'],
+            'nama'             => ['required', 'string', 'max:255', 'unique:tempat,nama'],
+            'deskripsi_alamat' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        Tempat::create($data);
+        $data['author'] = Auth::user()->name;
+        $data['last_modified_by'] = Auth::user()->name;
+
+        $tempat = Tempat::create($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan tempat baru: " . $tempat->nama))->toOthers();
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil ditambahkan.');
     }
 
-    /**
-     * Delete a Tempat.
-     */
-    public function destroy($id)
+    public function update(Request $request, $id)
     {
-        $this->requireAdmin();
+        $this->requireOperator();
 
         $tempat = Tempat::findOrFail($id);
-        $tempat->delete();
+
+        $data = $request->validate([
+            'nama'             => ['required', 'string', 'max:255', 'unique:tempat,nama,' . $id],
+            'deskripsi_alamat' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $data['last_modified_by'] = Auth::user()->name;
+
+        $tempat->update($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah tempat " . $tempat->nama))->toOthers();
 
         return redirect()->route('admin.tempat')
-            ->with('success', 'Tempat berhasil dihapus.');
+            ->with('success', 'Tempat berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $this->requireOperator();
+
+        $tempat = Tempat::findOrFail($id);
+        $nama = $tempat->nama;
+        $tempat->delete();
+
+        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus tempat " . $nama))->toOthers();
+
+        return redirect()->route('admin.tempat')
+            ->with('success', 'Tempat "' . $nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
     }
 }
