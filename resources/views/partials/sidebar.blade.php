@@ -87,7 +87,7 @@
     <div style="">
     @foreach($logs as $log)
       <div class="log-item" style="font-size: 1.1rem; color: #cbd5e1; line-height: 1.4; word-break: break-word;">
-        <span style="color: #64748b; font-size: 1rem; margin-right: 4px;">[{{ $log->created_at->format('H:i') }}]</span>
+        <span style="color: #64748b; font-size: 1.1rem; margin-right: 4px;">[{{ $log->created_at->format('H:i') }}]</span>
         <span>{{ $log->message }}</span>
       </div>
     @endforeach

@@ -164,7 +164,7 @@ class KajianController extends Controller
 
         $kajian->update($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah kajian " . $kajian->Judul))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah kajian " . $kajian->Judul))->toOthers();
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil diperbarui.');
@@ -220,7 +220,7 @@ class KajianController extends Controller
         ]);
 
         $statusText = $kajian->Tampilkan ? "ditampilkan" : "disembunyikan";
-        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah status tampil kajian '{$kajian->Judul}' menjadi {$statusText}"))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah status tampil kajian '{$kajian->Judul}' menjadi {$statusText}"))->toOthers();
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Status tampil kajian diperbarui.');
@@ -237,7 +237,7 @@ class KajianController extends Controller
         $judul = $kajian->Judul;
         $kajian->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus kajian " . $judul))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus kajian " . $judul))->toOthers();
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil dihapus.');

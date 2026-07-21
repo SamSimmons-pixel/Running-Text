@@ -61,4 +61,25 @@ class KontakController extends Controller
         return redirect()->route('admin.kontak')
             ->with('success', 'Kontak "' . $nama . '" berhasil dihapus. Data terkait di Kajian telah diset ke kosong (—).');
     }
+
+    public function update(Request $request, $id)
+    {
+        $this->requireOperator();
+
+        $kontak = Kontak::findOrFail($id);
+
+        $data = $request->validate([
+            'nama'         => ['required', 'string', 'max:255'],
+            'nomor_kontak' => ['required', 'string', 'max:255', 'unique:kontak,nomor_kontak,' . $id],
+        ]);
+
+        $data['last_modified_by'] = Auth::user()->name;
+
+        $kontak->update($data);
+
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah kontak: " . $kontak->nama))->toOthers();
+
+        return redirect()->route('admin.kontak')
+            ->with('success', 'Kontak berhasil diperbarui.');
+    }
 }

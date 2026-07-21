@@ -63,7 +63,7 @@ class TempatController extends Controller
 
         $tempat->update($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah tempat " . $tempat->nama))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah tempat " . $tempat->nama))->toOthers();
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil diperbarui.');

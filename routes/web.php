@@ -40,6 +40,7 @@ Route::post('/admin_dashboard/acara/{id}/toggle',  [AcaraController::class, 'tog
 // ── Narasumber Management ──────────────────────────────────────
 Route::get ('/admin_dashboard/narasumber',       [NarasumberController::class, 'index'])->name('admin.narasumber');
 Route::post('/admin_dashboard/narasumber',       [NarasumberController::class, 'store'])->name('admin.narasumber.store');
+Route::post('/admin_dashboard/narasumber/{id}',   [NarasumberController::class, 'update'])->name('admin.narasumber.update');
 Route::post('/admin_dashboard/narasumber/{id}/delete', [NarasumberController::class, 'destroy'])->name('admin.narasumber.destroy');
 
 // ── Tempat Management ──────────────────────────────────────────
@@ -51,6 +52,7 @@ Route::post('/admin_dashboard/tempat/{id}/delete', [TempatController::class, 'de
 // ── Kontak Management ──────────────────────────────────────────
 Route::get ('/admin_dashboard/kontak',           [KontakController::class, 'index'])->name('admin.kontak');
 Route::post('/admin_dashboard/kontak',           [KontakController::class, 'store'])->name('admin.kontak.store');
+Route::post('/admin_dashboard/kontak/{id}',        [KontakController::class, 'update'])->name('admin.kontak.update');
 Route::post('/admin_dashboard/kontak/{id}/delete', [KontakController::class, 'destroy'])->name('admin.kontak.destroy');
 
 // ── Pewaktuan Hijriah ──────────────────────────────────────────

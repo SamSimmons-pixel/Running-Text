@@ -76,7 +76,7 @@ class InformasiUmumController extends Controller
 
         $info->update($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah informasi umum " . $info->judul))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah informasi umum " . $info->judul))->toOthers();
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil diperbarui.');
@@ -96,7 +96,7 @@ class InformasiUmumController extends Controller
         ]);
 
         $statusText = $info->tampilkan ? "ditampilkan" : "disembunyikan";
-        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah status tampil informasi '{$info->judul}' menjadi {$statusText}"))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah status tampil informasi '{$info->judul}' menjadi {$statusText}"))->toOthers();
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Status tampil informasi diperbarui.');

@@ -151,6 +151,10 @@
                                     onclick="toggleInfoRow({{ $item->id }})">
                                     <i class="fa fa-info-circle"></i> Info
                                   </button>
+                                  <button class="btn-kajian-outline"
+                                      onclick="openEditModal({{ $item->id }}, '{{ addslashes($item->nama) }}', '{{ addslashes($item->nomor_kontak) }}')">
+                                       <i class="fa fa-pencil"></i> Edit
+                                  </button>
                                   <button class="btn-kajian-danger"
                                      onclick="openDeleteModal(
                                        {{ $item->id }},
@@ -183,6 +187,40 @@
       </div>{{-- end dashboard --}}
     </div>{{-- end wrapper --}}
 
+    {{-- Edit Modal --}}
+    <div class="modal-backdrop-custom" id="editModalBackdrop" onclick="closeEditModal(event)">
+      <div class="modal-card-custom" style="max-width: 450px; text-align: left;">
+        <h3 style="margin-top:0; margin-bottom:1.5rem; color:#e2e8f0; font-weight:600;">
+          <i class="fa fa-pencil" style="color:var(--accent);"></i> Edit Kontak
+        </h3>
+        <form method="POST" id="editForm">
+          @csrf
+          <div class="form-group">
+            <label class="control-label" for="edit_nama">Nama Pemilik <span class="text-danger">*</span></label>
+            <div class="tooltip-container">
+              <input id="edit_nama" type="text" name="nama" class="form-control form-control-custom" required autocomplete="off"
+                     oninput="updateTooltip(this)">
+              <span class="tooltiptext">Nama pemilik kontak</span>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 15px;">
+            <label class="control-label" for="edit_nomor_kontak">Nomor Kontak (HP / WA) <span class="text-danger">*</span></label>
+            <div class="tooltip-container">
+              <input id="edit_nomor_kontak" type="text" name="nomor_kontak" class="form-control form-control-custom" required autocomplete="off"
+                     oninput="updateTooltip(this)">
+              <span class="tooltiptext">Nomor kontak HP/WA</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-default" onclick="closeEditModal(null)">Batal</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa fa-check"></i> Simpan Perubahan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     {{-- Delete Modal --}}
     <div class="modal-backdrop-custom" id="deleteModalBackdrop" onclick="closeDeleteModal(event)">
       <div class="modal-confirm">
@@ -213,6 +251,19 @@
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
 
     <script>
+      function openEditModal(id, nama, nomorKontak) {
+        document.getElementById('editForm').action = `/admin_dashboard/kontak/${id}`;
+        document.getElementById('edit_nama').value = nama;
+        document.getElementById('edit_nomor_kontak').value = nomorKontak;
+        document.getElementById('editModalBackdrop').classList.add('open');
+      }
+
+      function closeEditModal(e) {
+        if (e === null || e.target === document.getElementById('editModalBackdrop')) {
+          document.getElementById('editModalBackdrop').classList.remove('open');
+        }
+      }
+
       function toggleAddForm() {
         var form = document.getElementById('addForm');
         form.classList.toggle('open');
@@ -280,6 +331,7 @@
 
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
+          closeEditModal(null);
           closeDeleteModal(null);
         }
       });

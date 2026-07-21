@@ -136,6 +136,12 @@
                                     onclick="toggleInfoRow({{ $item->id }})">
                                     <i class="fa fa-info-circle"></i> Info
                                   </button>
+
+                                  <button class="btn-kajian-outline"
+                                      onclick="openEditModal({{ $item->id }}, '{{ addslashes($item->nama) }}')">
+                                       <i class="fa fa-pencil"></i> Edit
+                                  </button>
+
                                   <button class="btn-kajian-danger"
                                     onclick="openDeleteModal(
                                       {{ $item->id }},
@@ -169,19 +175,45 @@
       </div>{{-- end dashboard --}}
     </div>{{-- end wrapper --}}
 
+    {{-- Edit Modal --}}
+    <div class="modal-backdrop-custom" id="editModalBackdrop" onclick="closeEditModal(event)">
+      <div class="modal-card-custom" style="max-width: 450px; text-align: left;">
+        <h3 style="margin-top:0; margin-bottom:1.5rem; color:#e2e8f0; font-weight:600;">
+          <i class="fa fa-pencil" style="color:var(--accent);"></i> Edit Narasumber
+        </h3>
+        <form method="POST" id="editForm">
+          @csrf
+          <div class="form-group">
+            <label class="control-label" for="edit_nama">Nama Narasumber <span class="text-danger">*</span></label>
+            <div class="tooltip-container">
+              <input id="edit_nama" type="text" name="nama" class="form-control form-control-custom" required autocomplete="off"
+                     oninput="updateTooltip(this)">
+              <span class="tooltiptext">Nama narasumber</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-default" onclick="closeEditModal(null)">Batal</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa fa-check"></i> Simpan Perubahan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     {{-- Delete Modal --}}
     <div class="modal-backdrop-custom" id="deleteModalBackdrop" onclick="closeDeleteModal(event)">
       <div class="modal-confirm">
         <div style="font-size:2.5rem; margin-bottom:1rem;">🗑️</div>
-        <div style="font-size:1rem; font-weight:700; margin-bottom:0.5rem; color:#e2e8f0;">Hapus Narasumber?</div>
-        <div style="font-size:0.85rem; color:#64748b; margin-bottom:0.75rem;" id="deleteDesc"></div>
+        <div style="font-size:2rem; font-weight:700; margin-bottom:0.5rem; color:#e2e8f0;">Hapus Narasumber?</div>
+        <div style="font-size:2rem; color:#64748b; margin-bottom:0.75rem;" id="deleteDesc"></div>
         {{-- Usage warning panel (shown only when there are usages) --}}
         <div id="deleteUsageWarning" style="display:none; margin-bottom:1rem; background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:8px; padding:0.75rem 1rem; text-align:left;">
-          <div style="font-size:0.8rem; font-weight:700; color:#fbbf24; margin-bottom:0.5rem;">
+          <div style="font-size:1.2rem; font-weight:700; color:#fbbf24; margin-bottom:0.5rem;">
             <i class="fa fa-exclamation-triangle"></i> Data ini masih digunakan oleh:
           </div>
-          <div id="deleteUsageList" style="font-size:0.78rem; color:#cbd5e1; max-height:120px; overflow-y:auto;"></div>
-          <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.5rem;">
+          <div id="deleteUsageList" style="font-size:1.5rem; color:#cbd5e1; max-height:120px; overflow-y:auto;"></div>
+          <div style="font-size:1.4rem; color:#94a3b8; margin-top:0.5rem;">
             Setelah dihapus, Kajian/Acara terkait akan menampilkan "—" untuk Narasumber.
           </div>
         </div>
@@ -200,6 +232,18 @@
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
 
     <script>
+      function openEditModal(id, nama) {
+        document.getElementById('editForm').action = `/admin_dashboard/narasumber/${id}`;
+        document.getElementById('edit_nama').value = nama;
+        document.getElementById('editModalBackdrop').classList.add('open');
+      }
+
+      function closeEditModal(e) {
+        if (e === null || e.target === document.getElementById('editModalBackdrop')) {
+          document.getElementById('editModalBackdrop').classList.remove('open');
+        }
+      }
+
       function toggleAddForm() {
         var form = document.getElementById('addForm');
         form.classList.toggle('open');
@@ -273,6 +317,7 @@
 
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
+          closeEditModal(null);
           closeDeleteModal(null);
         }
       });

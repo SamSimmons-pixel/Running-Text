@@ -74,7 +74,7 @@ class AcaraController extends Controller
 
         $acara->update($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah mengubah acara " . $acara->judul))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah acara " . $acara->judul))->toOthers();
 
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil diperbarui.');

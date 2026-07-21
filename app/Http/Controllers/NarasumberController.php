@@ -62,4 +62,20 @@ class NarasumberController extends Controller
         return redirect()->route('admin.narasumber')
             ->with('success', 'Narasumber "' . $nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
     }
+
+    public function update(Request $request, $id) {
+        $this->requireOperator();
+
+        $narasumber = Narasumber::findOrFail($id);
+
+        $data = $request->validate([
+            'nama' => ['required', 'string', 'max:255', 'unique:narasumber,nama,' . $id],
+        ]);
+
+        $narasumber->update($data);
+        
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah narasumber: " . $narasumber->nama))->toOthers();
+
+        return redirect()->route('admin.narasumber')->with('success', 'Narasumber berhasil diperbarui');
+    }
 }
