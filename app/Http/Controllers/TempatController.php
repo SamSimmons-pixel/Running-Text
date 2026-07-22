@@ -42,7 +42,7 @@ class TempatController extends Controller
 
         $tempat = Tempat::create($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan tempat baru: " . $tempat->nama))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan tempat baru \"{$tempat->nama}\""))->toOthers();
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil ditambahkan.');
@@ -54,6 +54,7 @@ class TempatController extends Controller
 
         $tempat = Tempat::findOrFail($id);
         $namaBefore = $tempat->nama;
+        $deskripsiBefore = $tempat->deskripsi_alamat ?? '—';
 
         $data = $request->validate([
             'nama'             => ['required', 'string', 'max:255', 'unique:tempat,nama,' . $id],
@@ -64,8 +65,17 @@ class TempatController extends Controller
 
         $tempat->update($data);
 
+        $changes = [];
         if ($namaBefore !== $tempat->nama) {
-            $msg = Auth::user()->name . " mengubah nama tempat dari \"{$namaBefore}\" menjadi \"{$tempat->nama}\"";
+            $changes[] = "nama dari \"{$namaBefore}\" menjadi \"{$tempat->nama}\"";
+        }
+        $deskripsiAfter = $tempat->deskripsi_alamat ?? '—';
+        if ($deskripsiBefore !== $deskripsiAfter) {
+            $changes[] = "deskripsi alamat dari \"{$deskripsiBefore}\" menjadi \"{$deskripsiAfter}\"";
+        }
+
+        if (count($changes) > 0) {
+            $msg = Auth::user()->name . " mengubah tempat \"{$namaBefore}\": " . implode('; ', $changes);
         } else {
             $msg = Auth::user()->name . " memperbarui tempat \"{$tempat->nama}\"";
         }

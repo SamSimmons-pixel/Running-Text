@@ -50,7 +50,7 @@ class InformasiUmumController extends Controller
 
         $info = InformasiUmum::create($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan informasi umum baru: " . $info->judul))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan informasi umum baru \"{$info->judul}\""))->toOthers();
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil ditambahkan.');
@@ -64,7 +64,8 @@ class InformasiUmumController extends Controller
         $this->requireOperator();
 
         $info = InformasiUmum::findOrFail($id);
-        $judulBefore = $info->judul;
+        $judulBefore     = $info->judul;
+        $deskripsiBefore = $info->deskripsi;
 
         $data = $request->validate([
             'judul'     => ['required', 'string', 'max:255'],
@@ -77,8 +78,16 @@ class InformasiUmumController extends Controller
 
         $info->update($data);
 
+        $changes = [];
         if ($judulBefore !== $info->judul) {
-            $msg = Auth::user()->name . " mengubah judul informasi dari \"{$judulBefore}\" menjadi \"{$info->judul}\"";
+            $changes[] = "judul dari \"{$judulBefore}\" menjadi \"{$info->judul}\"";
+        }
+        if ($deskripsiBefore !== $info->deskripsi) {
+            $changes[] = "deskripsi informasi diperbarui";
+        }
+
+        if (count($changes) > 0) {
+            $msg = Auth::user()->name . " mengubah informasi umum \"{$judulBefore}\": " . implode('; ', $changes);
         } else {
             $msg = Auth::user()->name . " memperbarui informasi umum \"{$info->judul}\"";
         }

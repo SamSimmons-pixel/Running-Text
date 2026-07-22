@@ -132,8 +132,11 @@ class KajianController extends Controller
         $data['last_modified_by'] = Auth::user()->name;
 
         $kajian = Kajian::create($data);
+        $kajian->load(['narasumber', 'tempat', 'kontak']);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan kajian baru: " . $kajian->Judul))->toOthers();
+        $narasumberName = $kajian->narasumber->nama ?? '—';
+        $tempatName     = $kajian->tempat->nama ?? '—';
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan kajian baru \"{$kajian->Judul}\" (Narasumber: {$narasumberName}, Tempat: {$tempatName})"))->toOthers();
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil ditambahkan.');
@@ -146,8 +149,17 @@ class KajianController extends Controller
     {
         $this->requireOperator();
 
-        $kajian = Kajian::findOrFail($id);
-        $judulBefore = $kajian->Judul;
+        $kajian = Kajian::with(['narasumber', 'tempat', 'kontak'])->findOrFail($id);
+
+        $oldData = [
+            'Judul'        => $kajian->Judul,
+            'Tanggal'      => $kajian->Tanggal,
+            'WaktuSelesai' => $kajian->WaktuSelesai,
+            'narasumber'   => $kajian->narasumber->nama ?? '—',
+            'tempat'       => $kajian->tempat->nama ?? '—',
+            'kontak'       => $kajian->kontak->nama ?? '—',
+            'Informasi'    => $kajian->Informasi,
+        ];
 
         $data = $request->validate([
             'Tanggal'      => ['required', 'date'],
@@ -164,11 +176,47 @@ class KajianController extends Controller
         $data['last_modified_by'] = Auth::user()->name;
 
         $kajian->update($data);
+        $kajian->load(['narasumber', 'tempat', 'kontak']);
 
-        if ($judulBefore !== $kajian->Judul) {
-            $msg = Auth::user()->name . " mengubah judul kajian dari \"{$judulBefore}\" menjadi \"{$kajian->Judul}\"";
+        $changes = [];
+        if (trim($oldData['Judul']) !== trim($kajian->Judul)) {
+            $changes[] = "judul dari \"{$oldData['Judul']}\" menjadi \"{$kajian->Judul}\"";
+        }
+        $oldTglNorm = \Carbon\Carbon::parse($oldData['Tanggal'])->format('Y-m-d H:i');
+        $newTglNorm = \Carbon\Carbon::parse($kajian->Tanggal)->format('Y-m-d H:i');
+        if ($oldTglNorm !== $newTglNorm) {
+            $oldTglDisplay = \Carbon\Carbon::parse($oldData['Tanggal'])->format('d-m-Y H:i');
+            $newTglDisplay = \Carbon\Carbon::parse($kajian->Tanggal)->format('d-m-Y H:i');
+            $changes[] = "waktu mulai dari \"{$oldTglDisplay}\" menjadi \"{$newTglDisplay}\"";
+        }
+        $oldSelesaiNorm = $oldData['WaktuSelesai'] ? preg_replace('/^(\d{2}:\d{2}):00$/', '$1', trim($oldData['WaktuSelesai'])) : '';
+        $newSelesaiNorm = $kajian->WaktuSelesai ? preg_replace('/^(\d{2}:\d{2}):00$/', '$1', trim($kajian->WaktuSelesai)) : '';
+        if ($oldSelesaiNorm !== $newSelesaiNorm) {
+            $oldSelesai = $oldData['WaktuSelesai'] ?: '—';
+            $newSelesai = $kajian->WaktuSelesai ?: '—';
+            $changes[] = "waktu selesai dari \"{$oldSelesai}\" menjadi \"{$newSelesai}\"";
+        }
+        $newNarasumber = $kajian->narasumber->nama ?? '—';
+        if ($oldData['narasumber'] !== $newNarasumber) {
+            $changes[] = "narasumber dari \"{$oldData['narasumber']}\" menjadi \"{$newNarasumber}\"";
+        }
+        $newTempat = $kajian->tempat->nama ?? '—';
+        if ($oldData['tempat'] !== $newTempat) {
+            $changes[] = "tempat dari \"{$oldData['tempat']}\" menjadi \"{$newTempat}\"";
+        }
+        $newKontak = $kajian->kontak->nama ?? '—';
+        if ($oldData['kontak'] !== $newKontak) {
+            $changes[] = "kontak dari \"{$oldData['kontak']}\" menjadi \"{$newKontak}\"";
+        }
+        if ($oldData['Informasi'] !== $kajian->Informasi) {
+            $changes[] = "informasi tambahan diperbarui";
+        }
+
+        $judulRef = $oldData['Judul'];
+        if (count($changes) > 0) {
+            $msg = Auth::user()->name . " mengubah kajian \"{$judulRef}\": " . implode('; ', $changes);
         } else {
-            $msg = Auth::user()->name . " memperbarui kajian \"{$kajian->Judul}\"";
+            $msg = Auth::user()->name . " memperbarui kajian \"{$judulRef}\"";
         }
         broadcast(new NotificationChange($msg))->toOthers();
 

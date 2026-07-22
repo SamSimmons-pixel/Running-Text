@@ -42,7 +42,7 @@ class NarasumberController extends Controller
 
         $narasumber = Narasumber::create($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan narasumber baru: " . $narasumber->nama))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan narasumber baru \"{$narasumber->nama}\""))->toOthers();
 
         return redirect()->route('admin.narasumber')
             ->with('success', 'Narasumber berhasil ditambahkan.');

@@ -47,8 +47,11 @@ class AcaraController extends Controller
         $data['last_modified_by'] = Auth::user()->name;
 
         $acara = Acara::create($data);
+        $acara->load(['narasumber', 'tempat']);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan acara baru: " . $acara->judul))->toOthers();
+        $narasumberName = $acara->narasumber->nama ?? '—';
+        $tempatName     = $acara->tempat->nama ?? '—';
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan acara baru \"{$acara->judul}\" ({$acara->hari}, {$acara->jam_mulai}-{$acara->jam_selesai}, Narasumber: {$narasumberName}, Tempat: {$tempatName})"))->toOthers();
 
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil ditambahkan.');
@@ -58,8 +61,17 @@ class AcaraController extends Controller
     {
         $this->requireOperator();
 
-        $acara = Acara::findOrFail($id);
-        $judulBefore = $acara->judul;
+        $acara = Acara::with(['narasumber', 'tempat'])->findOrFail($id);
+
+        $oldData = [
+            'judul'        => $acara->judul,
+            'hari'         => $acara->hari,
+            'jam_mulai'    => $acara->jam_mulai,
+            'jam_selesai'  => $acara->jam_selesai,
+            'narasumber'   => $acara->narasumber->nama ?? '—',
+            'tempat'       => $acara->tempat->nama ?? '—',
+            'status'       => $acara->status ?? '—',
+        ];
 
         $data = $request->validate([
             'judul'        => ['required', 'string', 'max:255'],
@@ -74,11 +86,43 @@ class AcaraController extends Controller
         $data['last_modified_by'] = Auth::user()->name;
 
         $acara->update($data);
+        $acara->load(['narasumber', 'tempat']);
 
-        if ($judulBefore !== $acara->judul) {
-            $msg = Auth::user()->name . " mengubah judul acara dari \"{$judulBefore}\" menjadi \"{$acara->judul}\"";
+        $changes = [];
+        if (trim($oldData['judul']) !== trim($acara->judul)) {
+            $changes[] = "judul dari \"{$oldData['judul']}\" menjadi \"{$acara->judul}\"";
+        }
+        if (trim($oldData['hari']) !== trim($acara->hari)) {
+            $changes[] = "hari dari \"{$oldData['hari']}\" menjadi \"{$acara->hari}\"";
+        }
+        $oldMulaiNorm = $oldData['jam_mulai'] ? date('H:i', strtotime($oldData['jam_mulai'])) : '';
+        $newMulaiNorm = $acara->jam_mulai ? date('H:i', strtotime($acara->jam_mulai)) : '';
+        if ($oldMulaiNorm !== $newMulaiNorm) {
+            $changes[] = "jam mulai dari \"{$oldMulaiNorm}\" menjadi \"{$newMulaiNorm}\"";
+        }
+        $oldSelesaiNorm = $oldData['jam_selesai'] ? date('H:i', strtotime($oldData['jam_selesai'])) : '';
+        $newSelesaiNorm = $acara->jam_selesai ? date('H:i', strtotime($acara->jam_selesai)) : '';
+        if ($oldSelesaiNorm !== $newSelesaiNorm) {
+            $changes[] = "jam selesai dari \"{$oldSelesaiNorm}\" menjadi \"{$newSelesaiNorm}\"";
+        }
+        $newNarasumber = $acara->narasumber->nama ?? '—';
+        if ($oldData['narasumber'] !== $newNarasumber) {
+            $changes[] = "narasumber dari \"{$oldData['narasumber']}\" menjadi \"{$newNarasumber}\"";
+        }
+        $newTempat = $acara->tempat->nama ?? '—';
+        if ($oldData['tempat'] !== $newTempat) {
+            $changes[] = "tempat dari \"{$oldData['tempat']}\" menjadi \"{$newTempat}\"";
+        }
+        $newStatus = $acara->status ?? '—';
+        if ($oldData['status'] !== $newStatus) {
+            $changes[] = "status dari \"{$oldData['status']}\" menjadi \"{$newStatus}\"";
+        }
+
+        $judulRef = $oldData['judul'];
+        if (count($changes) > 0) {
+            $msg = Auth::user()->name . " mengubah acara \"{$judulRef}\": " . implode('; ', $changes);
         } else {
-            $msg = Auth::user()->name . " memperbarui acara \"{$acara->judul}\"";
+            $msg = Auth::user()->name . " memperbarui acara \"{$judulRef}\"";
         }
         broadcast(new NotificationChange($msg))->toOthers();
 

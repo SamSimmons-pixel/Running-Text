@@ -42,7 +42,7 @@ class KontakController extends Controller
 
         $kontak = Kontak::create($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menambahkan kontak baru: " . $kontak->nama))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan kontak baru \"{$kontak->nama}\" ({$kontak->nomor_kontak})"))->toOthers();
 
         return redirect()->route('admin.kontak')
             ->with('success', 'Kontak berhasil ditambahkan.');
@@ -84,10 +84,15 @@ class KontakController extends Controller
             $changes[] = "nama dari \"{$namaBefore}\" menjadi \"{$kontak->nama}\"";
         }
         if ($nomorBefore !== $kontak->nomor_kontak) {
-            $changes[] = "nomor dari \"{$nomorBefore}\" menjadi \"{$kontak->nomor_kontak}\"";
+            $changes[] = "nomor kontak dari \"{$nomorBefore}\" menjadi \"{$kontak->nomor_kontak}\"";
         }
-        $detail = $changes ? implode('; ', $changes) : "data kontak \"{$kontak->nama}\"";
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah {$detail}"))->toOthers();
+
+        if (count($changes) > 0) {
+            $msg = Auth::user()->name . " mengubah kontak \"{$namaBefore}\": " . implode('; ', $changes);
+        } else {
+            $msg = Auth::user()->name . " memperbarui kontak \"{$kontak->nama}\"";
+        }
+        broadcast(new NotificationChange($msg))->toOthers();
 
         return redirect()->route('admin.kontak')
             ->with('success', 'Kontak berhasil diperbarui.');

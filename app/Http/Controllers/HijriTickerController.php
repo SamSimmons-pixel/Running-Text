@@ -68,14 +68,41 @@ class HijriTickerController extends Controller
         $timezone = $cities[$city]['timezone'] ?? 'Asia/Jakarta';
 
         $settings = HijriSetting::firstOrCreate([]);
+
+        $changes = [];
+        if ($settings->default_city !== $city) {
+            $changes[] = "kota dari \"{$settings->default_city}\" menjadi \"{$city}\"";
+        }
+        if ($settings->hijri_offset_days !== (int)$validated['hijri_offset_days']) {
+            $changes[] = "offset hari dari {$settings->hijri_offset_days} menjadi {$validated['hijri_offset_days']}";
+        }
+        if ($settings->prayer_time_provider !== $validated['prayer_time_provider']) {
+            $changes[] = "provider dari \"{$settings->prayer_time_provider}\" menjadi \"{$validated['prayer_time_provider']}\"";
+        }
+        $newMasehiSuffix = $request->has('show_masehi_suffix');
+        if ($settings->show_masehi_suffix !== $newMasehiSuffix) {
+            $statusStr = $newMasehiSuffix ? 'diaktifkan' : 'dinonaktifkan';
+            $changes[] = "akhiran Masehi (M) {$statusStr}";
+        }
+        $newHijriSuffix = $request->has('show_hijri_suffix');
+        if ($settings->show_hijri_suffix !== $newHijriSuffix) {
+            $statusStr = $newHijriSuffix ? 'diaktifkan' : 'dinonaktifkan';
+            $changes[] = "akhiran Hijriah (H) {$statusStr}";
+        }
+
         $settings->update([
             'default_city' => $city,
             'default_timezone' => $timezone,
             'hijri_offset_days' => $validated['hijri_offset_days'],
             'prayer_time_provider' => $validated['prayer_time_provider'],
-            'show_masehi_suffix' => $request->has('show_masehi_suffix'),
-            'show_hijri_suffix' => $request->has('show_hijri_suffix'),
+            'show_masehi_suffix' => $newMasehiSuffix,
+            'show_hijri_suffix' => $newHijriSuffix,
         ]);
+
+        if (count($changes) > 0) {
+            $msg = \Illuminate\Support\Facades\Auth::user()->name . " mengubah pengaturan pewaktuan Hijriah: " . implode('; ', $changes);
+            broadcast(new \App\Events\NotificationChange($msg))->toOthers();
+        }
 
         // Force cache eviction for today's schedule to show updated timing immediately
         $dateKey = Carbon::now($timezone)->format('Y-m-d');
