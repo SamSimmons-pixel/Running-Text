@@ -53,6 +53,7 @@ class TempatController extends Controller
         $this->requireOperator();
 
         $tempat = Tempat::findOrFail($id);
+        $namaBefore = $tempat->nama;
 
         $data = $request->validate([
             'nama'             => ['required', 'string', 'max:255', 'unique:tempat,nama,' . $id],
@@ -63,7 +64,12 @@ class TempatController extends Controller
 
         $tempat->update($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah tempat " . $tempat->nama))->toOthers();
+        if ($namaBefore !== $tempat->nama) {
+            $msg = Auth::user()->name . " mengubah nama tempat dari \"{$namaBefore}\" menjadi \"{$tempat->nama}\"";
+        } else {
+            $msg = Auth::user()->name . " memperbarui tempat \"{$tempat->nama}\"";
+        }
+        broadcast(new NotificationChange($msg))->toOthers();
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil diperbarui.');
@@ -77,7 +83,7 @@ class TempatController extends Controller
         $nama = $tempat->nama;
         $tempat->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus tempat " . $nama))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus tempat \"{$nama}\""))->toOthers();
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat "' . $nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');

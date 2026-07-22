@@ -56,7 +56,7 @@ class KontakController extends Controller
         $nama = $kontak->nama;
         $kontak->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus kontak " . $nama))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus kontak \"{$nama}\""))->toOthers();
 
         return redirect()->route('admin.kontak')
             ->with('success', 'Kontak "' . $nama . '" berhasil dihapus. Data terkait di Kajian telah diset ke kosong (—).');
@@ -67,6 +67,8 @@ class KontakController extends Controller
         $this->requireOperator();
 
         $kontak = Kontak::findOrFail($id);
+        $namaBefore   = $kontak->nama;
+        $nomorBefore  = $kontak->nomor_kontak;
 
         $data = $request->validate([
             'nama'         => ['required', 'string', 'max:255'],
@@ -77,7 +79,15 @@ class KontakController extends Controller
 
         $kontak->update($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah kontak: " . $kontak->nama))->toOthers();
+        $changes = [];
+        if ($namaBefore !== $kontak->nama) {
+            $changes[] = "nama dari \"{$namaBefore}\" menjadi \"{$kontak->nama}\"";
+        }
+        if ($nomorBefore !== $kontak->nomor_kontak) {
+            $changes[] = "nomor dari \"{$nomorBefore}\" menjadi \"{$kontak->nomor_kontak}\"";
+        }
+        $detail = $changes ? implode('; ', $changes) : "data kontak \"{$kontak->nama}\"";
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah {$detail}"))->toOthers();
 
         return redirect()->route('admin.kontak')
             ->with('success', 'Kontak berhasil diperbarui.');

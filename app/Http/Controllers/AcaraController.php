@@ -59,6 +59,7 @@ class AcaraController extends Controller
         $this->requireOperator();
 
         $acara = Acara::findOrFail($id);
+        $judulBefore = $acara->judul;
 
         $data = $request->validate([
             'judul'        => ['required', 'string', 'max:255'],
@@ -74,7 +75,12 @@ class AcaraController extends Controller
 
         $acara->update($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah acara " . $acara->judul))->toOthers();
+        if ($judulBefore !== $acara->judul) {
+            $msg = Auth::user()->name . " mengubah judul acara dari \"{$judulBefore}\" menjadi \"{$acara->judul}\"";
+        } else {
+            $msg = Auth::user()->name . " memperbarui acara \"{$acara->judul}\"";
+        }
+        broadcast(new NotificationChange($msg))->toOthers();
 
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil diperbarui.');
@@ -88,7 +94,7 @@ class AcaraController extends Controller
         $judul = $acara->judul;
         $acara->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus acara " . $judul))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus acara \"{$judul}\""))->toOthers();
 
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil dihapus.');
