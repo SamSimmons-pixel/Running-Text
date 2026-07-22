@@ -257,7 +257,7 @@
                                   <span class="label label-info" style="border-radius:99px; padding:3px 8px; font-size:1.1rem; background-color:rgba(239,68,68,0.15)!important; color:#ef4444!important; border:1px solid rgba(239,68,68,0.3)!important;">
                                     Off
                                   </span>
-                                @elseif(!$item->tampilkan || $item->tampilkan)
+                                @elseif(filled(trim($item->status)))
                                   <span class="label label-info" style="border-radius:99px; padding:3px 8px; font-size:1.1rem; background-color:rgba(99,179,237,0.15)!important; color:#63b3ed!important; border:1px solid rgba(99,179,237,0.3)!important;">
                                     {{ $item->status }}
                                   </span>

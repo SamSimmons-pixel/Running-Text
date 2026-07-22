@@ -33,6 +33,8 @@ class HijriService
         $timezone = $timezoneOverride ?: $settings->default_timezone;
         $offsetDays = $settings->hijri_offset_days;
         $providerName = $settings->prayer_time_provider;
+        $showMasehiSuffix = $settings->show_masehi_suffix ?? false;
+        $showHijriSuffix = $settings->show_hijri_suffix ?? true;
 
         $now = Carbon::now($timezone)->locale('id');
 
@@ -54,13 +56,13 @@ class HijriService
         // 4. Calculate Hijri Date (Maghrib Rollover and Offset)
         $maghribTime = $schedule['maghrib'] ?? '18:00';
         if ($providerName === 'alhabib') {
-            $hijriDate = $this->getAlhabibHijriDate($now, $maghribTime, $offsetDays);
+            $hijriDate = $this->getAlhabibHijriDate($now, $maghribTime, $offsetDays, $showHijriSuffix);
         } else {
-            $hijriDate = $this->formatToHijri($now, $maghribTime, $offsetDays, $timezone);
+            $hijriDate = $this->formatToHijri($now, $maghribTime, $offsetDays, $timezone, $showHijriSuffix);
         }
 
         // Format Gregorian Date
-        $masehiDate = $now->translatedFormat('j F Y');
+        $masehiDate = $now->translatedFormat('j F Y') . ($showMasehiSuffix ? ' M' : '');
 
         return array_merge($schedule, [
             'tanggal_masehi' => $masehiDate,
@@ -217,8 +219,13 @@ class HijriService
     /**
      * Formats Masehi datetime to Hijri with Maghrib rollover and manual offset.
      */
-    public function formatToHijri(Carbon $date, string $maghribTime, int $offsetDays, string $timezone = 'Asia/Jakarta'): string
+    public function formatToHijri(Carbon $date, string $maghribTime, int $offsetDays, string $timezone = 'Asia/Jakarta', ?bool $showHijriSuffix = null): string
     {
+        if ($showHijriSuffix === null) {
+            $settings = HijriSetting::first();
+            $showHijriSuffix = $settings ? ($settings->show_hijri_suffix ?? true) : true;
+        }
+
         $targetDate = $date->copy()->setTimezone($timezone);
 
         // Rollover logic: if now >= Maghrib, use tomorrow's Hijri date
@@ -245,14 +252,22 @@ class HijriService
             'd MMMM yyyy'
         );
 
-        return $formatter->format($targetDate->toDateTime());
+        $hijriStr = trim($formatter->format($targetDate->toDateTime()));
+        $hijriStr = preg_replace('/\s+H\.?$/i', '', $hijriStr);
+
+        return $showHijriSuffix ? ($hijriStr . ' H') : $hijriStr;
     }
 
     /**
      * Fetch Hijri Date from Al-Habib API for a target date with Maghrib rollover and offset.
      */
-    public function getAlhabibHijriDate(Carbon $date, string $maghribTime, int $offsetDays): string
+    public function getAlhabibHijriDate(Carbon $date, string $maghribTime, int $offsetDays, ?bool $showHijriSuffix = null): string
     {
+        if ($showHijriSuffix === null) {
+            $settings = HijriSetting::first();
+            $showHijriSuffix = $settings ? ($settings->show_hijri_suffix ?? true) : true;
+        }
+
         $targetDate = $date->copy();
 
         // 1. Maghrib rollover logic
@@ -273,7 +288,7 @@ class HijriService
         $cacheKey = "alhabib-hijri-date-{$dateKey}";
 
         try {
-            return Cache::remember($cacheKey, 86400, function() use ($targetDate) {
+            $rawHijri = Cache::remember($cacheKey, 86400, function() use ($targetDate) {
                 $query = http_build_query([
                     'the_y' => $targetDate->year,
                     'the_m' => $targetDate->month,
@@ -297,9 +312,12 @@ class HijriService
                 }
                 throw new \Exception("Invalid response from Al-Habib calendar API");
             });
+
+            $cleanHijri = preg_replace('/\s+H\.?$/i', '', $rawHijri);
+            return $showHijriSuffix ? ($cleanHijri . ' H') : $cleanHijri;
         } catch (\Exception $e) {
             Log::warning("Failed to fetch Al-Habib Hijri date: " . $e->getMessage() . ". Falling back to local UmAlQura.");
-            return $this->formatToHijri($date, $maghribTime, $offsetDays, $date->timezoneName);
+            return $this->formatToHijri($date, $maghribTime, $offsetDays, $date->timezoneName, $showHijriSuffix);
         }
     }
 
@@ -348,36 +366,11 @@ class HijriService
                 throw new \Exception("Invalid response from Al-Habib calendar API");
             });
 
-            $hijriMonths = [
-                1 => 'Muharram', 2 => 'Shafar', 3 => "Rabi'ul Awwal", 4 => "Rabi'ul Akhir",
-                5 => 'Jumadal Ula', 6 => 'Jumadal Akhirah', 7 => 'Rajab', 8 => "Sya'ban",
-                9 => 'Ramadhan', 10 => 'Syawwal', 11 => "Dzulqa'idah", 12 => 'Dzulhijjah'
-            ];
-
-            $dayVal = isset($data['hijri_tanggal']) ? sprintf('%02d', (int)$data['hijri_tanggal']) : $targetDate->format('d');
-            $monthNum = (int)($data['hijri_bulan'] ?? 1);
-            $monthVal = $hijriMonths[$monthNum] ?? 'Muharram';
-            $yearVal = $data['hijri_tahun'] ?? '1448';
-
-            return [
-                'kalender' => 'Hijriyah',
-                'tanggal'  => $dayVal,
-                'hari'     => $targetDate->translatedFormat('l'),
-                'bulan'    => $monthVal,
-                'tahun'    => $yearVal,
-            ];
+            return $data;
 
         } catch (\Exception $e) {
             Log::warning("Failed to fetch Al-Habib Hijri calendar object: " . $e->getMessage() . ". Falling back to local UmAlQura.");
             
-            $formatterDay = new \IntlDateFormatter(
-                'id_ID@calendar=islamic-umalqura',
-                \IntlDateFormatter::FULL,
-                \IntlDateFormatter::NONE,
-                $timezone,
-                \IntlDateFormatter::TRADITIONAL,
-                'd'
-            );
             $formatterMonth = new \IntlDateFormatter(
                 'id_ID@calendar=islamic-umalqura',
                 \IntlDateFormatter::FULL,
@@ -394,9 +387,17 @@ class HijriService
                 \IntlDateFormatter::TRADITIONAL,
                 'yyyy'
             );
+            $formatterDay = new \IntlDateFormatter(
+                'id_ID@calendar=islamic-umalqura',
+                \IntlDateFormatter::FULL,
+                \IntlDateFormatter::NONE,
+                $timezone,
+                \IntlDateFormatter::TRADITIONAL,
+                'd'
+            );
 
-            $hijriDayRaw = $formatterDay->format($targetDate->toDateTime());
-            $hijriDay = is_numeric($hijriDayRaw) ? sprintf('%02d', (int)$hijriDayRaw) : $hijriDayRaw;
+            $hijriDay = $formatterDay->format($targetDate->toDateTime());
+            $hijriDay = preg_replace('/\D/', '', $hijriDay);
 
             return [
                 'kalender' => 'Hijriyah',
@@ -417,11 +418,25 @@ class HijriService
         $offsetDays = $settings ? $settings->hijri_offset_days : 0;
         $tz = $timezone ?: ($settings ? $settings->default_timezone : 'Asia/Jakarta');
         $providerName = $settings ? $settings->prayer_time_provider : 'aladhan';
+        $showHijriSuffix = $settings ? ($settings->show_hijri_suffix ?? true) : true;
 
         if ($providerName === 'alhabib') {
-            return $this->getAlhabibHijriDate($date, '18:00', $offsetDays);
+            return $this->getAlhabibHijriDate($date, '18:00', $offsetDays, $showHijriSuffix);
         }
 
-        return $this->formatToHijri($date, '18:00', $offsetDays, $tz);
+        return $this->formatToHijri($date, '18:00', $offsetDays, $tz, $showHijriSuffix);
+    }
+
+    /**
+     * Fast conversion of Gregorian Carbon date to Masehi string with optional suffix.
+     */
+    public function formatMasehiFast(Carbon $date, ?bool $showMasehiSuffix = null): string
+    {
+        if ($showMasehiSuffix === null) {
+            $settings = HijriSetting::first();
+            $showMasehiSuffix = $settings ? ($settings->show_masehi_suffix ?? false) : false;
+        }
+
+        return $date->translatedFormat('d F Y') . ($showMasehiSuffix ? ' M' : '');
     }
 }

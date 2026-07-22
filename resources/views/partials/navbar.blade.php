@@ -34,14 +34,9 @@
   {{-- Desktop nav --}}
   <div class="topnavbar">
     <ul class="nav navbar-nav navbar-left">
-      <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-        <a href="{{ route('admin.dashboard') }}" wire:navigate><span>Dashboard</span></a>
+      <li class="active">
+        <span style="color: #34d399; font-size: 1rem; height: 100%; align-items:center;" >Login sebagai: <b>{{ Auth::user()->name }}</b></span>
       </li>
-      {{-- <li>
-        <a href="{{ url('/mainpage') }}" target="_blank">
-          <span><i class="fa fa-external-link" style="font-size:0.75em;"></i> MainPage</span>
-        </a>
-      </li> --}}
     </ul>
     
     @persist('notification')

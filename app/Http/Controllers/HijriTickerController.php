@@ -55,8 +55,10 @@ class HijriTickerController extends Controller
 
         $validated = $request->validate([
             'default_city' => 'required|string',
-            'hijri_offset_days' => 'required|integer|min:-5|max:5',
+            'hijri_offset_days' => 'required|integer',
             'prayer_time_provider' => 'required|string|in:aladhan,myquran,alhabib',
+            'show_masehi_suffix' => 'nullable|boolean',
+            'show_hijri_suffix' => 'nullable|boolean',
         ]);
 
         $city = $validated['default_city'];
@@ -71,6 +73,8 @@ class HijriTickerController extends Controller
             'default_timezone' => $timezone,
             'hijri_offset_days' => $validated['hijri_offset_days'],
             'prayer_time_provider' => $validated['prayer_time_provider'],
+            'show_masehi_suffix' => $request->has('show_masehi_suffix'),
+            'show_hijri_suffix' => $request->has('show_hijri_suffix'),
         ]);
 
         // Force cache eviction for today's schedule to show updated timing immediately

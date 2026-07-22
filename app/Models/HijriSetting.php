@@ -13,5 +13,12 @@ class HijriSetting extends Model
         'default_timezone',
         'hijri_offset_days',
         'prayer_time_provider',
+        'show_masehi_suffix',
+        'show_hijri_suffix',
+    ];
+
+    protected $casts = [
+        'show_masehi_suffix' => 'boolean',
+        'show_hijri_suffix'  => 'boolean',
     ];
 }

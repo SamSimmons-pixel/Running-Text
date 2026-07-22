@@ -55,6 +55,12 @@
               <div class="nav-menu__text"><span>Pewaktuan Hijriah</span></div>
             </a>
           </li>
+          <li class="{{ request()->routeIs('admin.activity-logs') ? 'active' : '' }}">
+            <a href="{{ route('admin.activity-logs') }}" wire:navigate>
+              <div class="nav-menu__ico"><i class="fa fa-fw fa-history"></i></div>
+              <div class="nav-menu__text"><span>Log Aktivitas</span></div>
+            </a>
+          </li>
           @if(Auth::check() && Auth::user()->role === 'admin_operator')
           <li class="{{ request()->routeIs('admin.operator') ? 'active' : '' }}">
             <a href="{{ route('admin.operator') }}" wire:navigate>
@@ -71,30 +77,6 @@
           </li>
         </ul>
       </div>
-
-      <div style="padding: 15px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.08);">
-  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-    <span style="font-size: 1.1rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">
-      <i class="fa fa-circle" style="color: #22c55e; font-size: 0.8rem; margin-right: 5px;"></i> Aktivitas Terbaru
-    </span>
-  </div>
-
-  {{-- Box Scrollable persisten Livewire --}}
-  <div id="activity-log-box" wire:persist="activity-log" style="height: 180px; overflow-y: auto; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 0px 10px 10px 10px; display: flex; flex-direction: column; overflow-y: hidden;">
-    @php
-      $logs = \App\Models\ActivityLog::latest()->take(10)->get()->reverse();
-    @endphp
-    <div style="">
-    @foreach($logs as $log)
-      <div class="log-item" style="font-size: 1.1rem; color: #cbd5e1; line-height: 1.4; word-break: break-word;">
-        <span style="color: #64748b; font-size: 1.1rem; margin-right: 4px;">[{{ $log->created_at->format('H:i') }}]</span>
-        <span>{{ $log->message }}</span>
-      </div>
-    @endforeach
-    </div>
-  </div>
-</div>
-
 
     </div>
   </div>

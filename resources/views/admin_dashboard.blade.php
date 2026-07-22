@@ -114,8 +114,9 @@
                 {{-- ── Stat Cards ── --}}
                 @php
                   $totalKajian      = $kajian->count();
-                  $upcoming         = $kajian->filter(fn($item) => \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta')->isToday() && $item->Tampilkan)->sortBy('Tanggal')->take(3);
+                  $upcoming         = $kajian->filter(fn($item) => \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta') && $item->Tampilkan)->sortBy('Tanggal')->take(3);
                   $liveKajianCount  = $kajian->filter(fn($item) => \App\Http\Controllers\KajianController::isKajianOnAir($item->Tanggal, $item->WaktuSelesai) && $item->Tampilkan)->count();
+                  $kajianTampilkan  = $kajian->filter(fn($item) => $item->Tampilkan == true)->count();
                 @endphp
 
                 <div class="stat-row">
@@ -124,8 +125,8 @@
                       <i class="fa fa-calendar"></i>
                     </div>
                     <div>
-                      <div class="stat-card__value">{{ $totalKajian }}</div>
-                      <div class="stat-card__label">Total Kajian</div>
+                      <div class="stat-card__value">{{ $kajianTampilkan }}/{{ $totalKajian }}</div>
+                      <div class="stat-card__label">On/Total Kajian</div>
                     </div>
                   </div>
                   <div class="stat-card">
@@ -133,8 +134,8 @@
                       <i class="fa fa-bullhorn"></i>
                     </div>
                     <div>
-                      <div class="stat-card__value" style="color:#34d399;">{{ $informasiUmumList->count() }}</div>
-                      <div class="stat-card__label">Total Informasi Umum</div>
+                      <div class="stat-card__value" style="color:#34d399;">{{ $informasiUmumList->where('tampilkan', true)->count() }}</div>
+                      <div class="stat-card__label">Informasi Umum Aktif</div>
                     </div>
                   </div>
                   <div class="stat-card">
@@ -142,8 +143,8 @@
                       <i class="fa fa-play"></i>
                     </div>
                     <div>
-                      <div class="stat-card__value" style="color:#22d3ee;">{{ $acaraList->count() }}</div>
-                      <div class="stat-card__label">Total Acara</div>
+                      <div class="stat-card__value" style="color:#22d3ee;">{{ $acaraList->where('tampilkan', true)->count() }}</div>
+                      <div class="stat-card__label">Acara Aktif</div>
                     </div>
                   </div>
                   <div class="stat-card">

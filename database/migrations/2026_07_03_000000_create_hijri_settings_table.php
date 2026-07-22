@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('default_timezone')->default('Asia/Jakarta');
             $table->integer('hijri_offset_days')->default(0);
             $table->string('prayer_time_provider')->default('aladhan');
+            $table->boolean('show_masehi_suffix')->default(false);
+            $table->boolean('show_hijri_suffix')->default(true);
             $table->timestamps();
         });
     }
@@ -26,6 +28,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hijri_settings');
+        Schema::table('hijri_settings', function (Blueprint $table) {
+            $table->dropColumn(['show_masehi_suffix', 'show_hijri_suffix']);
+        });
     }
 };

@@ -231,6 +231,7 @@
                     <span class="vmix-endpoint-url" id="endpointUrl">
                       {{ url('/api/vmix/hijri-ticker') }}?timezone=WIB
                       <button class="btn-copy" onclick="copyEndpoint()">Copy Link</button>
+                      <a class="btn-copy" target="_blank" href="{{ route('api.vmix.hijri-ticker') }}">Open Link</a>
                     </span>
                   </div>
                 </div>
@@ -290,10 +291,35 @@
                               <input type="number" id="hijri_offset_days" name="hijri_offset_days" 
                                      class="form-control form-control-custom" 
                                      value="{{ $settings->hijri_offset_days }}" 
-                                     min="-5" max="5" required style="width: 100px; display: inline-block;">
+                                    required style="width: 100px; display: inline-block;">
                               <span style="font-size: 1.45rem; color: #94a3b8;">
                                 Geser penanggalan Hijriah (misal: isi <code>-1</code> untuk memundurkan sehari, atau <code>1</code> untuk memajukan sehari jika rukyat hilal berbeda).
                               </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row" style="margin-top: 15px;">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="control-label">Format Akhiran Tanggal Masehi</label>
+                            <div style="display:flex; align-items:center; gap:10px; margin-top:5px;">
+                              <label style="cursor:pointer; font-weight:normal; color:#e2e8f0; display:flex; align-items:center; gap:8px;">
+                                <input type="checkbox" name="show_masehi_suffix" value="1" {{ $settings->show_masehi_suffix ? 'checked' : '' }} style="width:18px; height:18px; cursor:pointer;">
+                                <span>Tampilkan akhiran <code>M</code> (misal: 22 Juli 2026 M)</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="control-label">Format Akhiran Tanggal Hijriah</label>
+                            <div style="display:flex; align-items:center; gap:10px; margin-top:5px;">
+                              <label style="cursor:pointer; font-weight:normal; color:#e2e8f0; display:flex; align-items:center; gap:8px;">
+                                <input type="checkbox" name="show_hijri_suffix" value="1" {{ $settings->show_hijri_suffix ? 'checked' : '' }} style="width:18px; height:18px; cursor:pointer;">
+                                <span>Tampilkan akhiran <code>H</code> (misal: 7 Shafar 1448 H)</span>
+                              </label>
                             </div>
                           </div>
                         </div>

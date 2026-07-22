@@ -59,9 +59,13 @@ Route::post('/admin_dashboard/kontak/{id}/delete', [KontakController::class, 'de
 use App\Http\Controllers\HijriTickerController;
 use App\Http\Controllers\VmixDataController;
 use App\Http\Controllers\OperatorController;
+use App\Http\Controllers\ActivityLogController;
 
 Route::get ('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class, 'index'])->name('admin.hijri');
 Route::post('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class, 'update'])->name('admin.hijri.update');
+
+// ── Activity Log ───────────────────────────────────────────────
+Route::get ('/admin_dashboard/activity-logs',       [ActivityLogController::class, 'index'])->name('admin.activity-logs');
 
 // ── Operator Management ─────────────────────────────────────────
 Route::get ('/admin_dashboard/operator',             [OperatorController::class, 'index'])->name('admin.operator');

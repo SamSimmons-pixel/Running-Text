@@ -40,7 +40,7 @@ class admin_dashboard_Controller extends Controller
         $narasumberList = Narasumber::orderBy('nama', 'asc')->get();
         $tempatList     = Tempat::orderBy('nama', 'asc')->get();
         $kontakList     = Kontak::orderBy('nama', 'asc')->get();
-        $acaraList      = Acara::with(['narasumber', 'tempat'])->orderBy('hari', 'asc')->orderBy('jam_mulai', 'asc')->get()->where('tampilkan', true);
+        $acaraList      = Acara::with(['narasumber', 'tempat'])->orderBy('hari', 'asc')->orderBy('jam_mulai', 'asc')->get()->take(5)->where('tampilkan', true);
         $informasiUmumList = InformasiUmum::orderBy('created_at', 'desc')->get();
 
         return view('admin_dashboard', compact('kajian', 'narasumberList', 'tempatList', 'kontakList', 'acaraList', 'informasiUmumList'));

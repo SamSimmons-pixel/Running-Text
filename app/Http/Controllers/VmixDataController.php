@@ -99,7 +99,7 @@ class VmixDataController extends Controller
                         $carbonDate = \Carbon\Carbon::parse($item->Tanggal)->locale('id');
                         $hari = $carbonDate->translatedFormat('l');
                         $hijriDate = $this->hijriService->convertToHijriFast($carbonDate);
-                        $masehiDate = $carbonDate->translatedFormat('d F Y');
+                        $masehiDate = $this->hijriService->formatMasehiFast($carbonDate);
                         
                         $timeStr = $carbonDate->format('H:i');
                         if ($item->WaktuSelesai) {
@@ -181,7 +181,7 @@ class VmixDataController extends Controller
 
                     $hari = $carbonDate->translatedFormat('l');
                     $hijriDate = $this->hijriService->convertToHijriFast($carbonDate);
-                    $masehiDate = $carbonDate->translatedFormat('d F Y');
+                    $masehiDate = $this->hijriService->formatMasehiFast($carbonDate);
 
                     $timeStr = '';
                     if ($item->jam_mulai) {

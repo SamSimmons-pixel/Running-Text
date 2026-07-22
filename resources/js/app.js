@@ -125,7 +125,6 @@ function appendActivityLog(message) {
 // Panggil appendActivityLog di dalam Echo listener:
 window.Echo.channel('notifications')
     .listen('.NotificationChange', (e) => {
-        // Filter toast melayang agar tidak muncul di diri sendiri
         const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
 
 
