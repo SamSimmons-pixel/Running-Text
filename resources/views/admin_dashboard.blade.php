@@ -80,6 +80,18 @@
         font-size: 0.78rem;
         color: #64748b;
       }
+
+      /* Disable hover effect and pointer cursor on dashboard table rows */
+      .dashboard-table > tbody > tr,
+      .dashboard-table > tbody > tr:hover {
+        background-color: transparent !important;
+        cursor: default !important;
+      }
+      .dashboard-table > tbody > tr.row-on-air,
+      .dashboard-table > tbody > tr.row-on-air:hover {
+        background-color: rgba(16, 185, 129, 0.10) !important;
+        cursor: default !important;
+      }
     </style>
     @livewireStyles
   </head>
@@ -202,7 +214,7 @@
                       </div>
                     @else
                       <div class="table-responsive">
-                        <table class="table" style="margin-bottom:0; table-layout: fixed; width: 100%;">
+                        <table class="table dashboard-table" style="margin-bottom:0; table-layout: fixed; width: 100%;">
                           <thead>
                             <tr>
                               <th style="width: 30%;">Judul &amp; Narasumber</th>
@@ -292,7 +304,7 @@
                         $jamNow  = $nowJkt->format('H:i:s');
                       @endphp
                       <div class="table-responsive">
-                        <table class="table table-hover" style="margin-bottom:0; table-layout: fixed; width: 100%;">
+                        <table class="table dashboard-table" style="margin-bottom:0; table-layout: fixed; width: 100%;">
                           <thead>
                             <tr>
                               <th style="width: 30%;">Judul & Narasumber</th>

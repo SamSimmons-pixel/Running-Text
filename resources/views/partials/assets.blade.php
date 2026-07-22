@@ -17,6 +17,19 @@
 <script src="{{ asset('admin-template/libs/ionrangeslider/js/ion.rangeSlider.min.js') }}"></script>
 <script src="{{ asset('admin-template/libs/inputNumber/js/inputNumber.js') }}"></script>
 
+<style>
+  
+      /* Disable hover effect and pointer cursor on dashboard table rows */
+      table > tbody > tr,
+      table > tbody > tr:hover {
+        cursor: default !important;
+      }
+      table > tbody > tr.row-on-air,
+      table > tbody > tr.row-on-air:hover {
+        cursor: default !important;
+      }
+</style>
+
 <meta name="user-id" content="{{ auth()->id() }}">
 
 <!-- Safeguard jQuery overrides for missing theme dependencies -->
