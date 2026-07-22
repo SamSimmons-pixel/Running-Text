@@ -64,6 +64,7 @@ class InformasiUmumController extends Controller
         $this->requireOperator();
 
         $info = InformasiUmum::findOrFail($id);
+        $judulBefore = $info->judul;
 
         $data = $request->validate([
             'judul'     => ['required', 'string', 'max:255'],
@@ -76,7 +77,12 @@ class InformasiUmumController extends Controller
 
         $info->update($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah informasi umum " . $info->judul))->toOthers();
+        if ($judulBefore !== $info->judul) {
+            $msg = Auth::user()->name . " mengubah judul informasi dari \"{$judulBefore}\" menjadi \"{$info->judul}\"";
+        } else {
+            $msg = Auth::user()->name . " memperbarui informasi umum \"{$info->judul}\"";
+        }
+        broadcast(new NotificationChange($msg))->toOthers();
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil diperbarui.');
@@ -113,7 +119,7 @@ class InformasiUmumController extends Controller
         $judul = $info->judul;
         $info->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus informasi umum " . $judul))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus informasi umum \"{$judul}\""))->toOthers();
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil dihapus.');

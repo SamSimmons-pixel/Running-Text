@@ -57,7 +57,7 @@ class NarasumberController extends Controller
         // FK is SET NULL on delete — Eloquent will fire the delete and DB handles nullification
         $narasumber->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " telah menghapus narasumber " . $nama))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus narasumber \"" . $nama . "\""))->toOthers();
 
         return redirect()->route('admin.narasumber')
             ->with('success', 'Narasumber "' . $nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
@@ -67,14 +67,21 @@ class NarasumberController extends Controller
         $this->requireOperator();
 
         $narasumber = Narasumber::findOrFail($id);
+        $namaBefore = $narasumber->nama;
 
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:255', 'unique:narasumber,nama,' . $id],
         ]);
 
         $narasumber->update($data);
-        
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah narasumber: " . $narasumber->nama))->toOthers();
+
+        $namaAfter = $narasumber->fresh()->nama;
+        if ($namaBefore !== $namaAfter) {
+            $msg = Auth::user()->name . " mengubah nama narasumber dari \"{$namaBefore}\" menjadi \"{$namaAfter}\"";
+        } else {
+            $msg = Auth::user()->name . " memperbarui narasumber \"{$namaAfter}\"";
+        }
+        broadcast(new NotificationChange($msg))->toOthers();
 
         return redirect()->route('admin.narasumber')->with('success', 'Narasumber berhasil diperbarui');
     }

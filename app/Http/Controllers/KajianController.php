@@ -147,6 +147,7 @@ class KajianController extends Controller
         $this->requireOperator();
 
         $kajian = Kajian::findOrFail($id);
+        $judulBefore = $kajian->Judul;
 
         $data = $request->validate([
             'Tanggal'      => ['required', 'date'],
@@ -164,7 +165,12 @@ class KajianController extends Controller
 
         $kajian->update($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah kajian " . $kajian->Judul))->toOthers();
+        if ($judulBefore !== $kajian->Judul) {
+            $msg = Auth::user()->name . " mengubah judul kajian dari \"{$judulBefore}\" menjadi \"{$kajian->Judul}\"";
+        } else {
+            $msg = Auth::user()->name . " memperbarui kajian \"{$kajian->Judul}\"";
+        }
+        broadcast(new NotificationChange($msg))->toOthers();
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil diperbarui.');
@@ -237,7 +243,7 @@ class KajianController extends Controller
         $judul = $kajian->Judul;
         $kajian->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " menghapus kajian " . $judul))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus kajian \"{$judul}\""))->toOthers();
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil dihapus.');
