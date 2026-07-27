@@ -173,6 +173,35 @@ class HijriService
     }
 
     /**
+     * Fetch prayer schedule for a specific date using configured city and provider settings.
+     */
+    public function getPrayerScheduleForDate(Carbon $date): array
+    {
+        $settings = HijriSetting::firstOrCreate([], [
+            'default_city' => 'Jakarta',
+            'default_timezone' => 'Asia/Jakarta',
+            'hijri_offset_days' => 0,
+            'prayer_time_provider' => 'aladhan',
+        ]);
+
+        $city = $settings->default_city;
+        $providerName = $settings->prayer_time_provider;
+
+        if ($providerName === 'alhabib') {
+            $primary = new AlhabibProvider();
+            $secondary = new AladhanProvider();
+        } elseif ($providerName === 'myquran') {
+            $primary = new MyQuranProvider();
+            $secondary = new AladhanProvider();
+        } else {
+            $primary = new AladhanProvider();
+            $secondary = new MyQuranProvider();
+        }
+
+        return $this->getPrayerScheduleCached($city, $date, $primary, $secondary);
+    }
+
+    /**
      * Fetch prayer schedule with caching and fallback.
      */
     public function getPrayerScheduleCached(string $city, Carbon $date, $primary, $secondary): array

@@ -65,7 +65,9 @@ Route::get ('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class,
 Route::post('/admin_dashboard/pewaktuan-hijriah', [HijriTickerController::class, 'update'])->name('admin.hijri.update');
 
 // ── Activity Log ───────────────────────────────────────────────
-Route::get ('/admin_dashboard/activity-logs',       [ActivityLogController::class, 'index'])->name('admin.activity-logs');
+Route::get ('/admin_dashboard/activity-logs',            [ActivityLogController::class, 'index'])->name('admin.activity-logs');
+Route::post('/admin_dashboard/activity-logs/delete-all',  [ActivityLogController::class, 'destroyAll'])->name('admin.activity-logs.destroy-all');
+Route::post('/admin_dashboard/activity-logs/delete-30',   [ActivityLogController::class, 'destroy30'])->name('admin.activity-logs.destroy-30');
 
 // ── Operator Management ─────────────────────────────────────────
 Route::get ('/admin_dashboard/operator',             [OperatorController::class, 'index'])->name('admin.operator');

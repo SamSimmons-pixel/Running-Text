@@ -129,6 +129,7 @@
                   $upcoming         = $kajian->filter(fn($item) => \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta') && $item->Tampilkan)->sortBy('Tanggal')->take(3);
                   $liveKajianCount  = $kajian->filter(fn($item) => \App\Http\Controllers\KajianController::isKajianOnAir($item->Tanggal, $item->WaktuSelesai) && $item->Tampilkan)->count();
                   $kajianTampilkan  = $kajian->filter(fn($item) => $item->Tampilkan == true)->count();
+                  $totalAcara       = \App\Models\Acara::all()->count();
                 @endphp
 
                 <div class="stat-row">
@@ -138,7 +139,7 @@
                     </div>
                     <div>
                       <div class="stat-card__value">{{ $kajianTampilkan }}/{{ $totalKajian }}</div>
-                      <div class="stat-card__label">On/Total Kajian</div>
+                      <div class="stat-card__label">Kajian</div>
                     </div>
                   </div>
                   <div class="stat-card">
@@ -146,8 +147,8 @@
                       <i class="fa fa-bullhorn"></i>
                     </div>
                     <div>
-                      <div class="stat-card__value" style="color:#34d399;">{{ $informasiUmumList->where('tampilkan', true)->count() }}</div>
-                      <div class="stat-card__label">Informasi Umum Aktif</div>
+                      <div class="stat-card__value" style="color:#34d399;">{{ $informasiUmumList->where('tampilkan', true)->count() }}/{{ $informasiUmumList->count() }}</div>
+                      <div class="stat-card__label">Informasi Umum</div>
                     </div>
                   </div>
                   <div class="stat-card">
@@ -155,16 +156,19 @@
                       <i class="fa fa-play"></i>
                     </div>
                     <div>
-                      <div class="stat-card__value" style="color:#22d3ee;">{{ $acaraList->where('tampilkan', true)->count() }}</div>
-                      <div class="stat-card__label">Acara Aktif</div>
+                      <div class="stat-card__value" style="color:#22d3ee;">{{ $acaraList->where('tampilkan', true)->count() }}/{{ $totalAcara }}</div>
+                      <div class="stat-card__label">Acara</div>
                     </div>
                   </div>
                   <div class="stat-card">
                     <div class="stat-card__icon" style="background:rgba(251,191,36,0.12); color:#fbbf24;">
                       <i class="fa fa-user"></i>
                     </div>
+                    @php
+                      $usedNarasumberCount = $kajian->pluck('narasumber_id')->merge($acaraList->pluck('narasumber_id'))->filter()->unique()->count();
+                    @endphp
                     <div>
-                      <div class="stat-card__value" style="color:#fbbf24;">{{ $narasumberList->count() }}</div>
+                      <div class="stat-card__value" style="color:#fbbf24;">{{ $usedNarasumberCount }}/{{ $narasumberList->count() }}</div>
                       <div class="stat-card__label">Narasumber</div>
                     </div>
                   </div>
@@ -172,8 +176,11 @@
                     <div class="stat-card__icon" style="background:rgba(96,165,250,0.12); color:#60a5fa;">
                       <i class="fa fa-map-marker"></i>
                     </div>
+                    @php
+                      $usedTempatCount = $kajian->pluck('tempat_id')->merge($acaraList->pluck('tempat_id'))->filter()->unique()->count();
+                    @endphp
                     <div>
-                      <div class="stat-card__value" style="color:#60a5fa;">{{ $tempatList->count() }}</div>
+                      <div class="stat-card__value" style="color:#60a5fa;">{{ $usedTempatCount }}/{{ $tempatList->count() }}</div>
                       <div class="stat-card__label">Lokasi</div>
                     </div>
                   </div>
@@ -181,8 +188,11 @@
                     <div class="stat-card__icon" style="background:rgba(251,113,133,0.12); color:#fb7185;">
                       <i class="fa fa-phone"></i>
                     </div>
+                    @php
+                      $usedKontakCount = $kajian->pluck('kontak_id')->merge($acaraList->pluck('kontak_id'))->filter()->unique()->count();
+                    @endphp
                     <div>
-                      <div class="stat-card__value" style="color:#fb7185;">{{ $kontakList->count() }}</div>
+                      <div class="stat-card__value" style="color:#fb7185;">{{ $usedKontakCount }}/{{ $kontakList->count() }}</div>
                       <div class="stat-card__label">Kontak</div>
                     </div>
                   </div>

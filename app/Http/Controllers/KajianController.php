@@ -40,6 +40,51 @@ class KajianController extends Controller
     }
 
     /**
+     * Resolve the exact end datetime for a kajian based on explicit time string or dynamic prayer schedule.
+     */
+    public static function resolveEndTime($tanggal, $waktuSelesai): \Carbon\Carbon
+    {
+        $start = \Carbon\Carbon::parse($tanggal, 'Asia/Jakarta');
+        if ($waktuSelesai) {
+            if (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $waktuSelesai)) {
+                $parts = explode(':', $waktuSelesai);
+                return $start->copy()->setTime((int)$parts[0], (int)$parts[1], (int)($parts[2] ?? 0));
+            }
+
+            try {
+                $hijriService = app(\App\Services\HijriService::class);
+                $schedule = $hijriService->getPrayerScheduleForDate($start);
+
+                $textMap = [
+                    'Menjelang Subuh'   => $schedule['subuh'] ?? '04:30',
+                    'Menjelang Dzuhur'  => $schedule['dzuhur'] ?? '12:00',
+                    'Menjelang Ashar'   => $schedule['ashar'] ?? '15:15',
+                    'Menjelang Maghrib' => $schedule['maghrib'] ?? '18:00',
+                    'Menjelang Isya'    => $schedule['isya'] ?? '19:15',
+                ];
+
+                if (isset($textMap[$waktuSelesai])) {
+                    $parts = explode(':', $textMap[$waktuSelesai]);
+                    return $start->copy()->setTime((int)$parts[0], (int)$parts[1]);
+                }
+            } catch (\Exception $e) {
+                $fallbackMap = [
+                    'Menjelang Subuh'   => '04:30',
+                    'Menjelang Dzuhur'  => '12:00',
+                    'Menjelang Ashar'   => '15:15',
+                    'Menjelang Maghrib' => '18:00',
+                    'Menjelang Isya'    => '19:15',
+                ];
+                if (isset($fallbackMap[$waktuSelesai])) {
+                    $parts = explode(':', $fallbackMap[$waktuSelesai]);
+                    return $start->copy()->setTime((int)$parts[0], (int)$parts[1]);
+                }
+            }
+        }
+        return $start->copy()->addHour();
+    }
+
+    /**
      * Automatically update expired kajian records to not display in JSON feed.
      */
     public static function autoUpdateExpiredKajian(): void
@@ -48,31 +93,7 @@ class KajianController extends Controller
         $kajianList = Kajian::where('Tampilkan', true)->get();
 
         foreach ($kajianList as $item) {
-            $start = \Carbon\Carbon::parse($item->Tanggal, 'Asia/Jakarta');
-            $end = null;
-
-            if ($item->WaktuSelesai) {
-                if (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $item->WaktuSelesai)) {
-                    $parts = explode(':', $item->WaktuSelesai);
-                    $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1], (int)($parts[2] ?? 0));
-                } else {
-                    $textMap = [
-                        'Menjelang Dzuhur'  => '12:00',
-                        'Menjelang Ashar'   => '15:30',
-                        'Menjelang Maghrib' => '18:00',
-                        'Menjelang Isya'    => '19:30',
-                    ];
-                    if (isset($textMap[$item->WaktuSelesai])) {
-                        $parts = explode(':', $textMap[$item->WaktuSelesai]);
-                        $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1]);
-                    } else {
-                        $end = $start->copy()->addHour();
-                    }
-                }
-            } else {
-                $end = $start->copy()->addHour();
-            }
-
+            $end = self::resolveEndTime($item->Tanggal, $item->WaktuSelesai);
             if ($now->greaterThan($end)) {
                 $item->update(['Tampilkan' => false]);
             }
@@ -82,29 +103,7 @@ class KajianController extends Controller
     public static function isKajianOnAir($tanggal, $waktuSelesai): bool
     {
         $start = \Carbon\Carbon::parse($tanggal, 'Asia/Jakarta');
-        $end = null;
-
-        if ($waktuSelesai) {
-            if (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $waktuSelesai)) {
-                $parts = explode(':', $waktuSelesai);
-                $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1], (int)($parts[2] ?? 0));
-            } else {
-                $textMap = [
-                    'Menjelang Dzuhur'  => '12:00',
-                    'Menjelang Ashar'   => '15:30',
-                    'Menjelang Maghrib' => '18:00',
-                    'Menjelang Isya'    => '19:30',
-                ];
-                if (isset($textMap[$waktuSelesai])) {
-                    $parts = explode(':', $textMap[$waktuSelesai]);
-                    $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1]);
-                } else {
-                    $end = $start->copy()->addHour();
-                }
-            }
-        } else {
-            $end = $start->copy()->addHour();
-        }
+        $end = self::resolveEndTime($tanggal, $waktuSelesai);
 
         return \Carbon\Carbon::now('Asia/Jakarta')->between($start, $end);
     }
@@ -229,29 +228,8 @@ class KajianController extends Controller
      */
     public static function isKajianExpired($tanggal, $waktuSelesai): bool
     {
-        $start = \Carbon\Carbon::parse($tanggal, 'Asia/Jakarta');
-        $end = null;
-        if ($waktuSelesai) {
-            if (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $waktuSelesai)) {
-                $parts = explode(':', $waktuSelesai);
-                $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1], (int)($parts[2] ?? 0));
-            } else {
-                $textMap = [
-                    'Menjelang Dzuhur'  => '12:00',
-                    'Menjelang Ashar'   => '15:30',
-                    'Menjelang Maghrib' => '18:00',
-                    'Menjelang Isya'    => '19:30',
-                ];
-                if (isset($textMap[$waktuSelesai])) {
-                    $parts = explode(':', $textMap[$waktuSelesai]);
-                    $end = $start->copy()->setTime((int)$parts[0], (int)$parts[1]);
-                } else {
-                    $end = $start->copy()->addHour();
-                }
-            }
-        } else {
-            $end = $start->copy()->addHour();
-        }
+        $end = self::resolveEndTime($tanggal, $waktuSelesai);
+
         return \Carbon\Carbon::now('Asia/Jakarta')->greaterThan($end);
     }
 

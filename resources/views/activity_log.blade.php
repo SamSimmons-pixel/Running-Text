@@ -78,13 +78,37 @@
 
               <div class="container-fluid half-padding">
 
+                {{-- Alerts --}}
+                @if (session('success'))
+                  <div class="alert-kajian success">
+                    <i class="fa fa-check-circle"></i>
+                    {{ session('success') }}
+                  </div>
+                @endif
+                @if (session('error'))
+                  <div class="alert-kajian error">
+                    <i class="fa fa-exclamation-circle"></i>
+                    {{ session('error') }}
+                  </div>
+                @endif
+
                 {{-- Table Panel --}}
                 <div class="panel panel-default">
-                  <div class="panel-heading" style="display:flex; align-items:center; justify-space:between; flex-wrap:wrap; gap:10px;">
+                  <div class="panel-heading" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
                     <h3 class="panel-title" style="margin:0;">
                       <i class="fa fa-history"></i> Log Aktivitas Sistem
                       <small style="margin-left:8px; color:rgba(255,255,255,0.4);" class="section-count">Total: {{ $logs->total() }} riwayat</small>
                     </h3>
+                    @if (Auth::user() && Auth::user()->role === 'admin_operator' && $logs->total() > 0)
+                      <div style="display:flex; gap:8px;">
+                        <button type="button" class="btn btn-xs" onclick="openDelete30Modal()" style="padding: 5px 12px; border-radius: 6px; font-weight: 600; background-color: #b45b08ff;">
+                          <i class="fa fa-trash"></i> Hapus 30 Terlama
+                        </button>
+                        <button type="button" class="btn btn-xs btn-danger" onclick="openDeleteAllModal()" style="padding: 5px 12px; border-radius: 6px; font-weight: 600;">
+                          <i class="fa fa-trash-o"></i> Hapus Semua
+                        </button>
+                      </div>
+                    @endif
                   </div>
                   <div class="panel-body" style="padding:0;">
                     @if ($logs->isEmpty())
@@ -138,6 +162,48 @@
       </div>{{-- end dashboard --}}
     </div>{{-- end wrapper --}}
 
+    @if (Auth::user() && Auth::user()->role === 'admin_operator')
+      {{-- Modal Hapus 30 Terlama --}}
+      <div class="modal-backdrop-custom" id="delete30ModalBackdrop" onclick="closeDelete30Modal(event)">
+        <div class="modal-confirm">
+          <div style="font-size:2.5rem; margin-bottom:1rem;">⚠️</div>
+          <div style="font-size:1.8rem; font-weight:700; margin-bottom:0.5rem; color:#e2e8f0;">Hapus 30 Log Terlama?</div>
+          <div style="font-size:1.4rem; color:#94a3b8; margin-bottom:1.5rem;">
+            Apakah Anda yakin ingin menghapus <strong>30 riwayat log aktivitas terlama</strong> dari sistem?
+          </div>
+          <div style="display:flex; justify-content:center; gap:1rem;">
+            <button type="button" class="btn btn-default" onclick="closeDelete30Modal(null)">Batal</button>
+            <form method="POST" action="{{ route('admin.activity-logs.destroy-30') }}" style="display:inline;">
+              @csrf
+              <button type="submit" class="btn btn-warning">
+                <i class="fa fa-trash"></i> Ya, Hapus 30
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {{-- Modal Hapus Semua --}}
+      <div class="modal-backdrop-custom" id="deleteAllModalBackdrop" onclick="closeDeleteAllModal(event)">
+        <div class="modal-confirm">
+          <div style="font-size:2.5rem; margin-bottom:1rem;">🚨</div>
+          <div style="font-size:1.8rem; font-weight:700; margin-bottom:0.5rem; color:#ef4444;">Hapus Semua Log Aktivitas?</div>
+          <div style="font-size:1.4rem; color:#94a3b8; margin-bottom:1.5rem;">
+            Apakah Anda yakin ingin menghapus <strong>seluruh riwayat log aktivitas</strong> sistem? Tindakan ini tidak dapat dibatalkan.
+          </div>
+          <div style="display:flex; justify-content:center; gap:1rem;">
+            <button type="button" class="btn btn-default" onclick="closeDeleteAllModal(null)">Batal</button>
+            <form method="POST" action="{{ route('admin.activity-logs.destroy-all') }}" style="display:inline;">
+              @csrf
+              <button type="submit" class="btn btn-danger">
+                <i class="fa fa-trash-o"></i> Ya, Hapus Semua
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    @endif
+
     <script src="{{ asset('admin-template/js/main.js') }}"></script>
 
     @livewireScripts
@@ -153,6 +219,23 @@
           });
         }
       });
+
+      function openDelete30Modal() {
+        document.getElementById('delete30ModalBackdrop').classList.add('open');
+      }
+      function closeDelete30Modal(e) {
+        if (e === null || e.target === document.getElementById('delete30ModalBackdrop')) {
+          document.getElementById('delete30ModalBackdrop').classList.remove('open');
+        }
+      }
+      function openDeleteAllModal() {
+        document.getElementById('deleteAllModalBackdrop').classList.add('open');
+      }
+      function closeDeleteAllModal(e) {
+        if (e === null || e.target === document.getElementById('deleteAllModalBackdrop')) {
+          document.getElementById('deleteAllModalBackdrop').classList.remove('open');
+        }
+      }
     </script>
   </body>
 </html>

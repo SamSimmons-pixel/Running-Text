@@ -267,13 +267,13 @@
                             <label class="control-label" for="prayer_time_provider">API Provider Jadwal Sholat</label>
                             <select id="prayer_time_provider" name="prayer_time_provider" class="form-control form-control-custom" required>
                               <option value="aladhan" {{ $settings->prayer_time_provider === 'aladhan' ? 'selected' : '' }}>
-                                Aladhan API (Kemenag RI Method - International & Stabil)
+                                Aladhan API
                               </option>
                               <option value="myquran" {{ $settings->prayer_time_provider === 'myquran' ? 'selected' : '' }}>
-                                MyQuran API (Standard Kemenag Indonesia - Lokal)
+                                MyQuran API
                               </option>
                               <option value="alhabib" {{ $settings->prayer_time_provider === 'alhabib' ? 'selected' : '' }}>
-                                Al-Habib (Jadwal Shalat & Kalender Hijriyah - Lokal)
+                                Al-Habib
                               </option>
                             </select>
                             <span class="help-block" style="font-size: 1.4rem; color: #64748b;">

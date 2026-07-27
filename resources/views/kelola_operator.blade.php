@@ -95,7 +95,7 @@
                               <label class="control-label" for="add_role">Role / Peran</label>
                               <select id="add_role" name="role" class="form-control form-control-custom" required>
                                 <option value="operator" {{ old('role') == 'operator' ? 'selected' : '' }}>Operator</option>
-                                <option value="admin_operator" {{ old('role') == 'admin_operator' ? 'selected' : '' }}>Admin Operator</option>
+                                <option value="admin_operator" {{ old('role') == 'admin_operator' ? 'selected' : '' }}>Admin</option>
                               </select>
                             </div>
                           </div>
@@ -145,7 +145,7 @@
                               <td><strong>{{ $item->name }}</strong></td>
                               <td>
                                 @if($item->role === 'admin_operator')
-                                  <span class="label label-danger" style="border-radius: 99px; padding: 3px 8px; font-size: 1.15rem; background-color: rgba(239, 68, 68, 0.15) !important; color: #fb7185 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important;">Admin Operator</span>
+                                  <span class="label label-danger" style="border-radius: 99px; padding: 3px 8px; font-size: 1.15rem; background-color: rgba(239, 68, 68, 0.15) !important; color: #fb7185 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important;">Admin</span>
                                 @else
                                   <span class="label label-info" style="border-radius: 99px; padding: 3px 8px; font-size: 1.15rem; background-color: rgba(56, 189, 248, 0.15) !important; color: #38bdf8 !important; border: 1px solid rgba(56, 189, 248, 0.3) !important;">Operator</span>
                                 @endif
@@ -203,7 +203,7 @@
             <label class="control-label" for="edit_role">Role / Peran</label>
             <select id="edit_role" name="role" class="form-control form-control-custom" required>
               <option value="operator">Operator</option>
-              <option value="admin_operator">Admin Operator</option>
+              <option value="admin_operator">Admin</option>
             </select>
           </div>
           <div style="display:flex; justify-content:flex-end; gap:1rem;">
