@@ -5,6 +5,10 @@ RUN apt-get update && apt-get install -y \
     git curl zip unzip libzip-dev libpng-dev libonig-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
 
+# Node.js (for Vite / npm run build)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs
+
 # Point Apache's docroot at Laravel's /public, not the project root
 ENV APACHE_DOCUMENT_ROOT=/var/www/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
@@ -25,5 +29,8 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader \
     && chmod -R 775 storage bootstrap/cache
+
+# Build frontend assets (generates public/build/manifest.json)
+RUN npm install && npm run build
 
 EXPOSE 80
