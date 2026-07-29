@@ -6,6 +6,8 @@ services:
       - "8000:80"
     volumes:
       - ./:/var/www
+      - vendor_data:/var/www/vendor        # preserves vendor/ from image build
+      - build_data:/var/www/public/build   # preserves public/build/ from npm run build
     depends_on:
       - db
     networks:
@@ -33,6 +35,7 @@ services:
     command: php artisan reverb:start --host=0.0.0.0
     volumes:
       - ./:/var/www
+      - vendor_data:/var/www/vendor        # same vendor volume
     ports:
       - "8080:8080"
     depends_on:
@@ -47,6 +50,7 @@ services:
     command: php artisan queue:work --tries=3
     volumes:
       - ./:/var/www
+      - vendor_data:/var/www/vendor        # same vendor volume
     depends_on:
       - app
       - db
@@ -59,3 +63,5 @@ networks:
 
 volumes:
   db_data:
+  vendor_data:   # ← populated from image on first run
+  build_data:    # ← populated from image on first run
