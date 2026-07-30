@@ -8,13 +8,13 @@ echo "[Entrypoint] Waiting for database to be ready..."
 sleep 2
 
 echo "[Entrypoint] Running database migrations..."
-php artisan migrate --force
+php artisan migrate
 
 echo "[Entrypoint] Seeding initial data (skipped if already seeded)..."
-php artisan db:seed --force
+php artisan db:seed
 
 echo "[Entrypoint] Creating storage symlink..."
-php artisan storage:link --force 2>/dev/null || true
+php artisan storage:link
 
 echo "[Entrypoint] Clearing compiled views..."
 php artisan view:clear
