@@ -2,8 +2,8 @@ FROM php:8.5-apache
 
 # System deps + PHP extensions Laravel needs
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libzip-dev libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+    git curl zip unzip libzip-dev libpng-dev libonig-dev libxml2-dev libicu-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip intl
 
 # Node.js (for Vite / npm run build)
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
