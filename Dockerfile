@@ -27,7 +27,7 @@ WORKDIR /var/www
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader \
+RUN composer install \
     && chmod -R 777 storage bootstrap/cache
 
 # Build frontend assets (generates public/build/manifest.json)
@@ -36,7 +36,7 @@ RUN npm install && npm run build
 # Entrypoint: auto-runs migrate, seed, storage:link, permissions on startup
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 EXPOSE 80
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

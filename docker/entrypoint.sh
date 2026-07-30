@@ -17,8 +17,8 @@ php artisan db:seed
 echo "[Entrypoint] Creating storage symlink..."
 php artisan storage:link
 
-# echo "[Entrypoint] Clearing compiled views..."
-# php artisan view:clear
+echo "[Entrypoint] Clearing compiled views..."
+php artisan view:clear
 
-# echo "[Entrypoint] Starting Apache..."
-# exec apache2-foreground
+echo "[Entrypoint] Starting Apache..."
+exec apache2-foreground
