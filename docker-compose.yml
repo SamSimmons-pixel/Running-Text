@@ -5,8 +5,6 @@ services:
     restart: unless-stopped
     ports:
       - "8000:80"
-    environment:
-      REVERB_HOST: "reverb"
     volumes:
       - ./:/var/www
       - vendor_data:/var/www/vendor        # preserves vendor/ from image build
