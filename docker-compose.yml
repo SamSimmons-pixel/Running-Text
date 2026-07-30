@@ -2,6 +2,7 @@ services:
   app:
     build: .
     container_name: laravel_app
+    restart: unless-stopped
     ports:
       - "8000:80"
     volumes:
@@ -9,7 +10,8 @@ services:
       - vendor_data:/var/www/vendor        # preserves vendor/ from image build
       - build_data:/var/www/public/build   # preserves public/build/ from npm run build
     depends_on:
-      - db
+      db:
+        condition: service_healthy         # wait until MySQL is actually ready
     networks:
       - app_net
 
@@ -28,10 +30,17 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - app_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "laravel", "-psecret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   reverb:
     build: .
     container_name: laravel_reverb
+    restart: unless-stopped
     command: php artisan reverb:start --host=0.0.0.0
     volumes:
       - ./:/var/www
@@ -39,21 +48,22 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - app
-      - db
+      db:
+        condition: service_healthy         # wait until MySQL is actually ready
     networks:
       - app_net
 
   queue:
     build: .
     container_name: laravel_queue
+    restart: unless-stopped
     command: php artisan queue:work --tries=3
     volumes:
       - ./:/var/www
       - vendor_data:/var/www/vendor        # same vendor volume
     depends_on:
-      - app
-      - db
+      db:
+        condition: service_healthy         # wait until MySQL is actually ready
     networks:
       - app_net
 
