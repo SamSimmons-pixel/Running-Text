@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        // Skip seeding if data already exists (idempotent — safe to run multiple times)
+        if (User::count() > 0) {
+            echo "  Database already seeded, skipping.\n";
+            return;
+        }
+
         User::create([
             'name'     => 'Admin',
             'password' => 'Admin123',
