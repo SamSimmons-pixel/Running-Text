@@ -16,16 +16,16 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Admin',
+        User::create([
+            'name'     => 'Admin',
             'password' => 'Admin123',
-            'role' => 'admin_operator',
+            'role'     => 'admin_operator',
         ]);
 
-        User::factory()->create([
-            'name' => 'User',
+        User::create([
+            'name'     => 'User',
             'password' => 'User123',
-            'role' => 'operator',
+            'role'     => 'operator',
         ]);
 
         $narasumber = Narasumber::create([
