@@ -16,3 +16,5 @@ window.Echo = new Echo({
     forceTLS: scheme === 'https',
     enabledTransports: ['ws', 'wss'],
 });
+
+console.log('[ECHO DEBUG] Initialized Echo on host:', host, 'port:', port, window.Echo);
