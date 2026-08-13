@@ -122,12 +122,12 @@ function appendActivityLog(message) {
     logBox.scrollTop = logBox.scrollHeight;
 }
 
-window.showToast = showToast;
-
 // Panggil appendActivityLog di dalam Echo listener:
 window.Echo.channel('notifications')
     .listen('.NotificationChange', (e) => {
-        console.log('[REAL-TIME NOTIFICATION RECEIVED]:', e);
+        const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
+
+
         appendActivityLog(e.message);
         showToast(e.message);
     });
