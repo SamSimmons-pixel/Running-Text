@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\Log;
 
 class HijriService
 {
+    /** Carbon locale 'id' returns "Jumat"; normalise to "Jum'at". */
+    private function fixDayName(string $day): string
+    {
+        return $day === 'Jumat' ? "Jum'at" : $day;
+    }
+
     /**
      * Get the current prayer schedule and Hijri date.
      * Handles provider fallback, caching, and Maghrib rollover.
@@ -112,7 +118,7 @@ class HijriService
         $masehiObj = [
             'kalender' => 'Masehi',
             'tanggal'  => $now->translatedFormat('d'),
-            'hari'     => $now->translatedFormat('l'),
+            'hari'     => $this->fixDayName($now->translatedFormat('l')),
             'bulan'    => $now->translatedFormat('F'),
             'tahun'    => $now->translatedFormat('Y'),
         ];
@@ -163,7 +169,7 @@ class HijriService
             $hijriObj = [
                 'kalender' => 'Hijriyah',
                 'tanggal'  => $hijriDay,
-                'hari'     => $targetDate->translatedFormat('l'),
+                'hari'     => $this->fixDayName($targetDate->translatedFormat('l')),
                 'bulan'    => $formatterMonth->format($targetDate->toDateTime()),
                 'tahun'    => $formatterYear->format($targetDate->toDateTime()),
             ];
@@ -431,7 +437,7 @@ class HijriService
             return [
                 'kalender' => 'Hijriyah',
                 'tanggal'  => $hijriDay,
-                'hari'     => $targetDate->translatedFormat('l'),
+                'hari'     => $this->fixDayName($targetDate->translatedFormat('l')),
                 'bulan'    => $formatterMonth->format($targetDate->toDateTime()),
                 'tahun'    => $formatterYear->format($targetDate->toDateTime()),
             ];

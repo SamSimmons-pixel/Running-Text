@@ -16,6 +16,12 @@ class VmixDataController extends Controller
         $this->hijriService = $hijriService;
     }
 
+    /** Carbon locale 'id' returns "Jumat"; normalise to "Jum'at". */
+    private function fixDayName(string $day): string
+    {
+        return $day === 'Jumat' ? "Jum'at" : $day;
+    }
+
     /**
      * Endpoint for vMix Data Source. Returns flat JSON payload.
      */
@@ -38,7 +44,7 @@ class VmixDataController extends Controller
 
         try {
             $data = $this->hijriService->getLiveTickerData($resolvedTimezone);
-            $dayName = Carbon::now($resolvedTimezone ?? 'Asia/Jakarta')->locale('id')->translatedFormat('l');
+            $dayName = $this->fixDayName(Carbon::now($resolvedTimezone ?? 'Asia/Jakarta')->locale('id')->translatedFormat('l'));
 
             // Return flat JSON response exactly matching the PRD structure
             return response()->json([
@@ -55,7 +61,7 @@ class VmixDataController extends Controller
             Log::error("vMix endpoint error: " . $e->getMessage());
 
             // Never crash / return error, output placeholder values to prevent blank TV displays
-            $dayName = \Carbon\Carbon::now()->locale('id')->translatedFormat('l');
+            $dayName = $this->fixDayName(\Carbon\Carbon::now()->locale('id')->translatedFormat('l'));
             return response()->json([
                 'tanggal_masehi'    => $dayName . ', ' . \Carbon\Carbon::now()->locale('id')->translatedFormat('j F Y'),
                 'tanggal_hijriah'   => 'Gagal Memuat Data',
@@ -97,7 +103,7 @@ class VmixDataController extends Controller
                     $parts = [];
                     if ($item->Tanggal) {
                         $carbonDate = \Carbon\Carbon::parse($item->Tanggal)->locale('id');
-                        $hari = $carbonDate->translatedFormat('l');
+                        $hari = $this->fixDayName($carbonDate->translatedFormat('l'));
                         $hijriDate = $this->hijriService->convertToHijriFast($carbonDate);
                         $masehiDate = $this->hijriService->formatMasehiFast($carbonDate);
                         
@@ -180,7 +186,7 @@ class VmixDataController extends Controller
                         }
                     }
 
-                    $hari = $carbonDate->translatedFormat('l');
+                    $hari = $this->fixDayName($carbonDate->translatedFormat('l'));
                     $hijriDate = $this->hijriService->convertToHijriFast($carbonDate);
                     $masehiDate = $this->hijriService->formatMasehiFast($carbonDate);
 
