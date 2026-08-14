@@ -12,9 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Trust all proxies (e.g. Nginx Proxy Manager) so Laravel generates
-        // correct HTTPS URLs when accessed behind a reverse proxy with SSL.
-        $middleware->trustProxies(at: '*');
+        $middleware->trustProxies(at: '127.0.0.1');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
