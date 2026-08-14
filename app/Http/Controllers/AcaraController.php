@@ -35,7 +35,7 @@ class AcaraController extends Controller
 
         $data = $request->validate([
             'judul'        => ['required', 'string', 'max:255'],
-            'hari'         => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Ahad'],
+            'hari'         => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jum\'at,Sabtu,Ahad'],
             'jam_mulai'    => ['required', 'date_format:H:i'],
             'jam_selesai'  => ['required', 'date_format:H:i', 'after:jam_mulai'],
             'narasumber_id'=> ['required', 'integer', 'exists:narasumber,id'],
@@ -75,7 +75,7 @@ class AcaraController extends Controller
 
         $data = $request->validate([
             'judul'        => ['required', 'string', 'max:255'],
-            'hari'         => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Ahad'],
+            'hari'         => ['required', 'string', 'in:Senin,Selasa,Rabu,Kamis,Jum\'at,Sabtu,Ahad'],
             'jam_mulai'    => ['required', 'date_format:H:i'],
             'jam_selesai'  => ['required', 'date_format:H:i', 'after:jam_mulai'],
             'narasumber_id'=> ['required', 'integer', 'exists:narasumber,id'],

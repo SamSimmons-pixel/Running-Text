@@ -307,7 +307,7 @@
                           'Tuesday'   => 'Selasa',
                           'Wednesday' => 'Rabu',
                           'Thursday'  => 'Kamis',
-                          'Friday'    => 'Jumat',
+                          'Friday'    => "Jum'at",
                           'Saturday'  => 'Sabtu',
                         ];
                         $hariIni = $hariIndo[$nowJkt->format('l')];

@@ -150,6 +150,7 @@ class VmixDataController extends Controller
                 'selasa' => 'Tuesday',
                 'rabu'   => 'Wednesday',
                 'kamis'  => 'Thursday',
+                "jum'at" => 'Friday',
                 'jumat'  => 'Friday',
                 'sabtu'  => 'Saturday',
             ];

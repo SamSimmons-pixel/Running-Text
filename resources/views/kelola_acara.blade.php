@@ -109,7 +109,7 @@
                               <label class="control-label">Hari</label>
                               <select name="hari" class="form-control form-control-custom" required>
                                 <option value="" disabled selected>Pilih Hari</option>
-                                @foreach(['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Ahad'] as $h)
+                                @foreach(['Senin','Selasa','Rabu','Kamis',"Jum'at",'Sabtu','Ahad'] as $h)
                                   <option value="{{ $h }}" {{ old('hari') == $h ? 'selected' : '' }}>{{ $h }}</option>
                                 @endforeach
                               </select>
@@ -224,7 +224,7 @@
                                 'Tuesday'   => 'Selasa',
                                 'Wednesday' => 'Rabu',
                                 'Thursday'  => 'Kamis',
-                                'Friday'    => 'Jumat',
+                                'Friday'    => "Jum'at",
                                 'Saturday'  => 'Sabtu',
                               ];
                               $hariIni = $hariIndo[$nowJkt->format('l')];
@@ -359,7 +359,7 @@
                 <label class="control-label">Hari</label>
                 <select id="edit_hari" name="hari" class="form-control form-control-custom" required>
                   <option value="" disabled>Pilih Hari</option>
-                  @foreach(['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Ahad'] as $h)
+                  @foreach(['Senin','Selasa','Rabu','Kamis',"Jum'at",'Sabtu','Ahad'] as $h)
                     <option value="{{ $h }}">{{ $h }}</option>
                   @endforeach
                 </select>
