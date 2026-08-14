@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->trustProxies(at: 'runningtext.rodja.studio');
+        $middleware->trustProxies(at: '10.122.122.128');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
