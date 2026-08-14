@@ -51,7 +51,7 @@ class AcaraController extends Controller
 
         $narasumberName = $acara->narasumber->nama ?? '—';
         $tempatName     = $acara->tempat->nama ?? '—';
-        broadcast(new NotificationChange(Auth::user()->name . " menambahkan acara baru \"{$acara->judul}\" ({$acara->hari}, {$acara->jam_mulai}-{$acara->jam_selesai}, Narasumber: {$narasumberName}, Tempat: {$tempatName})"))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan acara baru \"{$acara->judul}\" ({$acara->hari}, {$acara->jam_mulai}-{$acara->jam_selesai}, Narasumber: {$narasumberName}, Tempat: {$tempatName})"));
 
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil ditambahkan.');
@@ -124,7 +124,7 @@ class AcaraController extends Controller
         } else {
             $msg = Auth::user()->name . " memperbarui acara \"{$judulRef}\"";
         }
-        broadcast(new NotificationChange($msg))->toOthers();
+        broadcast(new NotificationChange($msg));
 
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil diperbarui.');
@@ -138,7 +138,7 @@ class AcaraController extends Controller
         $judul = $acara->judul;
         $acara->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " menghapus acara \"{$judul}\""))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus acara \"{$judul}\""));
 
         return redirect()->route('admin.acara')
             ->with('success', 'Acara berhasil dihapus.');
@@ -154,7 +154,7 @@ class AcaraController extends Controller
         $acara->save();
 
         $statusText = $acara->tampilkan ? "ditampilkan" : "disembunyikan";
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah status tampil acara '{$acara->judul}' menjadi {$statusText}"))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah status tampil acara '{$acara->judul}' menjadi {$statusText}"));
 
         return redirect()->route('admin.acara')
             ->with('success', 'Status visibilitas acara berhasil diperbarui.');

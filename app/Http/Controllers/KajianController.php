@@ -135,7 +135,7 @@ class KajianController extends Controller
 
         $narasumberName = $kajian->narasumber->nama ?? '—';
         $tempatName     = $kajian->tempat->nama ?? '—';
-        broadcast(new NotificationChange(Auth::user()->name . " menambahkan kajian baru \"{$kajian->Judul}\" (Narasumber: {$narasumberName}, Tempat: {$tempatName})"))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan kajian baru \"{$kajian->Judul}\" (Narasumber: {$narasumberName}, Tempat: {$tempatName})"));
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil ditambahkan.');
@@ -217,7 +217,7 @@ class KajianController extends Controller
         } else {
             $msg = Auth::user()->name . " memperbarui kajian \"{$judulRef}\"";
         }
-        broadcast(new NotificationChange($msg))->toOthers();
+        broadcast(new NotificationChange($msg));
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil diperbarui.');
@@ -252,7 +252,7 @@ class KajianController extends Controller
         ]);
 
         $statusText = $kajian->Tampilkan ? "ditampilkan" : "disembunyikan";
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah status tampil kajian '{$kajian->Judul}' menjadi {$statusText}"))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah status tampil kajian '{$kajian->Judul}' menjadi {$statusText}"));
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Status tampil kajian diperbarui.');
@@ -269,7 +269,7 @@ class KajianController extends Controller
         $judul = $kajian->Judul;
         $kajian->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " menghapus kajian \"{$judul}\""))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus kajian \"{$judul}\""));
 
         return redirect()->route('admin.kajian')
             ->with('success', 'Kajian berhasil dihapus.');

@@ -101,7 +101,7 @@ class HijriTickerController extends Controller
 
         if (count($changes) > 0) {
             $msg = \Illuminate\Support\Facades\Auth::user()->name . " mengubah pengaturan pewaktuan Hijriah: " . implode('; ', $changes);
-            broadcast(new \App\Events\NotificationChange($msg))->toOthers();
+            broadcast(new \App\Events\NotificationChange($msg));
         }
 
         // Force cache eviction for today's schedule to show updated timing immediately

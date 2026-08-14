@@ -42,7 +42,7 @@ class TempatController extends Controller
 
         $tempat = Tempat::create($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " menambahkan tempat baru \"{$tempat->nama}\""))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan tempat baru \"{$tempat->nama}\""));
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil ditambahkan.');
@@ -79,7 +79,7 @@ class TempatController extends Controller
         } else {
             $msg = Auth::user()->name . " memperbarui tempat \"{$tempat->nama}\"";
         }
-        broadcast(new NotificationChange($msg))->toOthers();
+        broadcast(new NotificationChange($msg));
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat berhasil diperbarui.');
@@ -93,7 +93,7 @@ class TempatController extends Controller
         $nama = $tempat->nama;
         $tempat->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " menghapus tempat \"{$nama}\""))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus tempat \"{$nama}\""));
 
         return redirect()->route('admin.tempat')
             ->with('success', 'Tempat "' . $nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');

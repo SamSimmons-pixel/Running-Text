@@ -42,7 +42,7 @@ class NarasumberController extends Controller
 
         $narasumber = Narasumber::create($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " menambahkan narasumber baru \"{$narasumber->nama}\""))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan narasumber baru \"{$narasumber->nama}\""));
 
         return redirect()->route('admin.narasumber')
             ->with('success', 'Narasumber berhasil ditambahkan.');
@@ -57,7 +57,7 @@ class NarasumberController extends Controller
         // FK is SET NULL on delete — Eloquent will fire the delete and DB handles nullification
         $narasumber->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " menghapus narasumber \"" . $nama . "\""))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus narasumber \"" . $nama . "\""));
 
         return redirect()->route('admin.narasumber')
             ->with('success', 'Narasumber "' . $nama . '" berhasil dihapus. Data terkait di Kajian dan Acara telah diset ke kosong (—).');
@@ -81,7 +81,7 @@ class NarasumberController extends Controller
         } else {
             $msg = Auth::user()->name . " memperbarui narasumber \"{$namaAfter}\"";
         }
-        broadcast(new NotificationChange($msg))->toOthers();
+        broadcast(new NotificationChange($msg));
 
         return redirect()->route('admin.narasumber')->with('success', 'Narasumber berhasil diperbarui');
     }

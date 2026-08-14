@@ -50,7 +50,7 @@ class InformasiUmumController extends Controller
 
         $info = InformasiUmum::create($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " menambahkan informasi umum baru \"{$info->judul}\""))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan informasi umum baru \"{$info->judul}\""));
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil ditambahkan.');
@@ -91,7 +91,7 @@ class InformasiUmumController extends Controller
         } else {
             $msg = Auth::user()->name . " memperbarui informasi umum \"{$info->judul}\"";
         }
-        broadcast(new NotificationChange($msg))->toOthers();
+        broadcast(new NotificationChange($msg));
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil diperbarui.');
@@ -111,7 +111,7 @@ class InformasiUmumController extends Controller
         ]);
 
         $statusText = $info->tampilkan ? "ditampilkan" : "disembunyikan";
-        broadcast(new NotificationChange(Auth::user()->name . " mengubah status tampil informasi '{$info->judul}' menjadi {$statusText}"))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " mengubah status tampil informasi '{$info->judul}' menjadi {$statusText}"));
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Status tampil informasi diperbarui.');
@@ -128,7 +128,7 @@ class InformasiUmumController extends Controller
         $judul = $info->judul;
         $info->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " menghapus informasi umum \"{$judul}\""))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus informasi umum \"{$judul}\""));
 
         return redirect()->route('admin.informasi')
             ->with('success', 'Informasi Umum berhasil dihapus.');

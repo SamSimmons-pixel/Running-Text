@@ -42,7 +42,7 @@ class KontakController extends Controller
 
         $kontak = Kontak::create($data);
 
-        broadcast(new NotificationChange(Auth::user()->name . " menambahkan kontak baru \"{$kontak->nama}\" ({$kontak->nomor_kontak})"))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menambahkan kontak baru \"{$kontak->nama}\" ({$kontak->nomor_kontak})"));
 
         return redirect()->route('admin.kontak')
             ->with('success', 'Kontak berhasil ditambahkan.');
@@ -56,7 +56,7 @@ class KontakController extends Controller
         $nama = $kontak->nama;
         $kontak->delete();
 
-        broadcast(new NotificationChange(Auth::user()->name . " menghapus kontak \"{$nama}\""))->toOthers();
+        broadcast(new NotificationChange(Auth::user()->name . " menghapus kontak \"{$nama}\""));
 
         return redirect()->route('admin.kontak')
             ->with('success', 'Kontak "' . $nama . '" berhasil dihapus. Data terkait di Kajian telah diset ke kosong (—).');
@@ -92,7 +92,7 @@ class KontakController extends Controller
         } else {
             $msg = Auth::user()->name . " memperbarui kontak \"{$kontak->nama}\"";
         }
-        broadcast(new NotificationChange($msg))->toOthers();
+        broadcast(new NotificationChange($msg));
 
         return redirect()->route('admin.kontak')
             ->with('success', 'Kontak berhasil diperbarui.');
