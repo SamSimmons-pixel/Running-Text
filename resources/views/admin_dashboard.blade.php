@@ -247,7 +247,8 @@
                                 <small style="display:block; color:#D0DDF2; font-size:1.1rem; margin-top:2px;">{{ $item->narasumber->nama ?? '—' }}</small>
                               </td>
                               <td style="color:#94a3b8; white-space:nowrap;">
-                                {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('dddd') }}
+                                {{ $dayName = \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('dddd') }}
+                                {{ $dayName === 'Jumat' ? "Jum'at" : $dayName }}
                               </td>
                               <td style="color:#94a3b8; white-space:nowrap;">
                                 {{ \Carbon\Carbon::parse($item->Tanggal)->locale('id')->isoFormat('D MMMM Y') }}
