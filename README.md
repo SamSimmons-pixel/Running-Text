@@ -1,4 +1,4 @@
-# 📘 Technical Handover & Deployment Runbook: [Nama Proyek]
+# 📘 Technical Handover & Deployment Runbook: Running Text
 
 ## 1. System Overview & Tech Stack
 - **Framework:** Laravel 12 (PHP 8.2+)
